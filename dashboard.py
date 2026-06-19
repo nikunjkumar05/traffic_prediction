@@ -98,7 +98,7 @@ junction_stats, pareto_pct, pareto_count, total_junctions = compute_pareto_stats
 violation_queue = df.groupby('mapped_junction').agg(
     total_delay=('congestion_cost', 'sum'),
     violation_count=('single_violation', 'count'),
-    top_vehicle=('vehicle_type', lambda x: x.mode().iloc[0] if len(x) > 0 and not x.mode().empty else 'UNKNOWN'),
+    top_vehicle=('vehicle_type', lambda x: x.value_counts().idxmax() if len(x) > 0 else 'UNKNOWN'),
     avg_gridlock=('gridlock_score', 'mean'),
     avg_lat=('latitude', 'mean'),
     avg_lon=('longitude', 'mean'),
@@ -200,7 +200,7 @@ elif page == "📊 Commissioner View":
     c1, c2 = st.columns([3, 1])
     with c2:
         st.metric("Junction Pairs Tested", f"{len(lag_df):,}")
-        st.metric("Significant (r>0.3)", f"{len(lag_df[lag_df['lag_correlation'] > 0.3]):,}" if len(lag_df) > 0 else "0")
+        st.metric("Strong (r>0.3)", f"{len(lag_df[lag_df['lag_correlation'] > 0.3]):,}" if len(lag_df) > 0 else "0")
         st.metric("Cascade Chains", f"{len(cascades):,}")
 
     with c1:

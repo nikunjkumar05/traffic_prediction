@@ -81,7 +81,7 @@ def get_counter_intuitive_examples(df: pd.DataFrame, n: int = 5):
     stats = df.groupby('mapped_junction').agg(
         total_delay=('congestion_cost', 'sum'),
         violation_count=('single_violation', 'count'),
-        top_vehicle=('vehicle_type', lambda x: x.mode().iloc[0] if len(x) > 0 and not x.mode().empty else 'UNKNOWN'),
+        top_vehicle=('vehicle_type', lambda x: x.value_counts().idxmax() if len(x) > 0 else 'UNKNOWN'),
         avg_junction_dist=('junction_distance', 'mean'),
     ).reset_index()
 

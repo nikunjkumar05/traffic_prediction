@@ -69,7 +69,7 @@ def run_silk_board_case_study(df: pd.DataFrame) -> Dict[str, Any]:
         'total_violations': len(silk),
         'total_delay_minutes': round(silk['congestion_cost'].sum(), 2),
         'avg_delay_per_violation': round(silk['congestion_cost'].mean(), 2),
-        'peak_hour': int(silk['created_datetime'].dt.hour.mode()[0]),
+        'peak_hour': int(silk['created_datetime'].dt.hour.mode().iloc[0]) if len(silk) > 0 else 17,
         'gridlock_score': round(silk['gridlock_score'].mean(), 1),
     }
     print(f"  Case study: {result['junction']} | {result['total_violations']:,} violations | {result['total_delay_minutes']:,.0f} veh-min")

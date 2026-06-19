@@ -50,8 +50,8 @@ def train_model(df: pd.DataFrame, features: list = None, model_type: str = 'xgbo
         print(f"  WARNING: Insufficient data for {model_type}")
         return None, {}
 
-    X_train, y_train = train[features].fillna(0), train['congestion_cost']
-    X_test, y_test = test[features].fillna(0), test['congestion_cost']
+    X_train, y_train = train[features], train['congestion_cost']
+    X_test, y_test = test[features], test['congestion_cost']
 
     if model_type == 'xgboost':
         p = {'n_estimators': 500, 'max_depth': 6, 'learning_rate': 0.05,

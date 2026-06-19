@@ -50,7 +50,7 @@ def load_and_parse(csv_path: str) -> pd.DataFrame:
     df['date'] = df['created_datetime'].dt.date
 
     all_types = df['violation_type'].apply(_parse_violation_types)
-    df = df.loc[df.index.repeat(all_types.str.len())].copy()
+    df = df.loc[df.index.repeat(all_types.apply(len))].copy()
     df['single_violation'] = np.concatenate([t for t in all_types])
     print(f"  Parsed {len(df):,} violation events from {csv_path}")
     return df
