@@ -1,205 +1,131 @@
-"""
-ParkIntel v2 — Stage 6: Validation
-Backtest, speed correlation, Silk Board case study, one-deployment example.
-"""
+"""Stage 6: Validation — Backtest, cascade evidence, case study, one-deployment impact numbers."""
 
 import numpy as np
 import pandas as pd
 from sklearn.metrics import r2_score, mean_absolute_error
 from typing import Dict, Any
 
+# Dataset spans Nov 2023 - Apr 2024 = ~20 weeks
+WEEKS_IN_DATASET = 20
+ASSUMED_ENFORCEMENT_REDUCTION = 0.40
+FUEL_SAVINGS_PER_VEH_MIN = 0.5
 
-# --- Backtest ----------------------------------------------------------------
 
 def run_backtest(model, df: pd.DataFrame, features: list) -> Dict[str, Any]:
-    """
-    Validate model on held-out month (month 2 = February).
-
-    This is a temporal split — not random. Simulates real forecasting:
-    train on Nov-Jan, test on Feb.
-
-    Returns: dict with r2, mae, predictions
-    """
+    """Validate model on held-out Feb data (temporal split: train Nov-Jan, test Feb)."""
     if model is None:
-        return {'r2': 0, 'mae': 0, 'predictions': []}
+        return {'r2': 0, 'mae': 0, 'test_size': 0}
 
     test = df[df['month'] == 2]
     if len(test) == 0:
-        return {'r2': 0, 'mae': 0, 'predictions': []}
+        return {'r2': 0, 'mae': 0, 'test_size': 0}
 
-    X_test = test[features].fillna(0)
+    preds = model.predict(test[features].fillna(0))
     y_test = test['congestion_cost']
-
-    predictions = model.predict(X_test)
-    r2 = r2_score(y_test, predictions)
-    mae = mean_absolute_error(y_test, predictions)
-
-    result = {
-        'r2': round(r2, 4),
-        'mae': round(mae, 4),
-        'test_size': len(test),
-        'predictions': predictions,
-    }
-
-    print(f"  Backtest R2: {r2:.4f}")
-    print(f"  Backtest MAE: {mae:.4f}")
-    print(f"  Test size: {len(test):,} violations")
+    result = {'r2': round(r2_score(y_test, preds), 4), 'mae': round(mean_absolute_error(y_test, preds), 4), 'test_size': len(test)}
+    print(f"  Backtest R2: {result['r2']}, MAE: {result['mae']}, Test size: {result['test_size']:,}")
     return result
 
 
-# --- Speed Correlation -------------------------------------------------------
+def run_cascade_validation(df: pd.DataFrame, junction_coords: dict) -> Dict[str, Any]:
+    """Validate cascade hypothesis: when junction A jams, does B jam within 15-30 minutes?
 
-def run_speed_correlation(df: pd.DataFrame) -> Dict[str, Any]:
+    This is the REAL validation (not simulated). Uses historical lag correlations
+    computed from the actual violation timestamps in the dataset.
     """
-    Correlate CongestionCost™ with simulated traffic speed.
+    from src.cascade import build_adjacency_graph, compute_lag_correlation, detect_cascades
 
-    In production, use Google Maps API or DMS sensor data.
-    For this prototype, we simulate speed based on time-of-day patterns:
-    - Rush hours (7-10am, 5-8pm): 15-25 km/h
-    - Off-peak: 30-40 km/h
-    - Night: 40-50 km/h
+    graph = build_adjacency_graph(junction_coords, max_distance_m=3000)
+    lag_15 = compute_lag_correlation(df, graph, lag_minutes=15)
+    lag_30 = compute_lag_correlation(df, graph, lag_minutes=30)
+    cascades = detect_cascades(df, lag_15, threshold_r=0.2)
 
-    High CongestionCost should correlate with low speed (r = -0.72).
-    """
-    np.random.seed(42)
+    # Summary statistics
+    sig_15 = lag_15[lag_15['lag_correlation'] > 0.2] if len(lag_15) > 0 else pd.DataFrame()
+    sig_30 = lag_30[lag_30['lag_correlation'] > 0.2] if len(lag_30) > 0 else pd.DataFrame()
 
-    # Simulate speed based on time-of-day AND junction proximity
-    df = df.copy()
-    base_speed = 35 + np.random.normal(0, 3, len(df))
-
-    # Rush hours: slower
-    hour = df['created_datetime'].dt.hour
-    base_speed[(hour >= 7) & (hour <= 10)] -= 15
-    base_speed[(hour >= 17) & (hour <= 20)] -= 15
-
-    # Night: faster
-    base_speed[(hour >= 22) | (hour <= 5)] += 10
-
-    # Spatial component: near junctions = slower (turning traffic)
-    max_dist = df['junction_distance'].max()
-    if max_dist > 0:
-        spatial_penalty = (1 - df['junction_distance'] / max_dist) * -5
-    else:
-        spatial_penalty = 0
-
-    df['simulated_speed'] = (base_speed + spatial_penalty).clip(5, 60)
-
-    # Compute correlation
-    correlation = df['congestion_cost'].corr(df['simulated_speed'])
+    avg_r_15 = sig_15['lag_correlation'].mean() if len(sig_15) > 0 else 0
+    max_r_15 = sig_15['lag_correlation'].max() if len(sig_15) > 0 else 0
+    top_pair = sig_15.iloc[0] if len(sig_15) > 0 else None
 
     result = {
-        'correlation': round(correlation, 4),
-        'mean_speed': round(df['simulated_speed'].mean(), 1),
-        'mean_congestion_cost': round(df['congestion_cost'].mean(), 2),
+        'total_pairs_tested': len(lag_15),
+        'significant_pairs_15min': len(sig_15),
+        'significant_pairs_30min': len(sig_30),
+        'avg_correlation_15min': round(avg_r_15, 4),
+        'max_correlation_15min': round(max_r_15, 4),
+        'top_from': top_pair['from_junction'] if top_pair is not None else 'N/A',
+        'top_to': top_pair['to_junction'] if top_pair is not None else 'N/A',
+        'top_distance': top_pair['distance_m'] if top_pair is not None else 0,
+        'cascade_chains': len(cascades),
+        'longest_chain': ' -> '.join(cascades[0]['chain']) if cascades else 'N/A',
     }
 
-    print(f"  DMS-Speed Correlation: {correlation:.4f}")
-    print(f"  Mean simulated speed: {result['mean_speed']} km/h")
+    print(f"  Cascade validation: {result['significant_pairs_15min']} significant pairs (15min lag)")
+    print(f"  Top pair: {result['top_from']} -> {result['top_to']} (r={result['max_correlation_15min']}, {result['top_distance']:.0f}m)")
+    print(f"  Cascade chains: {result['cascade_chains']}")
+    if cascades:
+        print(f"  Longest chain: {result['longest_chain']}")
     return result
 
-
-# --- Silk Board Case Study ---------------------------------------------------
 
 def run_silk_board_case_study(df: pd.DataFrame) -> Dict[str, Any]:
-    """
-    Analyze Silk Board junction — Bengaluru's most notorious bottleneck.
-
-    Silk Board is infamous for 2-3 hour jams. If parking violations
-    contribute to this, our system should detect it.
-    """
-    # Search for Silk Board in junction names
-    silk_board = df[df['mapped_junction'].str.contains('Silk Board', case=False, na=False)]
-
-    if len(silk_board) == 0:
-        # Try nearby junctions
-        silk_board = df[df['mapped_junction'].str.contains('Silk|Bommanahalli|HSR', case=False, na=False)]
-
-    if len(silk_board) == 0:
-        print("  Silk Board not found in data — using top hotspot as proxy")
-        # Use the highest-delay junction as a case study proxy
+    """Analyze top congestion junction (proxy for Silk Board if not found in data)."""
+    silk = df[df['mapped_junction'].str.contains('Silk Board|Bommanahalli|HSR', case=False, na=False)]
+    if len(silk) == 0:
         top_junction = df.groupby('mapped_junction')['congestion_cost'].sum().idxmax()
-        silk_board = df[df['mapped_junction'] == top_junction]
+        silk = df[df['mapped_junction'] == top_junction]
 
-    case_study = {
-        'junction': silk_board['mapped_junction'].iloc[0] if len(silk_board) > 0 else 'N/A',
-        'total_violations': len(silk_board),
-        'total_delay_minutes': round(silk_board['congestion_cost'].sum(), 2),
-        'avg_delay_per_violation': round(silk_board['congestion_cost'].mean(), 2),
-        'top_vehicle_type': silk_board['vehicle_type'].mode()[0] if len(silk_board) > 0 else 'N/A',
-        'peak_hour': int(silk_board['created_datetime'].dt.hour.mode()[0]) if len(silk_board) > 0 else 0,
-        'gridlock_score': round(silk_board['gridlock_score'].mean(), 1) if len(silk_board) > 0 else 0,
+    result = {
+        'junction': silk['mapped_junction'].iloc[0],
+        'total_violations': len(silk),
+        'total_delay_minutes': round(silk['congestion_cost'].sum(), 2),
+        'avg_delay_per_violation': round(silk['congestion_cost'].mean(), 2),
+        'peak_hour': int(silk['created_datetime'].dt.hour.mode()[0]),
+        'gridlock_score': round(silk['gridlock_score'].mean(), 1),
     }
+    print(f"  Case study: {result['junction']} | {result['total_violations']:,} violations | {result['total_delay_minutes']:,.0f} veh-min")
+    return result
 
-    print(f"  Case study: {case_study['junction']}")
-    print(f"    Total violations: {case_study['total_violations']:,}")
-    print(f"    Total delay: {case_study['total_delay_minutes']:,.0f} vehicle-minutes")
-    print(f"    Peak hour: {case_study['peak_hour']}:00")
-    return case_study
-
-
-# --- One Deployment Example --------------------------------------------------
 
 def generate_one_deployment_example(df: pd.DataFrame) -> Dict[str, Any]:
-    """
-    Generate specific "one deployment" numbers for judges.
-
-    Shows: "If BTP deploys this at ONE junction for ONE month..."
-    """
-    # Find the highest-impact junction
-    junction_agg = df.groupby('mapped_junction').agg(
-        total_delay=('congestion_cost', 'sum'),
-        violation_count=('single_violation', 'count'),
-        avg_severity=('severity', 'mean'),
+    """Generate 'one deployment' impact numbers: 'If BTP deploys at ONE junction for ONE month...'"""
+    agg = df.groupby('mapped_junction').agg(
+        total_delay=('congestion_cost', 'sum'), violation_count=('single_violation', 'count'),
     ).reset_index()
+    top = agg.loc[agg['total_delay'].idxmax()]
 
-    top = junction_agg.loc[junction_agg['total_delay'].idxmax()]
-
-    # Estimate monthly metrics (data spans ~5 months)
-    violations_per_week = top['violation_count'] / 20  # ~20 weeks in dataset
-    delay_per_week = top['total_delay'] / 20
-
-    # If enforced (40% reduction)
-    reduction = 0.40
-    weekly_time_saved = delay_per_week * reduction
-    monthly_time_saved = weekly_time_saved * 4
-    monthly_fuel_saved = monthly_time_saved * 0.5  # Rs 0.5 per vehicle-minute
+    vpw = top['violation_count'] / WEEKS_IN_DATASET
+    dpw = top['total_delay'] / WEEKS_IN_DATASET
+    monthly_saved = dpw * ASSUMED_ENFORCEMENT_REDUCTION * 4
+    monthly_fuel = monthly_saved * FUEL_SAVINGS_PER_VEH_MIN
 
     example = {
         'junction': top['mapped_junction'],
-        'violations_per_week': round(violations_per_week),
-        'delay_per_week_vehicle_min': round(delay_per_week),
+        'violations_per_week': round(vpw),
+        'delay_per_week_vehicle_min': round(dpw),
         'if_enforced': {
-            'violations_reduction': f"{int(reduction * 100)}%",
-            'commuter_time_saved': f"{int(monthly_time_saved / 60)} hours/month",
-            'fuel_saved': f"Rs {int(monthly_fuel_saved)}/month",
-            'patrol_hours_optimized': '40% reduction',
+            'violations_reduction': f"{int(ASSUMED_ENFORCEMENT_REDUCTION * 100)}%",
+            'commuter_time_saved': f"{int(monthly_saved / 60)} hours/month",
+            'fuel_saved': f"Rs {int(monthly_fuel)}/month",
+            'patrol_hours_optimized': f"{int(ASSUMED_ENFORCEMENT_REDUCTION * 100)}% reduction",
         },
     }
-
-    print(f"  One deployment example: {example['junction']}")
-    print(f"    Violations/week: {example['violations_per_week']}")
-    print(f"    If enforced: {example['if_enforced']['commuter_time_saved']}")
-    print(f"    Fuel saved: {example['if_enforced']['fuel_saved']}")
+    print(f"  One deployment: {example['junction']} | {example['if_enforced']['commuter_time_saved']}")
     return example
 
 
-# --- Run Full Validation -----------------------------------------------------
-
-def run_validation(df: pd.DataFrame, models: dict = None) -> dict:
-    """
-    Run Stage 6: Full validation pipeline.
-    """
+def run_validation(df: pd.DataFrame, models: dict = None, junction_coords: dict = None) -> dict:
+    """Run Stage 6: Full validation — backtest + cascade evidence + case study + one-deployment."""
     print("=" * 60)
     print("Stage 6: Validation")
     print("=" * 60)
 
     results = {}
 
-    # Backtest
     print("\n[1/4] Running backtest...")
     if models and models.get('xgb_model'):
         features = models.get('features', [])
-        # Prepare features if not already done
         if features and not all(f in df.columns for f in features):
             from src.prediction import prepare_features
             df, features, _ = prepare_features(df)
@@ -207,36 +133,32 @@ def run_validation(df: pd.DataFrame, models: dict = None) -> dict:
     else:
         results['backtest'] = {'r2': 0, 'mae': 0}
 
-    # Speed correlation
-    print("\n[2/4] Computing speed correlation...")
-    results['speed_correlation'] = run_speed_correlation(df)
+    print("\n[2/4] Cascade validation (historical lag analysis)...")
+    if junction_coords:
+        results['cascade'] = run_cascade_validation(df, junction_coords)
+    else:
+        results['cascade'] = {'significant_pairs_15min': 0, 'max_correlation_15min': 0}
 
-    # Silk Board case study
-    print("\n[3/4] Silk Board case study...")
+    print("\n[3/4] Case study...")
     results['case_study'] = run_silk_board_case_study(df)
 
-    # One deployment example
     print("\n[4/4] One deployment example...")
     results['one_deployment'] = generate_one_deployment_example(df)
 
-    # Summary
     print("\n" + "=" * 60)
-    print("Validation Summary:")
     print(f"  XGBoost R2: {results['backtest']['r2']}")
-    print(f"  Speed Correlation: {results['speed_correlation']['correlation']}")
+    print(f"  Cascade pairs: {results['cascade']['significant_pairs_15min']} (max r={results['cascade']['max_correlation_15min']})")
     print(f"  Case Study: {results['case_study']['junction']}")
-    print(f"  One Deployment: {results['one_deployment']['if_enforced']['commuter_time_saved']}")
+    print(f"  One Deploy: {results['one_deployment']['if_enforced']['commuter_time_saved']}")
     print("=" * 60)
     print("Stage 6 complete.")
     print("=" * 60)
-
     return results
 
 
 if __name__ == '__main__':
-    import sys
+    import sys, json
     sys.path.insert(0, '.')
-    import json
     from src.data_pipeline import run_pipeline
     from src.congestion_cost import run_congestion_cost
     from src.prediction import run_prediction
@@ -247,4 +169,4 @@ if __name__ == '__main__':
     df = run_pipeline('data/raw/violations.csv', junction_coords=coords)
     df = run_congestion_cost(df, junction_coords=coords)
     models = run_prediction(df)
-    results = run_validation(df, models)
+    results = run_validation(df, models, junction_coords=coords)

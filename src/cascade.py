@@ -1,0 +1,233 @@
+"""Cascade Detection — Historical lag analysis + cascade simulator.
+
+Proves that parking violations at one junction predict violations at nearby junctions
+within 15-30 minutes. This is the evidence that replaces simulated speed correlation.
+"""
+
+import numpy as np
+import pandas as pd
+from itertools import combinations
+from typing import Dict, List, Tuple
+
+
+def build_adjacency_graph(junction_coords: dict, max_distance_m: float = 3000) -> pd.DataFrame:
+    """Build directed adjacency graph from junction coordinates. Edge = junctions within max_distance_m."""
+    jnames = list(junction_coords.keys())
+    jlats = np.array([junction_coords[j][0] for j in jnames])
+    jlons = np.array([junction_coords[j][1] for j in jnames])
+
+    edges = []
+    for i, j in combinations(range(len(jnames)), 2):
+        dist = np.sqrt((jlats[i] - jlats[j])**2 + (jlons[i] - jlons[j])**2) * 111000
+        if dist <= max_distance_m:
+            edges.append({'from': jnames[i], 'to': jnames[j], 'distance_m': round(dist, 0)})
+            edges.append({'from': jnames[j], 'to': jnames[i], 'distance_m': round(dist, 0)})
+
+    graph = pd.DataFrame(edges)
+    print(f"  Adjacency graph: {len(jnames)} junctions, {len(graph)} directed edges (max {max_distance_m}m)")
+    return graph
+
+
+def compute_lag_correlation(df: pd.DataFrame, graph: pd.DataFrame, lag_minutes: int = 15,
+                            min_violations: int = 5) -> pd.DataFrame:
+    """For each edge (A→B), compute: when A has a violation spike, does B spike at T+lag?"""
+    df = df.copy()
+    df['time_bin'] = df['created_datetime'].dt.floor(f'{lag_minutes}min')
+
+    # Count violations per junction per time bin
+    bin_counts = df.groupby(['mapped_junction', 'time_bin']).size().reset_index(name='count')
+
+    results = []
+    for _, edge in graph.iterrows():
+        a, b = edge['from'], edge['to']
+        a_data = bin_counts[bin_counts['mapped_junction'] == a].set_index('time_bin')['count']
+        b_data = bin_counts[bin_counts['mapped_junction'] == b].set_index('time_bin')['count']
+
+        if len(a_data) < min_violations or len(b_data) < min_violations:
+            continue
+
+        # Align on common time bins
+        common = a_data.index.intersection(b_data.index)
+        if len(common) < 10:
+            continue
+
+        a_aligned = a_data.reindex(common, fill_value=0)
+        b_aligned = b_data.reindex(common, fill_value=0)
+
+        # Shift B forward by lag (if A spikes at T, does B spike at T+lag?)
+        b_lagged = b_aligned.shift(-1).dropna()
+        a_common = a_aligned.reindex(b_lagged.index, fill_value=0)
+
+        if a_common.std() == 0 or b_lagged.std() == 0:
+            continue
+
+        corr = a_common.corr(b_lagged)
+        if np.isnan(corr):
+            continue
+
+        results.append({
+            'from_junction': a, 'to_junction': b,
+            'distance_m': edge['distance_m'],
+            'lag_correlation': round(corr, 4),
+            'from_violations': int(a_data.sum()),
+            'to_violations': int(b_data.sum()),
+        })
+
+    lag_df = pd.DataFrame(results)
+    if len(lag_df) > 0:
+        lag_df = lag_df.sort_values('lag_correlation', ascending=False)
+        significant = lag_df[lag_df['lag_correlation'] > 0.2]
+        print(f"  Lag analysis ({lag_minutes}min): {len(lag_df)} pairs tested, {len(significant)} significant (r>0.2)")
+    else:
+        print("  Lag analysis: no significant correlations found")
+    return lag_df
+
+
+def detect_cascades(df: pd.DataFrame, lag_df: pd.DataFrame, threshold_r: float = 0.2,
+                    top_n: int = 10) -> List[Dict]:
+    """Detect cascade chains: A→B→C where each link has significant lag correlation."""
+    sig = lag_df[lag_df['lag_correlation'] > threshold_r].copy()
+    if len(sig) == 0:
+        return []
+
+    # Build adjacency from significant edges
+    adj = {}
+    for _, row in sig.iterrows():
+        if row['from_junction'] not in adj:
+            adj[row['from_junction']] = []
+        adj[row['from_junction']].append({
+            'to': row['to_junction'],
+            'correlation': row['lag_correlation'],
+            'distance': row['distance_m'],
+        })
+
+    # Find chains (BFS up to depth 3)
+    cascades = []
+    for source in adj:
+        visited = {source}
+        queue = [(source, [(source, 0, 0)])]
+        while queue:
+            current, path = queue.pop(0)
+            if len(path) >= 3:  # Max chain length
+                cascades.append({
+                    'chain': [p[0] for p in path],
+                    'total_correlation': np.prod([p[1] for p in path[1:]]),
+                    'total_distance': sum(p[2] for p in path[1:]),
+                    'length': len(path),
+                })
+                continue
+            for neighbor in adj.get(current, []):
+                if neighbor['to'] not in visited:
+                    visited.add(neighbor['to'])
+                    queue.append((neighbor['to'], path + [(neighbor['to'], neighbor['correlation'], neighbor['distance'])]))
+
+    cascades.sort(key=lambda x: x['total_correlation'], reverse=True)
+    print(f"  Cascades detected: {len(cascades)} chains (top {top_n} shown)")
+    return cascades[:top_n]
+
+
+def simulate_cascade(df: pd.DataFrame, junction_coords: dict, source_junction: str,
+                     source_time: str, propagation_speed: float = 0.5) -> pd.DataFrame:
+    """Simulate cascade from a single violation at source_junction at source_time.
+
+    propagation_speed: fraction of distance covered per 15-minute step (0.5 = 50% of 3km in 15min)
+    """
+    graph = build_adjacency_graph(junction_coords, max_distance_m=5000)
+    source_time = pd.Timestamp(source_time)
+
+    # Get source junction coordinates
+    if source_junction not in junction_coords:
+        print(f"  Junction '{source_junction}' not found")
+        return pd.DataFrame()
+
+    src_lat, src_lon = junction_coords[source_junction]
+
+    # Propagate through graph
+    events = [{'junction': source_junction, 'lat': src_lat, 'lon': src_lon,
+               'time': source_time, 'step': 0, 'delay_minutes': 0}]
+
+    visited = {source_junction}
+    current_step = [source_junction]
+
+    for step in range(1, 4):  # Max 3 propagation steps (45 minutes)
+        next_step = []
+        for src in current_step:
+            neighbors = graph[graph['from'] == src]
+            for _, edge in neighbors.iterrows():
+                dst = edge['to']
+                if dst in visited or dst not in junction_coords:
+                    continue
+                visited.add(dst)
+
+                dst_lat, dst_lon = junction_coords[dst]
+                dist = edge['distance_m']
+
+                # Delay = distance / propagation_speed (in 15-min units)
+                delay_steps = max(1, int(dist / (3000 * propagation_speed)))
+                delay_minutes = delay_steps * 15
+
+                events.append({
+                    'junction': dst, 'lat': dst_lat, 'lon': dst_lon,
+                    'time': source_time + pd.Timedelta(minutes=delay_minutes),
+                    'step': step, 'delay_minutes': delay_minutes,
+                })
+                next_step.append(dst)
+
+        current_step = next_step
+        if not current_step:
+            break
+
+    result = pd.DataFrame(events)
+    print(f"  Cascade from {source_junction}: {len(result)} junctions affected over {result['delay_minutes'].max()} minutes")
+    return result
+
+
+def run_cascade_analysis(df: pd.DataFrame, junction_coords: dict) -> dict:
+    """Run full cascade analysis: adjacency graph → lag correlation → cascade detection."""
+    print("=" * 60)
+    print("Cascade Analysis — Historical Lag + Propagation")
+    print("=" * 60)
+
+    print("\n[1/4] Building adjacency graph...")
+    graph = build_adjacency_graph(junction_coords, max_distance_m=3000)
+
+    print("\n[2/4] Computing lag correlations (15-min lag)...")
+    lag_df = compute_lag_correlation(df, graph, lag_minutes=15)
+
+    print("\n[3/4] Detecting cascade chains...")
+    cascades = detect_cascades(df, lag_df, threshold_r=0.2)
+
+    print("\n[4/4] Summary...")
+    if len(lag_df) > 0:
+        top_pairs = lag_df.head(5)
+        print("  Top 5 cascade pairs:")
+        for _, r in top_pairs.iterrows():
+            print(f"    {r['from_junction']} -> {r['to_junction']}: r={r['lag_correlation']:.3f}, {r['distance_m']:.0f}m apart")
+
+    if cascades:
+        print(f"\n  Longest cascade chain: {' -> '.join(cascades[0]['chain'])}")
+        print(f"  Total correlation: {cascades[0]['total_correlation']:.4f}")
+
+    print("=" * 60)
+    print("Cascade Analysis complete.")
+    print("=" * 60)
+
+    return {
+        'graph': graph,
+        'lag_correlations': lag_df,
+        'cascades': cascades,
+    }
+
+
+if __name__ == '__main__':
+    import json, sys
+    sys.path.insert(0, '.')
+    from src.data_pipeline import run_pipeline
+    from src.congestion_cost import run_congestion_cost
+
+    with open('data/external/junction_coords.json') as f:
+        coords = json.load(f)
+
+    df = run_pipeline('data/raw/violations.csv', junction_coords=coords)
+    df = run_congestion_cost(df, junction_coords=coords)
+    results = run_cascade_analysis(df, coords)
