@@ -1,25 +1,41 @@
-# Data files
-*.csv
-*.xlsx
-*.xls
-
-# Python
+```
+# Compiled and build artifacts
+*.pyc
 __pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
+
+# Dependencies
+.venv/
+venv/
+node_modules/
 dist/
 build/
-.eggs/
-*.egg
+target/
+.gradle/
 
-# Virtual environments
-venv/
-env/
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+
+# Environment
 .env
-.agents/
-# IDE
+.env.local
+.env.*
+
+# Editors
 .vscode/
 .idea/
-*.swp
-*.swo
+
+# Coverage
+.coverage
+coverage/
+htmlcov/
+
+# Python cache
+.mypy_cache/
+.pytest_cache/
+
+# System files
+.DS_Store
+Thumbs.db
+```

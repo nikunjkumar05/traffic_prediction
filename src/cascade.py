@@ -1,7 +1,8 @@
-"""Cascade Detection — Historical lag analysis + cascade simulator.
+"""Cascade Detection — Historical lag correlation analysis.
 
-Proves that parking violations at one junction predict violations at nearby junctions
-within 15-30 minutes. This is the evidence that replaces simulated speed correlation.
+Proves that parking violations at one junction correlate with violations at nearby junctions
+within 15-30 minutes. This identifies spatial-temporal patterns for enforcement beat allocation.
+Note: Measures reporting pattern correlation, not physical congestion propagation.
 """
 
 import numpy as np
