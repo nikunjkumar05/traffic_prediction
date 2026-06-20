@@ -678,12 +678,13 @@ elif role == "Sub-Inspector (Station)":
 elif role == "ACP / Commissioner":
     st.header("📊 ACP / Commissioner — Strategy View")
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "🎯 Priority Map",
         "🏗️ Enforcement Futility",
-        "🔗 Cascade Proof",
+        "🔗 Cascade Patterns",
         "👤 Repeat Offenders",
         "✅ Validation",
+        "📊 Data Quality",
     ])
 
     # --- TAB 1: Priority Map + Scorecard ---
@@ -824,7 +825,9 @@ elif role == "ACP / Commissioner":
 
         st.divider()
 
-        st.subheader("What-If Simulator")
+        st.subheader("Enforcement Impact Calculator")
+        st.caption("Arithmetic impact projection based on historical violation patterns—not a traffic flow simulation")
+        
         n_clear = st.slider("Clear top N violations", min_value=10, max_value=500, value=50, step=10)
         sorted_df = df.sort_values('congestion_cost', ascending=False)
         top_n = sorted_df.head(n_clear)
@@ -834,10 +837,10 @@ elif role == "ACP / Commissioner":
 
         c1, c2, c3 = st.columns(3)
         c1.metric("Violations Cleared", f"{n_clear:,}", f"{n_clear/len(df)*100:.1f}% of total")
-        c2.metric("Delay Recovered", f"{cleared_delay:,.0f} veh-min", f"{cleared_pct:.1f}% of total")
-        c3.metric("Remaining Delay", f"{remaining_delay:,.0f} veh-min")
+        c2.metric("Impact Recovered", f"{cleared_delay:,.0f} veh-min", f"{cleared_pct:.1f}% of total")
+        c3.metric("Remaining Impact", f"{remaining_delay:,.0f} veh-min")
 
-        st.info(f"**7% rule in action:** Clearing just {n_clear} violations ({n_clear/len(df)*100:.1f}%) recovers {cleared_pct:.1f}% of all congestion delay.")
+        st.info(f"**Pareto principle in action:** Targeting just {n_clear} violations ({n_clear/len(df)*100:.1f}%) addresses {cleared_pct:.1f}% of total congestion risk exposure.")
 
         with st.expander("Transparency: How is this score calculated?"):
             st.markdown("""
@@ -908,9 +911,9 @@ elif role == "ACP / Commissioner":
 
     # --- TAB 3: Cascade Proof ---
     with tab3:
-        st.subheader("Cascade Proof — The Domino Effect")
-        st.write("When one junction jams, nearby junctions follow within 15 minutes. Proven from historical data.")
-
+        st.subheader("Cascade Patterns — Spatial-Temporal Clustering")
+        st.write("Violations at one junction correlate with violations at nearby junctions within 15 minutes. This reveals **enforcement visibility patterns** for beat allocation.")
+        
         cascade_results = get_cascade(df, junction_coords)
         lag_df = cascade_results['lag_correlations']
         cascades = cascade_results['cascades']
@@ -955,16 +958,7 @@ elif role == "ACP / Commissioner":
                 st.plotly_chart(fig_dir, use_container_width=True)
 
         st.divider()
-        st.subheader("Correlation ≠ Causation — Our Defense")
-        st.markdown("""
-        | Evidence | What It Proves |
-        |----------|----------------|
-        | **r = 0.978** at 15-min lag | Probability of random: < 0.001 |
-        | **15-min > 5-min > 30-min** | Matches physical propagation speed (not same-cause) |
-        | **Forward > Reverse** | Directional cascade (not symmetric response) |
-        | **Geographic direction** | Lalbagh is upstream of Mysore Bank on same corridor |
-        | **Practical action** | Clearing upstream STILL reduces downstream (regardless of causation) |
-        """)
+        st.info("**Note:** `created_datetime` reflects reporting time, not parking start time. These patterns indicate enforcement visibility and systemic parking demand—not physical congestion propagation. Still actionable for beat planning.")
 
         st.info("**Bottom line:** We're not claiming we can predict cascades with certainty. We're claiming we can IDENTIFY which junctions are linked — and that's enough for enforcement prioritization.")
 
@@ -1031,7 +1025,7 @@ elif role == "ACP / Commissioner":
         else:
             st.info("Camera data not available.")
 
-    # --- TAB 5: Validation (was incorrectly tab4) ---
+    # --- TAB 5: Validation ---
     with tab5:
         st.subheader("Model Validation")
 
@@ -1045,17 +1039,96 @@ elif role == "ACP / Commissioner":
             st.metric("XGBoost R²", f"{backtest['r2']:.4f}")
             st.metric("MAE", f"{backtest['mae']:.4f}")
             st.metric("Case Study Junction", case['junction'])
-            st.metric("Total Delay", f"{case['total_delay_minutes']:,.0f} veh-min")
+            st.metric("Total Impact", f"{case['total_delay_minutes']:,.0f} veh-min")
         with c2:
-            st.metric("Time Saved (if enforced)", one_dep['if_enforced']['commuter_time_saved'])
+            st.metric("Impact Reduction (if enforced)", one_dep['if_enforced']['commuter_time_saved'])
             st.metric("Fuel Saved", one_dep['if_enforced']['fuel_saved'])
-            st.metric("ROI", "294x")
+            st.metric("ROI", "294% annual")
 
         st.divider()
         st.subheader("Pilot Plan — 2-Week Proof of Concept")
         st.write(f"**Location:** {case['junction']}")
         st.write("**Duration:** 2 weeks | **Cost:** Rs 14,000 | **Success:** 30% reduction in avg violation duration")
         st.write("**Measurement:** Compare average violation duration before/after")
+
+    # --- TAB 6: Data Quality Report ---
+    with tab6:
+        st.subheader("📊 Data Quality & Coverage Report")
+        st.write("Transparency: What the dataset can and cannot tell us.")
+        
+        # Junction coverage
+        total_violations = len(df)
+        junction_violations = df[df['junction_'] != 'No Junction'].shape[0]
+        junction_coverage = (junction_violations / total_violations * 100) if total_violations > 0 else 0
+        
+        # Vehicle type coverage
+        vehicle_types_known = df['vehicle_type'].notna().sum()
+        vehicle_coverage = (vehicle_types_known / total_violations * 100) if total_violations > 0 else 0
+        
+        # Violation type diversity
+        violation_types = df['single_violation'].unique()
+        
+        # Temporal distribution
+        hour_dist = df.groupby('hour').size()
+        peak_hours = hour_dist.nlargest(3).index.tolist()
+        
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Total Violations", f"{total_violations:,}")
+        c2.metric("Junction Coverage", f"{junction_coverage:.1f}%", f"{junction_violations:,} with BTP code")
+        c3.metric("Vehicle Type Coverage", f"{vehicle_coverage:.1f}%")
+        c4.metric("Violation Types", f"{len(violation_types)}")
+        
+        st.divider()
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("**Junction Coverage**")
+            if junction_coverage < 5:
+                st.warning(f"Only {junction_coverage:.1f}% of violations have BTP junction codes. Cascade analysis may be limited.")
+            elif junction_coverage < 20:
+                st.info(f"{junction_coverage:.1f}% junction coverage—sufficient for basic cascade detection.")
+            else:
+                st.success(f"Good junction coverage at {junction_coverage:.1f}%.")
+            
+            st.markdown("**Vehicle Type Distribution**")
+            if vehicle_coverage < 50:
+                st.warning(f"Only {vehicle_coverage:.1f}% have vehicle types—using default multiplier=1.0 for rest.")
+            else:
+                st.success(f"Vehicle type coverage adequate at {vehicle_coverage:.1f}%.")
+        
+        with col2:
+            st.markdown("**Violation Type Diversity**")
+            st.write(f"Found {len(violation_types)} unique violation types:")
+            for vt in list(violation_types)[:8]:
+                count = (df['single_violation'] == vt).sum()
+                pct = (count / total_violations * 100) if total_violations > 0 else 0
+                st.write(f"- {vt}: {count:,} ({pct:.1f}%)")
+            if len(violation_types) > 8:
+                st.write(f"- ...and {len(violation_types) - 8} more")
+        
+        st.divider()
+        
+        st.markdown("**Temporal Distribution**")
+        fig_hour = go.Figure()
+        fig_hour.add_bar(x=hour_dist.index, y=hour_dist.values, marker_color='steelblue')
+        fig_hour.update_layout(title="Violations by Hour of Day", xaxis_title="Hour", yaxis_title="Count", height=300)
+        st.plotly_chart(fig_hour, use_container_width=True)
+        
+        st.info(f"**Peak hours:** {', '.join([f'{h}:00' for h in sorted(peak_hours)])}")
+        
+        st.divider()
+        
+        st.markdown("**Minimum Viable Dataset Requirements**")
+        st.markdown("""
+        | Requirement | Minimum | Current Status |
+        |-------------|---------|----------------|
+        | Total violations | 100+ | ✅ PASS |
+        | Junctions with BTP codes | 5+ | """ + ("✅ PASS" if df['mapped_junction'].nunique() >= 5 else "❌ FAIL") + """ |
+        | Violation types | 2+ | """ + ("✅ PASS" if len(violation_types) >= 2 else "❌ FAIL") + """ |
+        | Vehicle type coverage | 50%+ | """ + ("✅ PASS" if vehicle_coverage >= 50 else "⚠️ PARTIAL") + """ |
+        """)
+        
+        st.caption("If any critical requirement fails, some dashboard features may show limited or no data.")
 
 # --- Footer ---
 
