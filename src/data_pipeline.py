@@ -17,13 +17,30 @@ from config import (
 
 
 def _parse_violation_types(raw) -> list:
-    if pd.isna(raw):
+    """Robust parsing of stringified JSON arrays with multiple fallbacks."""
+    import ast
+    import re
+    
+    if pd.isna(raw) or raw == "":
         return ['UNKNOWN']
+    
+    # Try JSON first (handles proper JSON: ["WRONG PARKING"])
     try:
         t = json.loads(raw)
         return t if isinstance(t, list) else [t]
     except (json.JSONDecodeError, TypeError):
-        return [str(raw)]
+        pass
+    
+    # Try ast.literal_eval for Python literals (handles: ['WRONG PARKING'])
+    try:
+        t = ast.literal_eval(raw)
+        return t if isinstance(t, list) else [t]
+    except (ValueError, SyntaxError):
+        pass
+    
+    # Fallback: extract quoted strings (handles: "['WRONG PARKING']", "WRONG PARKING")
+    matches = re.findall(r'["\']([^"\']+)["\']', str(raw))
+    return matches if matches else [str(raw).strip()]
 
 
 def load_and_parse(csv_path: str) -> pd.DataFrame:
