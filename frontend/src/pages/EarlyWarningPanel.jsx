@@ -1,67 +1,89 @@
-import { useState, useEffect, useCallback } from 'react'
-import { AlertTriangle, Clock, MapPin, Truck, Activity, ChevronRight, RefreshCw, Radio, Zap } from 'lucide-react'
+import { useState, useEffect, useCallback } from "react";
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, ReferenceLine
-} from 'recharts'
+  AlertTriangle,
+  Clock,
+  MapPin,
+  Truck,
+  Activity,
+  ChevronRight,
+  RefreshCw,
+  Radio,
+  Zap,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+} from "recharts";
 
-const REFRESH_INTERVAL = 30_000
+const REFRESH_INTERVAL = 30_000;
 
 function countdownMinutes() {
-  const now = new Date()
-  const mins = now.getMinutes()
-  const secs = now.getSeconds()
-  const elapsed = (mins % 15) * 60 + secs
-  return elapsed === 0 ? 15 * 60 : 15 * 60 - elapsed
+  const now = new Date();
+  const mins = now.getMinutes();
+  const secs = now.getSeconds();
+  const elapsed = (mins % 15) * 60 + secs;
+  return elapsed === 0 ? 15 * 60 : 15 * 60 - elapsed;
 }
 
 function formatCountdown(totalSeconds) {
-  const m = Math.floor(totalSeconds / 60)
-  const s = totalSeconds % 60
-  return `${m} min ${s.toString().padStart(2, '0')} sec`
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${m} min ${s.toString().padStart(2, "0")} sec`;
 }
 
 export default function EarlyWarningPanel() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [lastFetch, setLastFetch] = useState(null)
-  const [secondsLeft, setSecondsLeft] = useState(countdownMinutes())
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [lastFetch, setLastFetch] = useState(null);
+  const [secondsLeft, setSecondsLeft] = useState(countdownMinutes());
 
   const fetchData = useCallback(async () => {
     try {
-      const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 30000)
-      const res = await fetch('/api/early-warning-system', { signal: controller.signal })
-      clearTimeout(timeout)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const json = await res.json()
-      setData(json)
-      setLastFetch(new Date())
-      setError(null)
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 30000);
+      const res = await fetch("/api/early-warning-system", {
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      setData(json);
+      setLastFetch(new Date());
+      setError(null);
     } catch (err) {
-      setError(err.name === 'AbortError' ? 'Request timed out — backend is processing heavy data' : err.message)
+      setError(
+        err.name === "AbortError"
+          ? "Request timed out — backend is processing heavy data"
+          : err.message,
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    fetchData()
-    const id = setInterval(fetchData, REFRESH_INTERVAL)
-    return () => clearInterval(id)
-  }, [fetchData])
+    fetchData();
+    const id = setInterval(fetchData, REFRESH_INTERVAL);
+    return () => clearInterval(id);
+  }, [fetchData]);
 
   useEffect(() => {
     const id = setInterval(() => {
-      setSecondsLeft(countdownMinutes())
-    }, 1000)
-    return () => clearInterval(id)
-  }, [])
+      setSecondsLeft(countdownMinutes());
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
 
-  const zones = data?.top_risk_zones || []
-  const hero = zones[0] || null
-  const rest = zones.slice(1)
+  const zones = data?.top_risk_zones || [];
+  const hero = zones[0] || null;
+  const rest = zones.slice(1);
 
   return (
     <div className="space-y-6">
@@ -89,12 +111,10 @@ export default function EarlyWarningPanel() {
       <div className="flex items-center gap-4 text-xs text-muted">
         <span className="flex items-center gap-1.5">
           <span className="w-1.5 h-1.5 rounded-full bg-signal-emerald animate-pulse" />
-          Live — {data?.current_time_block || '--:--'}
+          Live — {data?.current_time_block || "--:--"}
         </span>
-        <span>Next block: {data?.next_time_block || '--:--'}</span>
-        {lastFetch && (
-          <span>Last: {lastFetch.toLocaleTimeString()}</span>
-        )}
+        <span>Next block: {data?.next_time_block || "--:--"}</span>
+        {lastFetch && <span>Last: {lastFetch.toLocaleTimeString()}</span>}
       </div>
 
       {/* Error Banner */}
@@ -109,8 +129,11 @@ export default function EarlyWarningPanel() {
         <div className="space-y-4">
           <div className="h-48 bg-elevated rounded-xl animate-pulse" />
           <div className="grid grid-cols-2 gap-3">
-            {[1,2,3,4].map(i => (
-              <div key={i} className="h-24 bg-elevated rounded-xl animate-pulse" />
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-24 bg-elevated rounded-xl animate-pulse"
+              />
             ))}
           </div>
         </div>
@@ -135,7 +158,9 @@ export default function EarlyWarningPanel() {
                 </span>
               </div>
               <div className="text-right">
-                <p className="text-[10px] text-muted uppercase tracking-wider">Risk Score</p>
+                <p className="text-[10px] text-muted uppercase tracking-wider">
+                  Risk Score
+                </p>
                 <p className="font-mono text-2xl font-bold text-signal-red">
                   {hero.phantom_risk_score}
                 </p>
@@ -158,20 +183,32 @@ export default function EarlyWarningPanel() {
             {/* Details Grid */}
             <div className="grid grid-cols-3 gap-3 mb-4">
               <div className="p-3 bg-black/20 rounded-lg">
-                <p className="text-[10px] text-muted uppercase tracking-wider">Vehicle</p>
-                <p className="text-sm font-medium text-chalk mt-0.5">{hero.vehicle_type}</p>
+                <p className="text-[10px] text-muted uppercase tracking-wider">
+                  Vehicle
+                </p>
+                <p className="text-sm font-medium text-chalk mt-0.5">
+                  {hero.vehicle_type}
+                </p>
                 <p className="text-xs text-muted">Weight: {hero.weight}</p>
               </div>
               <div className="p-3 bg-black/20 rounded-lg">
-                <p className="text-[10px] text-muted uppercase tracking-wider">Location</p>
+                <p className="text-[10px] text-muted uppercase tracking-wider">
+                  Location
+                </p>
                 <p className="text-sm font-mono text-chalk mt-0.5">
                   {hero.latitude}, {hero.longitude}
                 </p>
               </div>
               <div className="p-3 bg-black/20 rounded-lg">
-                <p className="text-[10px] text-muted uppercase tracking-wider">Seeds Nearby</p>
-                <p className="text-sm font-mono text-chalk mt-0.5">{hero.nearby_seed_count}</p>
-                <p className="text-xs text-muted">within {hero.avg_distance_to_seeds}m</p>
+                <p className="text-[10px] text-muted uppercase tracking-wider">
+                  Seeds Nearby
+                </p>
+                <p className="text-sm font-mono text-chalk mt-0.5">
+                  {hero.nearby_seed_count}
+                </p>
+                <p className="text-xs text-muted">
+                  within {hero.avg_distance_to_seeds}m
+                </p>
               </div>
             </div>
 
@@ -189,11 +226,13 @@ export default function EarlyWarningPanel() {
       )}
 
       {/* No Data */}
-      {!loading && !hero && (
+      {!loading && !error && !hero && (
         <div className="text-center py-12 card">
           <Activity className="w-10 h-10 text-signal-emerald mx-auto mb-3" />
           <p className="text-chalk font-medium">No phantom risk detected</p>
-          <p className="text-sm text-muted mt-1">Current time blocks are clear</p>
+          <p className="text-sm text-muted mt-1">
+            {data?.message || "Current time blocks are clear"}
+          </p>
         </div>
       )}
 
@@ -218,7 +257,7 @@ export default function EarlyWarningPanel() {
       {/* Anomaly Detection Section */}
       <AnomalyDetectionPanel />
     </div>
-  )
+  );
 }
 
 function ZoneCard({ zone }) {
@@ -236,18 +275,27 @@ function ZoneCard({ zone }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <Truck className="w-3.5 h-3.5 text-muted" />
-            <span className="text-sm font-medium text-chalk">{zone.vehicle_type}</span>
+            <span className="text-sm font-medium text-chalk">
+              {zone.vehicle_type}
+            </span>
             <span className="text-xs text-muted">wt. {zone.weight}</span>
             <span className="text-[10px] text-muted">·</span>
-            <span className="text-xs text-muted">{zone.nearby_seed_count} seeds within {zone.avg_distance_to_seeds}m</span>
+            <span className="text-xs text-muted">
+              {zone.nearby_seed_count} seeds within {zone.avg_distance_to_seeds}
+              m
+            </span>
           </div>
-          <p className="text-xs text-muted truncate">{zone.recommended_action}</p>
+          <p className="text-xs text-muted truncate">
+            {zone.recommended_action}
+          </p>
         </div>
 
         {/* Score + Arrow */}
         <div className="flex items-center gap-3 shrink-0">
           <div className="text-right">
-            <p className="text-[10px] text-muted uppercase tracking-wider">Score</p>
+            <p className="text-[10px] text-muted uppercase tracking-wider">
+              Score
+            </p>
             <p className="font-mono text-lg font-bold text-tier-high">
               {zone.phantom_risk_score}
             </p>
@@ -256,35 +304,43 @@ function ZoneCard({ zone }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function TippingPointChart() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const c = new AbortController()
-    const t = setTimeout(() => c.abort(), 30000)
-    fetch('/api/tipping-points', { signal: c.signal })
-      .then(res => { clearTimeout(t); return res.json() })
-      .then(json => {
-        setData(json)
-        setLoading(false)
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), 30000);
+    fetch("/api/tipping-points", { signal: c.signal })
+      .then((res) => {
+        clearTimeout(t);
+        return res.json();
       })
-      .catch(() => { clearTimeout(t); setLoading(false) })
-  }, [])
+      .then((json) => {
+        setData(json);
+        setLoading(false);
+      })
+      .catch(() => {
+        clearTimeout(t);
+        setLoading(false);
+      });
+  }, []);
 
   if (loading) {
     return (
       <div className="card border border-white/[0.06] animate-pulse">
         <div className="h-48 bg-elevated/50 rounded-xl" />
       </div>
-    )
+    );
   }
 
-  const predictions = data?.predictions || []
-  const critical = predictions.filter(p => p.status === 'CRITICAL').slice(0, 5)
+  const predictions = data?.predictions || [];
+  const critical = predictions
+    .filter((p) => p.status === "CRITICAL")
+    .slice(0, 5);
 
   return (
     <div className="card border border-white/[0.06]">
@@ -308,7 +364,9 @@ function TippingPointChart() {
       {critical.length === 0 ? (
         <div className="text-center py-8">
           <Activity className="w-8 h-8 text-signal-emerald mx-auto mb-2" />
-          <p className="text-sm text-muted">No critical tipping points detected</p>
+          <p className="text-sm text-muted">
+            No critical tipping points detected
+          </p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -320,15 +378,19 @@ function TippingPointChart() {
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-signal-red" />
                 <div>
-                  <p className="text-sm font-medium text-chalk">{pred.junction}</p>
+                  <p className="text-sm font-medium text-chalk">
+                    {pred.junction}
+                  </p>
                   <p className="text-xs text-muted">{pred.message}</p>
                 </div>
               </div>
-              <span className={`px-2 py-0.5 text-[10px] font-bold rounded ${
-                pred.status === 'CRITICAL'
-                  ? 'bg-signal-red/10 text-signal-red'
-                  : 'bg-signal-amber/10 text-signal-amber'
-              }`}>
+              <span
+                className={`px-2 py-0.5 text-[10px] font-bold rounded ${
+                  pred.status === "CRITICAL"
+                    ? "bg-signal-red/10 text-signal-red"
+                    : "bg-signal-amber/10 text-signal-amber"
+                }`}
+              >
                 {pred.predicted_time}
               </span>
             </div>
@@ -340,35 +402,43 @@ function TippingPointChart() {
       <div className="mt-4 p-3 bg-black/20 rounded-lg text-xs text-muted">
         <p className="flex items-center gap-1.5">
           <Activity className="w-3.5 h-3.5" />
-          {data?.methodology || '7-hour rolling window, 3-sigma spike detection'}
+          {data?.methodology ||
+            "7-hour rolling window, 3-sigma spike detection"}
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 function AnomalyDetectionPanel() {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const c = new AbortController()
-    const t = setTimeout(() => c.abort(), 30000)
-    fetch('/api/anomaly-scores', { signal: c.signal })
-      .then(res => { clearTimeout(t); return res.json() })
-      .then(json => {
-        setData(json)
-        setLoading(false)
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), 30000);
+    fetch("/api/anomaly-scores", { signal: c.signal })
+      .then((res) => {
+        clearTimeout(t);
+        return res.json();
       })
-      .catch(() => { clearTimeout(t); setLoading(false) })
-  }, [])
+      .then((json) => {
+        setData(json);
+        setLoading(false);
+      })
+      .catch(() => {
+        clearTimeout(t);
+        setLoading(false);
+      });
+  }, []);
 
   if (loading) {
-    return null
+    return null;
   }
 
-  const anomalies = data?.anomalies?.filter(a => a.is_anomaly).slice(0, 3) || []
-  if (anomalies.length === 0) return null
+  const anomalies =
+    data?.anomalies?.filter((a) => a.is_anomaly).slice(0, 3) || [];
+  if (anomalies.length === 0) return null;
 
   return (
     <div className="card border border-signal-amber/20">
@@ -407,5 +477,5 @@ function AnomalyDetectionPanel() {
         ))}
       </div>
     </div>
-  )
+  );
 }
