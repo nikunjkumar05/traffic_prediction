@@ -131,6 +131,7 @@ def compute_congestion_cost(df: pd.DataFrame, junction_coords: dict, road_width:
 
     tier_dist = df['impact_tier'].value_counts()
     
+    df = assign_mv_act_section(df)
     df = compute_throughput_impact(df)
     
     total_economic = df['economic_loss_inr'].sum()
@@ -141,6 +142,31 @@ def compute_congestion_cost(df: pd.DataFrame, junction_coords: dict, road_width:
     print(f"  Gridlock Score: min={df['gridlock_score'].min():.1f}, max={df['gridlock_score'].max():.1f}")
     print(f"  Impact Tiers: {tier_dist.to_dict()}")
     print(f"  Throughput: {total_vehicles:,} vehicles/hr blocked, INR {total_economic:,.0f} economic loss, {total_co2:,.1f} kg CO2")
+    return df
+
+
+# MV Act Section Mapping
+MV_ACT_SECTIONS = {
+    'WRONG PARKING': {'section': '177', 'penalty': '₹500', 'description': 'Wrong parking'},
+    'NO PARKING': {'section': '177', 'penalty': '₹500', 'description': 'Parking in no-parking zone'},
+    'DOUBLE PARKING': {'section': '118(b)', 'penalty': '₹1000', 'description': 'Dangerous parking'},
+    'PARKING IN A MAIN ROAD': {'section': '118(b)', 'penalty': '₹1000', 'description': 'Dangerous parking on main road'},
+    'PARKING ON FOOTPATH': {'section': '177', 'penalty': '₹500', 'description': 'Parking on footpath'},
+    'PARKING NEAR ROAD CROSSING': {'section': '118(b)', 'penalty': '₹1000', 'description': 'Dangerous parking near crossing'},
+    'PARKING NEAR TRAFFIC LIGHT OR ZEBRA CROSS': {'section': '118(b)', 'penalty': '₹1000', 'description': 'Parking near traffic signal'},
+    'PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC': {'section': '177', 'penalty': '₹500', 'description': 'Parking near restricted zone'},
+    'PARKING OPPOSITE TO ANOTHER PARKED VEHICLE': {'section': '118(b)', 'penalty': '₹1000', 'description': 'Dangerous parking opposite vehicle'},
+}
+
+
+def assign_mv_act_section(df: pd.DataFrame) -> pd.DataFrame:
+    """Assign MV Act section, penalty, and description to each violation."""
+    def get_act_info(violation_type):
+        info = MV_ACT_SECTIONS.get(violation_type, {'section': '177', 'penalty': '₹500', 'description': 'Wrong parking'})
+        return pd.Series([info['section'], info['penalty'], info['description']])
+    
+    df[['mv_act_section', 'mv_act_penalty', 'mv_act_description']] = df['single_violation'].apply(get_act_info)
+    print(f"  MV Act sections assigned: {df['mv_act_section'].value_counts().to_dict()}")
     return df
 
 

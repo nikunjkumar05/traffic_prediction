@@ -124,7 +124,7 @@ if __name__ == '__main__':
     from src.data_pipeline import run_pipeline
     from src.congestion_cost import run_congestion_cost
 
-    with open('data/external/junction_coords.json') as f:
+    with open('data/external/junction_coords.json', 'r', encoding='utf-8') as f:
         coords = json.load(f)
 
     df = run_pipeline('data/raw/violations.csv', junction_coords=coords)

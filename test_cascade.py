@@ -5,7 +5,7 @@ from src.data_pipeline import run_pipeline
 from src.congestion_cost import run_congestion_cost
 from src.cascade import run_cascade_analysis, simulate_cascade
 
-with open('data/external/junction_coords.json') as f:
+with open('data/external/junction_coords.json', 'r', encoding='utf-8') as f:
     coords = json.load(f)
 
 t0 = time.time()

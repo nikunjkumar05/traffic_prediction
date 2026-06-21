@@ -187,7 +187,7 @@ if __name__ == '__main__':
         run_enhanced_cascade_analysis()
         sys.exit(0)
     
-    with open('data/external/junction_coords.json') as f:
+    with open('data/external/junction_coords.json', 'r', encoding='utf-8') as f:
         coords = json.load(f)
 
     df = run_pipeline('data/raw/violations.csv', junction_coords=coords)

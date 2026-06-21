@@ -93,6 +93,6 @@ if __name__ == "__main__":
     result = find_tipping_points(df)
 
     print(json.dumps(result, indent=2))
-    with open("tipping_points.json", "w") as f:
+    with open("tipping_points.json", "w", encoding='utf-8') as f:
         json.dump(result, f, indent=2)
     print("\nSaved to tipping_points.json")

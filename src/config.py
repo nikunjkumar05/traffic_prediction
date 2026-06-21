@@ -20,7 +20,7 @@ def _load_config_from_disk() -> Dict[str, Any]:
     """Load configuration from JSON file."""
     if not CONFIG_PATH.exists():
         raise FileNotFoundError(f"Config file not found: {CONFIG_PATH}")
-    with open(CONFIG_PATH, 'r') as f:
+    with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 

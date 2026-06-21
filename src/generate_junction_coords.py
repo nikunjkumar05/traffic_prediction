@@ -64,7 +64,7 @@ def generate_junction_coords_from_dataset(csv_path: str, output_path: str = None
     # Save simple format: {junction_name: [lat, lon]}
     simple_coords = {k: v['coords'] for k, v in junction_coords.items()}
     
-    with open(output_file, 'w') as f:
+    with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(simple_coords, f, indent=2)
     
     print(f"\nSaved to: {output_file}")

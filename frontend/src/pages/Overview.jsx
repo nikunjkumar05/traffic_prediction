@@ -37,9 +37,9 @@ export default function Overview() {
       <div>
         <h1 className="font-heading font-bold text-2xl text-chalk flex items-center gap-3">
           <Shield className="w-7 h-7 text-accent" />
-          DispatchMind
+          ClearLane
         </h1>
-        <p className="text-muted mt-1">Your constable's co-pilot. Your city's clear path.</p>
+        <p className="text-muted mt-1">Congestion-First Enforcement — Your city's clear path.</p>
       </div>
 
       {/* Stats Grid */}

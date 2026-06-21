@@ -2,7 +2,7 @@ import { useState, lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { 
   Shield, Map, AlertTriangle, Route as RouteIcon, 
-  Users, BarChart3, Menu, Zap, Target, Activity, Radio
+  Users, BarChart3, Menu, Zap, Target, Activity, Radio, FileText
 } from 'lucide-react'
 
 const Overview = lazy(() => import('./pages/Overview'))
@@ -13,16 +13,44 @@ const Dispatch = lazy(() => import('./pages/Dispatch'))
 const Alerts = lazy(() => import('./pages/Alerts'))
 const ImpactCalculator = lazy(() => import('./pages/ImpactCalculator'))
 const EarlyWarningPanel = lazy(() => import('./pages/EarlyWarningPanel'))
+const CommandCenter = lazy(() => import('./pages/CommandCenter'))
+const FieldOfficer = lazy(() => import('./pages/FieldOfficer'))
+const InspectorDashboard = lazy(() => import('./pages/InspectorDashboard'))
+const EvidenceView = lazy(() => import('./pages/EvidenceView'))
 
-const NAV_ITEMS = [
-  { path: '/', icon: Target, label: 'Impact Dashboard', badge: 'hero' },
-  { path: '/early-warning', icon: Radio, label: 'Early Warning', badge: 'new' },
-  { path: '/priority', icon: AlertTriangle, label: 'Action Plan' },
-  { path: '/dispatch', icon: Shield, label: 'Dispatch Routes' },
-  { path: '/map', icon: Map, label: 'Tactical Map' },
-  { path: '/cascade', icon: RouteIcon, label: 'Cascade Proof' },
-  { path: '/alerts', icon: Zap, label: 'Live Alerts' },
-]
+const NAV_BY_ROLE = {
+  constable: [
+    { path: '/', icon: Target, label: 'ClearLane Dashboard', badge: 'hero' },
+    { path: '/field', icon: Map, label: 'Field Dispatch' },
+    { path: '/map', icon: Map, label: 'Tactical Map' },
+    { path: '/alerts', icon: Radio, label: 'Live Alerts' },
+  ],
+  si: [
+    { path: '/', icon: Target, label: 'ClearLane Dashboard', badge: 'hero' },
+    { path: '/inspector', icon: FileText, label: 'Case Management' },
+    { path: '/priority', icon: AlertTriangle, label: 'Action Plan' },
+    { path: '/dispatch', icon: RouteIcon, label: 'Dispatch Routes' },
+    { path: '/evidence', icon: Zap, label: 'Evidence Packets' },
+    { path: '/map', icon: Map, label: 'Tactical Map' },
+    { path: '/alerts', icon: Radio, label: 'Live Alerts' },
+  ],
+  acp: [
+    { path: '/', icon: Target, label: 'ClearLane Dashboard', badge: 'hero' },
+    { path: '/command', icon: Shield, label: 'Command Center' },
+    { path: '/early-warning', icon: Activity, label: 'Early Warning' },
+    { path: '/priority', icon: AlertTriangle, label: 'Action Plan' },
+    { path: '/dispatch', icon: RouteIcon, label: 'Dispatch Routes' },
+    { path: '/cascade', icon: BarChart3, label: 'Cascade Analysis' },
+    { path: '/map', icon: Map, label: 'Tactical Map' },
+    { path: '/alerts', icon: Radio, label: 'Live Alerts' },
+  ],
+}
+
+const ROLE_LABELS = {
+  constable: 'Constable (On Beat)',
+  si: 'Sub-Inspector (Station)',
+  acp: 'ACP / Commissioner',
+}
 
 function PageLoader() {
   return (
@@ -37,7 +65,8 @@ function PageLoader() {
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [role, setRole] = useState('constable')
+  const [role, setRole] = useState('acp')
+  const navItems = NAV_BY_ROLE[role] || NAV_BY_ROLE.acp
 
   return (
     <BrowserRouter>
@@ -51,10 +80,10 @@ export default function App() {
         `}>
           {/* Logo */}
           <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
-            <img src="/logo.svg" alt="DispatchMind" className="w-10 h-10" />
+            <img src="/logo.svg" alt="ClearLane" className="w-10 h-10" />
             <div>
-              <h1 className="font-heading font-bold text-base text-chalk leading-tight">DispatchMind</h1>
-              <p className="text-[10px] text-muted uppercase tracking-wider">BTP Co-Pilot</p>
+              <h1 className="font-heading font-bold text-base text-chalk leading-tight">ClearLane</h1>
+              <p className="text-[10px] text-muted uppercase tracking-wider">Congestion-First Enforcement</p>
             </div>
           </div>
 
@@ -66,15 +95,15 @@ export default function App() {
               onChange={(e) => setRole(e.target.value)}
               className="mt-1.5 w-full bg-elevated border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-chalk focus:outline-none focus:border-accent/50 transition-colors"
             >
-              <option value="constable">Constable (On Beat)</option>
-              <option value="si">Sub-Inspector (Station)</option>
-              <option value="acp">ACP / Commissioner</option>
+              {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
             </select>
           </div>
 
           {/* Navigation */}
           <nav className="px-3 py-3 space-y-0.5">
-            {NAV_ITEMS.map(({ path, icon: Icon, label, badge }) => (
+            {navItems.map(({ path, icon: Icon, label, badge }) => (
               <NavLink
                 key={path}
                 to={path}
@@ -121,20 +150,24 @@ export default function App() {
             >
               <Menu className="w-5 h-5 text-chalk" />
             </button>
-            <h1 className="font-heading font-bold text-sm text-chalk">DispatchMind</h1>
+            <h1 className="font-heading font-bold text-sm text-chalk">ClearLane</h1>
           </div>
 
           <div className="p-4 lg:p-6 max-w-7xl mx-auto">
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route path="/" element={<ImpactCalculator />} />
-                <Route path="/early-warning" element={<EarlyWarningPanel />} />
-                <Route path="/overview" element={<Overview />} />
+                <Route path="/command" element={<CommandCenter />} />
+                <Route path="/field" element={<FieldOfficer />} />
+                <Route path="/inspector" element={<InspectorDashboard />} />
                 <Route path="/priority" element={<PriorityQueue role={role} />} />
+                <Route path="/dispatch" element={<Dispatch />} />
+                <Route path="/evidence" element={<EvidenceView />} />
                 <Route path="/map" element={<MapView />} />
                 <Route path="/cascade" element={<Cascade />} />
-                <Route path="/dispatch" element={<Dispatch />} />
                 <Route path="/alerts" element={<Alerts />} />
+                <Route path="/overview" element={<Overview />} />
+                <Route path="/early-warning" element={<EarlyWarningPanel />} />
               </Routes>
             </Suspense>
           </div>

@@ -19,7 +19,7 @@ OUT = Path('pwa/data')
 OUT.mkdir(parents=True, exist_ok=True)
 
 print("Loading data...")
-with open('data/external/junction_coords.json') as f:
+with open('data/external/junction_coords.json', 'r', encoding='utf-8') as f:
     junction_coords = json.load(f)
 
 df = run_pipeline('data/raw/violations.csv', junction_coords=junction_coords)
@@ -248,7 +248,7 @@ output = {
     'cascade': cascade_summary,
 }
 
-with open(OUT / 'dashboard.json', 'w') as f:
+with open(OUT / 'dashboard.json', 'w', encoding='utf-8') as f:
     json.dump(output, f, default=str)
 
 print(f"Done! Written to {OUT / 'dashboard.json'}")

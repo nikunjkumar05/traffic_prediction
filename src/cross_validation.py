@@ -282,7 +282,7 @@ def run_spatial_cv(
     
     # Load junction coordinates
     import json
-    with open(junction_coords_path) as f:
+    with open(junction_coords_path, 'r', encoding='utf-8') as f:
         junction_coords = json.load(f)
     
     # Run CV

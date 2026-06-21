@@ -77,32 +77,59 @@ def nearest_neighbor_routing(junctions, num_trucks, max_distance=50000):
     return [r for r in routes if r]
 
 
+def compute_capacity_recovery_priority(hotspots: pd.DataFrame) -> pd.DataFrame:
+    """Rank by capacity recovered per minute of tow truck time."""
+    hotspots = hotspots.copy()
+    if 'blocked_width_m' in hotspots.columns and 'violation_count' in hotspots.columns:
+        # Estimate tow time: 5 min per vehicle + 2 min travel
+        hotspots['estimated_tow_time_min'] = hotspots['violation_count'] * 5 + 2
+        hotspots['capacity_recovery_rate'] = (
+            hotspots['blocked_width_m'] / hotspots['estimated_tow_time_min']
+        ).round(2)
+    else:
+        hotspots['capacity_recovery_rate'] = hotspots.get('total_delay', 0)
+    return hotspots.sort_values('capacity_recovery_rate', ascending=False)
+
+
 def generate_tiered_response(hotspots: pd.DataFrame) -> List[dict]:
     """Map gridlock score → action: >=80 TOW_TRUCK, >=50 MARSHAL, <50 DRIVER_ALERT."""
     responses = []
     for _, row in hotspots.iterrows():
         score = row.get('gridlock_score', row.get('avg_gridlock', 0))
         delay = row.get('predicted_cost', row.get('total_delay', row.get('congestion_cost', 0)))
+        recovery = row.get('capacity_recovery_rate', 0)
+        
         if score >= 80:
-            action, reason = 'PRE_POSITION_TOW_TRUCK', f"Critical: {delay:.0f} veh-min delay"
+            action, reason = 'PRE_POSITION_TOW_TRUCK', f"Critical: {delay:.0f} veh-min delay, recovery rate: {recovery:.1f}m/min"
         elif score >= 50:
             action, reason = 'COMMUNITY_MARSHAL', f"High: {delay:.0f} veh-min delay"
         else:
             action, reason = 'DRIVER_ALERT', f"Moderate: {delay:.0f} veh-min delay"
-        responses.append({'junction': row.get('mapped_junction', 'Unknown'), 'gridlock_score': score,
-                          'action': action, 'reason': reason, 'predicted_delay': delay})
+        
+        responses.append({
+            'junction': row.get('mapped_junction', 'Unknown'),
+            'gridlock_score': score,
+            'action': action,
+            'reason': reason,
+            'predicted_delay': delay,
+            'capacity_recovery_rate': recovery,
+        })
     return responses
 
 
 def plan_shift(df, junction_coords, num_trucks=2, start_junction=None, max_distance=30000):
-    """Plan a full tow truck shift: identify hotspots → tiered response → VRP routing."""
+    """Plan a full tow truck shift: identify hotspots → capacity-aware priority → VRP routing."""
     if 'total_delay' not in df.columns:
         hotspot_stats = df.groupby('mapped_junction').agg(
             total_delay=('congestion_cost', 'sum'), violation_count=('single_violation', 'count'),
             avg_gridlock=('gridlock_score', 'mean'),
+            blocked_width_m=('blocked_width_m', 'sum') if 'blocked_width_m' in df.columns else ('congestion_cost', 'sum'),
         ).reset_index().nlargest(10, 'total_delay')
     else:
         hotspot_stats = df.nlargest(10, 'total_delay')
+    
+    # Apply capacity-aware prioritization
+    hotspot_stats = compute_capacity_recovery_priority(hotspot_stats)
 
     responses = generate_tiered_response(hotspot_stats)
 
@@ -160,7 +187,7 @@ if __name__ == '__main__':
     from src.data_pipeline import run_pipeline
     from src.congestion_cost import run_congestion_cost
 
-    with open('data/external/junction_coords.json') as f:
+    with open('data/external/junction_coords.json', 'r', encoding='utf-8') as f:
         coords = json.load(f)
 
     df = run_pipeline('data/raw/violations.csv', junction_coords=coords)

@@ -198,6 +198,27 @@
       "network_reliability": "poor"
     }
   },
+  "flipkart": {
+    "delivery_vehicle_types": ["GOODS AUTO", "TEMPO", "VAN", "LGV", "MINI LORRY"],
+    "commercial_zones": [
+      {"name": "Koramangala", "lat": 12.9352, "lon": 77.6245, "peak_hours": [11, 13, 17, 19]},
+      {"name": "Indiranagar", "lat": 12.9784, "lon": 77.6408, "peak_hours": [12, 14, 18, 20]},
+      {"name": "Whitefield", "lat": 12.9698, "lon": 77.7500, "peak_hours": [11, 13, 17, 19]},
+      {"name": "HSR Layout", "lat": 12.9116, "lon": 77.6389, "peak_hours": [12, 14, 18, 20]}
+    ],
+    "loading_bay_recommendations": {
+      "min_violations_per_week": 5,
+      "recommended_bays_per_cluster": 3,
+      "time_window_hours": 2
+    }
+  },
+  "clearlane": {
+    "version": "1.0.0",
+    "cost_per_station_inr": 2400,
+    "junctions_per_station": 15,
+    "cpu_inference": true,
+    "model_inference_ms": 20
+  },
   "bengaluru": {
     "metro_construction_zones": [
       {

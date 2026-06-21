@@ -93,10 +93,10 @@ class ViolationAnomalyDetector:
                 try:
                     parsed = json.loads(violation_str)
                     return len(parsed) if isinstance(parsed, list) else 1
-                except:
+                except (ValueError, SyntaxError, json.JSONDecodeError):
                     parsed = ast.literal_eval(violation_str)
                     return len(parsed) if isinstance(parsed, list) else 1
-            except:
+            except (ValueError, SyntaxError, json.JSONDecodeError, TypeError):
                 return 1
         
         df['offense_count'] = df.get('violation', df.get('offence_code', '')).apply(count_offenses)

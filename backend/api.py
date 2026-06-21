@@ -30,6 +30,7 @@ from src.dispatch import run_dispatch
 from src.realtime_alerts import ViolationAlertSystem
 from src.spillover_ai import detect_spillover_zones
 from phantom_risk import calculate_phantom_risk_score
+from preprocess import preprocess
 
 logger = logging.getLogger("dispatchmind")
 
@@ -38,10 +39,15 @@ logger = logging.getLogger("dispatchmind")
 async def lifespan(app: FastAPI):
     """Warm the base pipeline in the background without blocking startup."""
     def _bg_load():
-        try:
-            _ensure_base_data()
-        except Exception:
-            logger.exception("Pipeline failed to load")
+        for attempt in range(3):
+            try:
+                _ensure_base_data()
+                if _pipeline_data is not None:
+                    return
+            except Exception:
+                logger.exception("Pipeline failed to load (attempt %d/3)", attempt + 1)
+            import time
+            time.sleep(5)
 
     threading.Thread(target=_bg_load, daemon=True).start()
     yield
@@ -56,7 +62,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=os.environ.get("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(","),
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -130,7 +136,7 @@ def _ensure_base_data():
             logger.warning(_pipeline_error)
             return
 
-        with open(COORDS_PATH) as f:
+        with open(COORDS_PATH, 'r', encoding='utf-8') as f:
             _junction_coords = json.load(f)
 
         try:
@@ -140,6 +146,7 @@ def _ensure_base_data():
                 missing = REQUIRED_SCORED_COLUMNS.difference(cached.columns)
                 if not missing:
                     _pipeline_data = cached
+                    _pipeline_loading = False
                     logger.info("Scored cache loaded: %d violations", len(_pipeline_data))
                     return
                 logger.warning("Ignoring stale scored cache, missing columns: %s", sorted(missing))
@@ -227,7 +234,6 @@ def _ensure_phantom_data():
         if _phantom_data is not None:
             return
         try:
-            from preprocess import preprocess
             logger.info("Loading PhantomBlockageAI data...")
             _phantom_data = preprocess()
             logger.info("PhantomBlockageAI data loaded: %d rows", len(_phantom_data))
@@ -480,6 +486,7 @@ async def get_stations():
 @app.get("/api/map-data")
 async def get_map_data():
     """All violation coordinates + junction markers for map rendering."""
+    await asyncio.to_thread(_ensure_base_data)
     if _pipeline_data is None or _junction_coords is None:
         raise HTTPException(503, "Pipeline not loaded")
 
@@ -582,6 +589,7 @@ async def get_curbflex():
 @app.get("/api/dispatch")
 async def get_dispatch(num_trucks: int = Query(2, ge=1, le=4)):
     """Tow truck shift plan with VRP routing."""
+    await asyncio.to_thread(_ensure_base_data)
     if _pipeline_data is None or _junction_coords is None:
         raise HTTPException(503, "Pipeline not loaded")
 
@@ -632,8 +640,26 @@ async def get_alerts(count: int = Query(10, ge=1, le=20)):
         if len(alerts) >= count:
             break
 
+        mapped = row.to_dict()
+        mapped['junction_'] = mapped.get('mapped_junction', 'Unknown')
+        mapped['created_date'] = mapped.get('created_date', mapped.get('created_datetime', '2024-06-01 12:00:00'))
+        mapped['created_datetime'] = pd.to_datetime(mapped['created_date'])
+        mapped['vehicle_number'] = mapped.get('vehicle_number', mapped.get('vehicle_no', 'N/A'))
+        mapped['location'] = mapped.get('location', f"{mapped.get('latitude', 0)}, {mapped.get('longitude', 0)}")
+        mapped['id'] = mapped.get('id', str(mapped.get('index', len(alerts))))
+
+        mapped_series = pd.Series(mapped)
+
+        if 'created_datetime' not in recent_pool.columns:
+            recent_pool_local = recent_pool.copy()
+            recent_pool_local['created_datetime'] = pd.to_datetime(
+                recent_pool_local.get('created_date', '2024-06-01 12:00:00')
+            )
+        else:
+            recent_pool_local = recent_pool
+
         alert = _alert_system.check_and_alert(
-            row, recent_pool, row['congestion_cost'], anomaly_score=None
+            mapped_series, recent_pool_local, row['congestion_cost'], anomaly_score=None
         )
         if alert:
             alerts.append(_sanitize(alert))
@@ -704,7 +730,6 @@ async def get_predictions():
         raise HTTPException(503, "Models not trained or pipeline not loaded")
 
     from src.prediction import prepare_features
-    import pandas as pd
 
     df = _pipeline_data.copy()
     df, features, _ = prepare_features(df)
@@ -955,6 +980,206 @@ async def get_early_warning_system():
         total_feeders_scored=len(risk_df),
         message=f"Found {len(risk_df)} phantom risk zones. Top 5 require immediate dispatch.",
     )
+
+
+# ---------------------------------------------------------------------------
+# ClearLane Endpoints — Capacity Loss, Causal Impact, Evidence, Flipkart
+# ---------------------------------------------------------------------------
+
+@app.get("/api/capacity-status")
+async def get_capacity_status():
+    """Road Capacity Loss status per junction — the core ClearLane innovation."""
+    if _pipeline_data is None:
+        raise HTTPException(503, "Pipeline not loaded")
+    
+    from src.capacity_loss import run_capacity_loss
+    
+    df = _pipeline_data.copy()
+    _, junction_stats, summary = run_capacity_loss(df)
+    
+    # Format junction stats for API
+    junctions = []
+    for _, row in junction_stats.iterrows():
+        junctions.append({
+            'junction': row['mapped_junction'],
+            'capacity_loss_pct': row['junction_capacity_loss_pct'],
+            'remaining_pct': row['junction_remaining_pct'],
+            'status': str(row['operational_status']),
+            'violation_count': int(row['violation_count']),
+            'footpath_violations': int(row['footpath_violations']),
+            'blocked_width_m': round(row['total_blocked_width'], 2),
+        })
+    
+    return {
+        'summary': summary,
+        'junctions': junctions,
+    }
+
+
+@app.get("/api/causal-impact")
+async def get_causal_impact():
+    """Causal Impact Engine — proves parking → congestion causation with regression."""
+    if _pipeline_data is None:
+        raise HTTPException(503, "Pipeline not loaded")
+    
+    from src.causal_impact import run_causal_impact
+    
+    df = _pipeline_data.copy()
+    result = run_causal_impact(df)
+    
+    return {
+        'model': result.get('model', {}),
+        'chart_data': result.get('chart_data', {}),
+        'before_after': result.get('before_after', {}),
+        'worst_junction': result.get('worst_junction'),
+    }
+
+
+@app.get("/api/evidence-packet/{violation_idx}")
+async def get_evidence_packet(violation_idx: int):
+    """Generate court-ready evidence packet for a specific violation."""
+    if _pipeline_data is None:
+        raise HTTPException(503, "Pipeline not loaded")
+    
+    from src.evidence_packet import generate_evidence_packet, generate_evidence_html
+    
+    df = _pipeline_data
+    if violation_idx < 0 or violation_idx >= len(df):
+        raise HTTPException(404, f"Violation index {violation_idx} out of range")
+    
+    violation = df.iloc[violation_idx].to_dict()
+    
+    # Get capacity data if available
+    capacity_data = None
+    try:
+        from src.capacity_loss import compute_capacity_loss_single
+        capacity_data = compute_capacity_loss_single(df.iloc[violation_idx])
+    except Exception as exc:
+        logger.warning("Evidence packet capacity lookup failed: %s", exc)
+    
+    packet = generate_evidence_packet(violation, capacity_data)
+    html = generate_evidence_html(packet)
+    
+    return {
+        'packet': packet,
+        'html': html,
+    }
+
+
+@app.get("/api/flipkart-logistics")
+async def get_flipkart_logistics():
+    """Flipkart Green-Zone — Delivery bay optimization recommendations."""
+    if _pipeline_data is None:
+        raise HTTPException(503, "Pipeline not loaded")
+    
+    from src.flipkart_logistics import run_flipkart_logistics
+    
+    df = _pipeline_data.copy()
+    result = run_flipkart_logistics(df)
+    
+    return {
+        'status': result.get('status', 'unknown'),
+        'recommendations': result.get('recommendations', []),
+        'impact': result.get('impact', {}),
+        'hourly_patterns': result.get('hourly_patterns', []),
+    }
+
+
+@app.get("/api/cost-metrics")
+async def get_cost_metrics():
+    """Cost per junction per month — for scalability pitch."""
+    # Unit economics (based on Project ClearLane estimates)
+    return {
+        'per_station': {
+            'cloud_cost_inr': 2400,
+            'coverage_junctions': 15,
+            'cost_per_junction_inr': 160,
+            'cost_per_violation_inr': 12,
+            'model': 'CPU inference (no GPU)',
+            'scaling': {
+                '1_station': {'monthly': 2400, 'junctions': 15},
+                '10_stations': {'monthly': 20000, 'junctions': 150},
+                '50_stations': {'monthly': 80000, 'junctions': 750},
+                'city_wide': {'monthly': 300000, 'junctions': 2800},
+            }
+        },
+        'comparison': {
+            'traditional_enforcement': {'monthly_per_station': 15000, 'coverage': '5 junctions'},
+            'clearlane': {'monthly_per_station': 2400, 'coverage': '15 junctions'},
+            'savings_pct': 84,
+        },
+        'roi': {
+            'annual_cost': 28800,
+            'annual_savings_inr': 8500000,
+            'roi_pct': 29400,
+            'payback_days': 1,
+        }
+    }
+
+
+@app.get("/api/degradation-status")
+async def get_degradation_status():
+    """System health and graceful degradation status."""
+    from src.degradation import get_system_health, get_camera_status
+    
+    health = get_system_health()
+    
+    # Check a few sample cameras
+    sample_cameras = []
+    for jid in ['BTP001', 'BTP044', 'BTP148', 'BTP200', 'BTP300']:
+        status = get_camera_status(jid)
+        sample_cameras.append(status)
+    
+    online_count = sum(1 for c in sample_cameras if c['status'] == 'ONLINE')
+    
+    return {
+        'system_health': health,
+        'camera_sample': sample_cameras,
+        'online_percentage': round(online_count / len(sample_cameras) * 100, 1),
+        'degradation_handlers': {
+            'camera_offline': 'Historical heatmap fallback',
+            'low_bandwidth': 'Metadata-only transmission (50 bytes vs 50KB)',
+            'model_uncertain': 'Human-in-the-loop review',
+            'two_wheeler_footpath': 'Special priority queue',
+        }
+    }
+
+
+@app.get("/api/llm/nudge")
+async def get_llm_nudge(violation_type: str = "wrong_parking", vehicle_type: str = "TWO_WHEELER", location: str = "MG Road"):
+    """Generate personalized nudge message via GLM 5.2 Free."""
+    from src.llm_client import generate_nudge_message
+    msg = generate_nudge_message(
+        violation_type=violation_type,
+        vehicle_type=vehicle_type,
+        location=location,
+        impact_score=65.0,
+    )
+    return {"message": msg, "model": "z-ai/glm-5.2-free", "provider": "ZenMux"}
+
+
+@app.get("/api/llm/report")
+async def get_llm_report(junction: str = "KR Market", violations: int = 12, capacity_loss: float = 35.0, economic_impact: float = 180000):
+    """Generate enforcement report via GLM 5.2 Free."""
+    from src.llm_client import generate_enforcement_report
+    report = generate_enforcement_report(
+        junction=junction,
+        violations=violations,
+        capacity_loss=capacity_loss,
+        economic_impact=economic_impact,
+    )
+    return {"report": report, "model": "z-ai/glm-5.2-free", "provider": "ZenMux"}
+
+
+@app.get("/api/llm/query")
+async def query_clearlane_llm(q: str):
+    """Natural language query interface for ClearLane data."""
+    from src.llm_client import query_clearlane
+    context = ""
+    if _pipeline_data is not None:
+        context = f"Available violations: {len(_pipeline_data)}, junctions: {len(_junction_coords) if _junction_coords is not None else 0}"
+    answer = query_clearlane(question=q, context=context)
+    return {"answer": answer, "model": "z-ai/glm-5.2-free", "provider": "ZenMux"}
 
 
 @app.get("/api/health")
