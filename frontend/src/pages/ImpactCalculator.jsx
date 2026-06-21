@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useApi } from '../utils/api'
 import { Target, TrendingDown, Users, Cloud, ArrowRight, Zap, CheckCircle, Clock, MapPin, Phone } from 'lucide-react'
+import LoadingSkeleton from '../components/LoadingSkeleton'
 
 const ROLE_THEMES = {
   constable: {
@@ -45,7 +46,7 @@ export default function ImpactCalculator({ role = 'constable' }) {
   const theme = ROLE_THEMES[role] || ROLE_THEMES.constable
   const ThemeIcon = theme.icon
 
-  if (loading) return <LoadingSkeleton />
+  if (loading) return <LoadingSkeleton variant="dashboard" />
 
   const total = data?.total || {}
   const scenarios = data?.scenarios || []
@@ -270,16 +271,6 @@ function ImpactRow({ label, value, pct }) {
     <div className="flex items-center justify-between">
       <span className="text-muted text-sm">{label}</span>
       <span className="font-mono text-chalk font-semibold">{value}</span>
-    </div>
-  )
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className="space-y-6">
-      <div className="h-8 w-48 bg-elevated rounded-lg animate-pulse" />
-      <div className="card h-32 bg-elevated animate-pulse" />
-      <div className="card h-64 bg-elevated animate-pulse" />
     </div>
   )
 }

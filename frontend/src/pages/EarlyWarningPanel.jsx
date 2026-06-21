@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import {
   AlertTriangle, Clock, MapPin, Truck, Activity,
   ChevronRight, RefreshCw, Radio
@@ -40,7 +40,7 @@ export default function EarlyWarningPanel() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [lastFetch, setLastFetch] = useState(null)
-  const [secondsLeft, setSecondsLeft] = useState(countdownMinutes())
+  const [secondsLeft, setSecondsLeft] = useState(() => countdownMinutes())
 
   const fetchData = useCallback(async () => {
     try {
@@ -70,9 +70,10 @@ export default function EarlyWarningPanel() {
     return () => clearInterval(id)
   }, [])
 
-  const zones = data?.top_risk_zones || []
-  const hero = zones[0] || null
-  const rest = zones.slice(1)
+  // Memoize expensive computations
+  const zones = useMemo(() => data?.top_risk_zones || [], [data])
+  const hero = useMemo(() => zones[0] || null, [zones])
+  const rest = useMemo(() => zones.slice(1), [zones])
 
   return (
     <div className="space-y-6">
