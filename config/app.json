@@ -1,0 +1,271 @@
+{
+  "version": "1.0.0",
+  "city": "bengaluru",
+  "data": {
+    "raw_path": "jan to may police violation_anonymized791b166.csv",
+    "processed_path": "data/processed/violations_scored.csv",
+    "external_dir": "data/external"
+  },
+  "model": {
+    "features": [
+      "latitude", "longitude", "hour", "day_of_week", "month",
+      "duration_minutes", "severity", "vehicle_type_encoded",
+      "violation_type_encoded", "is_junction", "junction_distance",
+      "is_morning_rush", "is_evening_rush", "is_weekend",
+      "hour_sin", "hour_cos", "day_sin", "day_cos"
+    ],
+    "temporal": {
+      "morning_start": 7,
+      "morning_end": 10,
+      "evening_start": 17,
+      "evening_end": 20,
+      "peak_multiplier": 1.2,
+      "offpeak_multiplier": 0.7
+    }
+  },
+  "formula": {
+    "duration": {
+      "base_by_type": {
+        "WRONG PARKING": 35,
+        "NO PARKING": 40,
+        "DOUBLE PARKING": 55,
+        "PARKING IN A MAIN ROAD": 45,
+        "PARKING ON FOOTPATH": 30,
+        "PARKING NEAR ROAD CROSSING": 25,
+        "PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC": 20,
+        "PARKING OPPOSITE TO ANOTHER PARKED VEHICLE": 50,
+        "PARKING NEAR TRAFFIC LIGHT OR ZEBRA CROSS": 25
+      },
+      "vehicle_adjustment": {
+        "SCOOTER": 0.8,
+        "MOTOR CYCLE": 0.7,
+        "MOPED": 0.7,
+        "PASSENGER AUTO": 0.9,
+        "CAR": 1.0,
+        "MAXI-CAB": 1.0,
+        "VAN": 1.0,
+        "JEEP": 1.0,
+        "SCHOOL VEHICLE": 1.0,
+        "OTHERS": 1.0,
+        "GOODS AUTO": 1.1,
+        "TEMPO": 1.1,
+        "MINI LORRY": 1.1,
+        "LGV": 1.2,
+        "BUS (BMTC/KSRTC)": 1.3,
+        "PRIVATE BUS": 1.3,
+        "TOURIST BUS": 1.3,
+        "HGV": 1.4,
+        "TANKER": 1.4
+      }
+    },
+    "congestion": {
+      "lane_width": 3.5,
+      "road_width": 7.0,
+      "junction_distance": {
+        "CRITICAL": 10,
+        "HIGH": 30,
+        "MEDIUM": 50
+      },
+      "vehicle_size_mult": {
+        "TANKER": 2.5,
+        "BUS (BMTC/KSRTC)": 2.5,
+        "HGV": 2.5,
+        "PRIVATE BUS": 2.5,
+        "TOURIST BUS": 2.5,
+        "LGV": 2.2,
+        "MINI LORRY": 2.2,
+        "CAR": 1.8,
+        "VAN": 1.8,
+        "MAXI-CAB": 1.8,
+        "JEEP": 1.8,
+        "TEMPO": 1.8,
+        "GOODS AUTO": 1.8,
+        "PASSENGER AUTO": 1.0,
+        "SCOOTER": 1.0,
+        "MOTOR CYCLE": 1.0,
+        "MOPED": 1.0,
+        "SCHOOL VEHICLE": 1.0,
+        "OTHERS": 1.0
+      },
+      "vehicle_width": {
+        "SCOOTER": 0.8,
+        "MOTOR CYCLE": 0.7,
+        "MOPED": 0.6,
+        "PASSENGER AUTO": 1.5,
+        "CAR": 1.8,
+        "MAXI-CAB": 1.8,
+        "VAN": 1.8,
+        "JEEP": 2.0,
+        "GOODS AUTO": 1.8,
+        "TEMPO": 2.0,
+        "LGV": 2.2,
+        "MINI LORRY": 2.2,
+        "BUS (BMTC/KSRTC)": 2.5,
+        "HGV": 2.5,
+        "TANKER": 2.5,
+        "PRIVATE BUS": 2.5,
+        "TOURIST BUS": 2.5,
+        "SCHOOL VEHICLE": 2.0,
+        "OTHERS": 1.8
+      }
+    },
+    "severity_map": {
+      "DOUBLE PARKING": 3,
+      "PARKING IN A MAIN ROAD": 3,
+      "PARKING ON FOOTPATH": 2,
+      "PARKING NEAR ROAD CROSSING": 2,
+      "PARKING NEAR TRAFFIC LIGHT OR ZEBRA CROSS": 2,
+      "PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC": 2,
+      "WRONG PARKING": 1,
+      "NO PARKING": 1
+    },
+    "throughput": {
+      "road_capacity_veh_per_hour": {
+        "arterial": 1800,
+        "main_road": 1200,
+        "collector": 800,
+        "local": 400
+      },
+      "avg_delay_minutes_per_block": 8.5,
+      "fuel_cost_per_liter_inr": 102.5,
+      "fuel_consumption_liter_per_veh_min": 0.008,
+      "co2_kg_per_liter": 2.31,
+      "avg_passengers_per_vehicle": 1.8,
+      "person_hour_value_inr": 150
+    }
+  },
+  "cascades": {
+    "adjacency_max_distance_m": 3000,
+    "lag_windows": [5, 15, 30, 60],
+    "correlation_threshold": 0.2,
+    "min_violations_for_test": 5,
+    "min_common_bins": 10
+  },
+  "validation": {
+    "weeks_in_dataset": 20,
+    "assumed_enforcement_reduction": 0.40,
+    "fuel_savings_per_veh_min": 0.5,
+    "silk_board_junctions": ["Silk Board", "Bommanahalli", "HSR"],
+    "pilot_target_junction": "BTP148 - 17th Main, Doopanahalli Bus Stop",
+    "pilot_duration_weeks": 2,
+    "pilot_effectiveness_threshold": 0.3,
+    "temporal_split": {
+      "train_months": [11, 12, 1],
+      "test_month": 2
+    },
+    "spatial_cv": {
+      "leave_one_junction_out": true,
+      "min_junctions_for_test": 5
+    },
+    "cross_validation": {
+      "n_folds": 5,
+      "min_junctions_per_fold": 3
+    }
+  },
+  "curbflex": {
+    "weekly_threshold": 50,
+    "repeat_offenders_min_violations": 3,
+    "high_impact_tiers": ["CRITICAL", "HIGH"]
+  },
+  "enhanced_cascade": {
+    "max_lag_minutes": 120,
+    "lag_step_minutes": 5,
+    "correlation_threshold": 0.2,
+    "min_violations": 5,
+    "min_common_bins": 10
+  },
+  "pilot": {
+    "target_junction": "BTP148 - 17th Main, Doopanahalli Bus Stop",
+    "intervention_type": "tow_truck",
+    "pre_post_weeks": 4,
+    "effectiveness_threshold": 0.3,
+    "power_analysis": {
+      "alpha": 0.05,
+      "beta": 0.2,
+      "effect_size": 0.5
+    }
+  },
+  "deployment": {
+    "pwa": {
+      "cache_duration_days": 7,
+      "offline_mode": true,
+      "quick_action_mode": true
+    },
+    "mobile_assumptions": {
+      "has_tablet": false,
+      "has_gps": true,
+      "has_camera": true,
+      "network_reliability": "poor"
+    }
+  },
+  "flipkart": {
+    "delivery_vehicle_types": ["GOODS AUTO", "TEMPO", "VAN", "LGV", "MINI LORRY"],
+    "commercial_zones": [
+      {"name": "Koramangala", "lat": 12.9352, "lon": 77.6245, "peak_hours": [11, 13, 17, 19]},
+      {"name": "Indiranagar", "lat": 12.9784, "lon": 77.6408, "peak_hours": [12, 14, 18, 20]},
+      {"name": "Whitefield", "lat": 12.9698, "lon": 77.7500, "peak_hours": [11, 13, 17, 19]},
+      {"name": "HSR Layout", "lat": 12.9116, "lon": 77.6389, "peak_hours": [12, 14, 18, 20]}
+    ],
+    "loading_bay_recommendations": {
+      "min_violations_per_week": 5,
+      "recommended_bays_per_cluster": 3,
+      "time_window_hours": 2
+    }
+  },
+  "clearlane": {
+    "version": "1.0.0",
+    "cost_per_station_inr": 2400,
+    "junctions_per_station": 15,
+    "cpu_inference": true,
+    "model_inference_ms": 20
+  },
+  "bengaluru": {
+    "metro_construction_zones": [
+      {
+        "name": "Metro Phase 2 - Silk Board",
+        "affected_junctions": ["Silk Board", "Bommanahalli", "HSR Layout"],
+        "lat": 12.9171,
+        "lon": 77.6229,
+        "radius_m": 800,
+        "spillover_multiplier": 1.8,
+        "status": "active"
+      },
+      {
+        "name": "Metro Phase 2 - KR Puram",
+        "affected_junctions": ["KR Puram", "Mahadevapura", "Whitefield"],
+        "lat": 12.9976,
+        "lon": 77.6771,
+        "radius_m": 600,
+        "spillover_multiplier": 1.5,
+        "status": "active"
+      },
+      {
+        "name": "Metro Phase 2 - Jayanagar",
+        "affected_junctions": ["Jayanagar", "BTM Layout", "JP Nagar"],
+        "lat": 12.9291,
+        "lon": 77.5843,
+        "radius_m": 500,
+        "spillover_multiplier": 1.4,
+        "status": "active"
+      }
+    ],
+    "narrow_roads": {
+      "old_bengaluru_zones": ["Majestic", "Cubbon Pete", "Shivajinagar", "Chickpet"],
+      "max_width_meters": 5.0,
+      "single_parked_car_block_pct": 0.85
+    },
+    "it_corridor_timing": {
+      "whitefield_peak_morning": {"start": 8, "end": 10, "multiplier": 1.6},
+      "whitefield_peak_evening": {"start": 17, "end": 20, "multiplier": 1.8},
+      "koramangala_commercial": {"start": 11, "end": 21, "multiplier": 1.3},
+      "electronics_city_shift_change": {"start": 7, "end": 9, "multiplier": 1.5}
+    },
+    "commercial_spillover_hotspots": [
+      {"name": "Orion Mall", "lat": 13.0107, "lon": 77.5548, "type": "mall", "peak_hours": [11, 21]},
+      {"name": "Phoenix Marketcity", "lat": 12.9976, "lon": 77.6493, "type": "mall", "peak_hours": [10, 22]},
+      {"name": "Narayana Health City", "lat": 12.9116, "lon": 77.6528, "type": "hospital", "peak_hours": [8, 18]},
+      {"name": "St. Martha's Hospital", "lat": 12.9716, "lon": 77.6093, "type": "hospital", "peak_hours": [7, 19]},
+      {"name": "Chinnaswamy Stadium", "lat": 12.9790, "lon": 77.5993, "type": "stadium", "peak_hours": [14, 22]}
+    ]
+  }
+}

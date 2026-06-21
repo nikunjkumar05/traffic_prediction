@@ -1,0 +1,29 @@
+# Environment files
+.env
+*.env
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+
+# Build outputs
+dist/
+build/
+frontend/dist/
+
+# Data files
+*.csv
+*.parquet
+data/processed/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
