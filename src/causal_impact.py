@@ -125,7 +125,7 @@ def build_causal_model(df: pd.DataFrame) -> Dict:
     
     # Model 2: Gradient Boosting (better accuracy)
     gb = GradientBoostingRegressor(
-        n_estimators=100, max_depth=4, learning_rate=0.1,
+        n_estimators=50, max_depth=4, learning_rate=0.1,
         random_state=42, subsample=0.8
     )
     gb.fit(X_train, y_train)
@@ -147,8 +147,11 @@ def build_causal_model(df: pd.DataFrame) -> Dict:
         best_name = 'linear_regression'
         best_coefs = dict(zip(CAUSAL_FEATURES, lr.coef_))
     
-    # Cross-validation score
-    cv_scores = cross_val_score(best_model, X, y, cv=5, scoring='r2')
+    # Cross-validation score (subsample to keep CV fast on large datasets)
+    cv_sample_size = min(50000, len(X))
+    cv_indices = np.random.RandomState(42).choice(len(X), cv_sample_size, replace=False)
+    X_cv, y_cv = X.iloc[cv_indices], y.iloc[cv_indices]
+    cv_scores = cross_val_score(best_model, X_cv, y_cv, cv=5, scoring='r2')
     cv_mean = cv_scores.mean()
     cv_std = cv_scores.std()
     
@@ -182,18 +185,18 @@ def build_causal_model(df: pd.DataFrame) -> Dict:
         'train_size': int(train_mask.sum()),
         'test_size': int(test_mask.sum()),
         'interpretation': {
-            'key_finding': f"1% increase in road capacity loss → {speed_drop_per_pct:.2f} km/h speed drop",
+            'key_finding': f"1% increase in road capacity loss => {speed_drop_per_pct:.2f} km/h speed drop",
             'critical_threshold': f"When capacity loss > {threshold_12kph:.0f}%, speed drops > 12 km/h",
-            'confidence': f"R² = {best_r2:.3f} (95% CI: [{r2_ci_lower:.3f}, {r2_ci_upper:.3f}])",
+            'confidence': f"R2 = {best_r2:.3f} (95% CI: [{r2_ci_lower:.3f}, {r2_ci_upper:.3f}])",
             'validity': "Tested on temporal split: train=Nov-Jan, test=Feb" if 'month' in df.columns else "Cross-validated",
         }
     }
     
     print(f"  Model: {best_name}")
-    print(f"  R² = {best_r2:.4f} (CV: {cv_mean:.4f} ± {cv_std:.4f})")
+    print(f"  R2 = {best_r2:.4f} (CV: {cv_mean:.4f} +/- {cv_std:.4f})")
     print(f"  MAE = {best_mae:.4f}")
-    print(f"  Key: 1% capacity loss → {speed_drop_per_pct:.2f} km/h drop")
-    print(f"  Threshold: {threshold_12kph:.0f}% capacity loss → 12 km/h drop")
+    print(f"  Key: 1% capacity loss => {speed_drop_per_pct:.2f} km/h drop")
+    print(f"  Threshold: {threshold_12kph:.0f}% capacity loss => 12 km/h drop")
     
     return result
 

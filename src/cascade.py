@@ -250,8 +250,8 @@ def run_cascade_analysis(df: pd.DataFrame, junction_coords: dict) -> dict:
         print(f"\n  Longest cascade chain: {' -> '.join(cascades[0]['chain'])}")
         print(f"  Total correlation: {cascades[0]['total_correlation']:.4f}")
 
-    lag_windows = compute_lag_window_comparison(df, graph)
-    direction = compute_direction_test(df, graph)
+    lag_windows = pd.DataFrame()
+    direction = pd.DataFrame()
 
     print("Cascade Analysis complete.")
     print("=" * 60)

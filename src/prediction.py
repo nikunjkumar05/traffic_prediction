@@ -54,12 +54,12 @@ def train_model(df: pd.DataFrame, features: list = None, model_type: str = 'xgbo
     X_test, y_test = test[features], test['congestion_cost']
 
     if model_type == 'xgboost':
-        p = {'n_estimators': 500, 'max_depth': 6, 'learning_rate': 0.05,
+        p = {'n_estimators': 200, 'max_depth': 6, 'learning_rate': 0.05,
              'subsample': 0.8, 'colsample_bytree': 0.8, 'random_state': 42, 'n_jobs': -1}
         model = xgb.XGBRegressor(**(params or p))
         model.fit(X_train, y_train, eval_set=[(X_test, y_test)], verbose=False)
     else:
-        p = {'n_estimators': 500, 'max_depth': 6, 'learning_rate': 0.05,
+        p = {'n_estimators': 200, 'max_depth': 6, 'learning_rate': 0.05,
              'random_state': 42, 'n_jobs': -1, 'verbose': -1}
         model = lgb.LGBMRegressor(**(params or p))
         model.fit(X_train, y_train)
@@ -111,6 +111,8 @@ if __name__ == '__main__':
     with open('data/external/junction_coords.json', 'r', encoding='utf-8') as f:
         coords = json.load(f)
 
-    df = run_pipeline('data/raw/violations.csv', junction_coords=coords)
+    import os
+    csv_path = os.environ.get("DISPATCHMIND_CSV", "jan to may police violation_anonymized791b166.csv")
+    df = run_pipeline(csv_path, junction_coords=coords)
     df = run_congestion_cost(df, junction_coords=coords)
     run_prediction(df)

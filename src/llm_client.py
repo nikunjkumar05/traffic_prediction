@@ -19,22 +19,23 @@ if _env_path.exists():
             key, value = line.split('=', 1)
             os.environ.setdefault(key.strip(), value.strip())
 
-ZENMUX_API_KEY = os.environ.get("ZENMUX_API_KEY", "")
-ZENMUX_BASE_URL = os.environ.get("ZENMUX_BASE_URL", "https://zenmux.ai/api/v1")
-ZENMUX_MODEL = os.environ.get("ZENMUX_MODEL", "z-ai/glm-5.2-free")
+MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY", "")
+MISTRAL_BASE_URL = os.environ.get("MISTRAL_BASE_URL", "https://api.mistral.ai/v1")
+MISTRAL_MODEL = os.environ.get("MISTRAL_MODEL", "mistral-large-latest")
 
 _client = None
 
 
 def get_client():
-    """Get or create OpenAI-compatible client."""
+    """Get or create OpenAI-compatible client for Mistral."""
     global _client
     if _client is None:
         try:
             from openai import OpenAI
             _client = OpenAI(
-                base_url=ZENMUX_BASE_URL,
-                api_key=ZENMUX_API_KEY,
+                base_url=MISTRAL_BASE_URL,
+                api_key=MISTRAL_API_KEY,
+                timeout=10.0,
             )
         except ImportError:
             print("WARNING: openai package not installed. Run: pip install openai")
@@ -55,7 +56,7 @@ def chat_completion(prompt: str, system: str = None, temperature: float = 0.7) -
     
     try:
         completion = client.chat.completions.create(
-            model=ZENMUX_MODEL,
+            model=MISTRAL_MODEL,
             messages=messages,
             temperature=temperature,
         )
@@ -72,7 +73,7 @@ def responses_create(input_text: str, model: str = None) -> dict:
     
     try:
         responses = client.responses.create(
-            model=model or ZENMUX_MODEL,
+            model=model or MISTRAL_MODEL,
             input=input_text,
         )
         return responses
@@ -138,10 +139,14 @@ Be concise and data-driven."""
 
 
 if __name__ == '__main__':
-    api_key_display = ZENMUX_API_KEY or ""
-    print(f"ZenMux API Key: {api_key_display[:10]}...")
-    print(f"Base URL: {ZENMUX_BASE_URL}")
-    print(f"Model: {ZENMUX_MODEL}")
+    has_key = bool(MISTRAL_API_KEY)
+    print(f"Mistral API Key: {'set' if has_key else 'NOT SET'}")
+    print(f"Base URL: {MISTRAL_BASE_URL}")
+    print(f"Model: {MISTRAL_MODEL}")
+    
+    if not has_key:
+        print("WARNING: MISTRAL_API_KEY not set. LLM features will return errors.")
+        sys.exit(1)
     
     # Test connection
     result = chat_completion("Say 'ClearLane LLM connected' in 5 words or less.")

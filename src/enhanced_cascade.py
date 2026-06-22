@@ -385,13 +385,13 @@ def build_adjacency_graph(
     cos_lat = np.cos(np.radians(np.mean(jlats)))
     
     edges = []
-    for i, j in zip(range(len(jnames)), range(len(jnames))):
-        if i == j:
-            continue
-        dist = np.sqrt((jlats[i] - jlats[j])**2 + ((jlons[i] - jlons[j]) * cos_lat)**2) * 111000
-        if dist <= max_distance_m:
-            edges.append({'from': jnames[i], 'to': jnames[j], 'distance_m': round(dist, 0)})
-            edges.append({'from': jnames[j], 'to': jnames[i], 'distance_m': round(dist, 0)})
+    n = len(jnames)
+    for i in range(n):
+        for j in range(i + 1, n):
+            dist = np.sqrt((jlats[i] - jlats[j])**2 + ((jlons[i] - jlons[j]) * cos_lat)**2) * 111000
+            if dist <= max_distance_m:
+                edges.append({'from': jnames[i], 'to': jnames[j], 'distance_m': round(dist, 0)})
+                edges.append({'from': jnames[j], 'to': jnames[i], 'distance_m': round(dist, 0)})
     
     graph = pd.DataFrame(edges)
     print(f"  Adjacency graph: {len(jnames)} junctions, {len(graph)} directed edges (max {max_distance_m}m)")

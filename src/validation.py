@@ -71,7 +71,11 @@ def run_silk_board_case_study(df: pd.DataFrame) -> Dict[str, Any]:
     
     silk = df[df['mapped_junction'].str.contains('|'.join(silk_board_junctions), case=False, na=False)]
     if len(silk) == 0:
-        top_junction = df.groupby('mapped_junction')['congestion_cost'].sum().idxmax()
+        junction_agg = df.groupby('mapped_junction')['congestion_cost'].sum()
+        if len(junction_agg) == 0:
+            top_junction = 'Unknown'
+        else:
+            top_junction = junction_agg.idxmax()
         silk = df[df['mapped_junction'] == top_junction]
 
     result = {
@@ -97,6 +101,10 @@ def generate_one_deployment_example(df: pd.DataFrame) -> Dict[str, Any]:
     agg = df.groupby('mapped_junction').agg(
         total_delay=('congestion_cost', 'sum'), violation_count=('single_violation', 'count'),
     ).reset_index()
+    if len(agg) == 0:
+        return {'junction': 'N/A', 'total_delay': 0, 'violation_count': 0,
+                'weekly_violations': 0, 'weekly_delay_minutes': 0,
+                'monthly_saved_minutes': 0, 'monthly_fuel_savings_inr': 0}
     top = agg.loc[agg['total_delay'].idxmax()]
 
     vpw = top['violation_count'] / WEEKS_IN_DATASET

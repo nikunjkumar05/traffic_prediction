@@ -27,3 +27,8 @@ data/processed/
 # OS
 .DS_Store
 Thumbs.db
+
+# Logs
+*.log
+backend.log
+frontend.log

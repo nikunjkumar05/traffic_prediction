@@ -9,17 +9,12 @@ import {
   RefreshCw,
   Radio,
   Zap,
+  ShieldAlert,
+  TrendingUp,
 } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from "recharts";
+import ScrollReveal from "../components/ScrollReveal";
+import GlassCard from "../components/GlassCard";
+import PageHeader from "../components/PageHeader";
 
 const REFRESH_INTERVAL = 30_000;
 
@@ -87,53 +82,52 @@ export default function EarlyWarningPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading font-bold text-2xl text-chalk flex items-center gap-2">
-            <Radio className="w-6 h-6 text-signal-red" />
-            Phantom Blockage AI
-          </h1>
-          <p className="text-muted text-sm mt-1">
-            Predicting gridlock 15 minutes before it happens
-          </p>
+      <ScrollReveal>
+        <div className="flex items-center justify-between">
+          <PageHeader
+            icon={Radio}
+            iconColor="text-neon-red"
+            title="Phantom Blockage AI"
+            subtitle="Predicting gridlock 15 minutes before it happens"
+          />
+          <button
+            onClick={fetchData}
+            className="btn-ghost flex items-center gap-2 hover:bg-elevated/50 px-3 py-1.5 rounded-lg border border-border transition-all"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-neon-blue" />
+            <span className="text-chalk">Refresh</span>
+          </button>
         </div>
-        <button
-          onClick={fetchData}
-          className="flex items-center gap-2 px-3 py-1.5 bg-elevated border border-white/[0.08] rounded-lg text-sm text-muted hover:text-chalk hover:border-accent/30 transition-all"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          Refresh
-        </button>
-      </div>
+      </ScrollReveal>
 
       {/* Status Bar */}
-      <div className="flex items-center gap-4 text-xs text-muted">
-        <span className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-signal-emerald animate-pulse" />
-          Live — {data?.current_time_block || "--:--"}
-        </span>
-        <span>Next block: {data?.next_time_block || "--:--"}</span>
-        {lastFetch && <span>Last: {lastFetch.toLocaleTimeString()}</span>}
-      </div>
+      <ScrollReveal delay={50}>
+        <div className="flex items-center gap-4 text-xs text-muted">
+          <span className="flex items-center gap-1.5 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse shadow-[0_0_8px_var(--color-accent-green)]" />
+            Live — {data?.current_time_block || "--:--"}
+          </span>
+          <span>Next block: {data?.next_time_block || "--:--"}</span>
+          {lastFetch && <span>Last: {lastFetch.toLocaleTimeString()}</span>}
+        </div>
+      </ScrollReveal>
 
       {/* Error Banner */}
       {error && (
-        <div className="p-3 bg-signal-red/10 border border-signal-red/20 rounded-lg text-sm text-signal-red">
-          Failed to fetch: {error}. Retrying in {REFRESH_INTERVAL / 1000}s...
-        </div>
+        <ScrollReveal delay={60}>
+          <div className="glass-card border-neon-red/30 p-3 text-sm text-neon-red bg-neon-red/5">
+            Failed to fetch: {error}. Retrying in {REFRESH_INTERVAL / 1000}s...
+          </div>
+        </ScrollReveal>
       )}
 
       {/* Loading */}
       {loading && (
         <div className="space-y-4">
-          <div className="h-48 bg-elevated rounded-xl animate-pulse" />
+          <div className="h-48 glass-card-static animate-pulse" />
           <div className="grid grid-cols-2 gap-3">
             {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="h-24 bg-elevated rounded-xl animate-pulse"
-              />
+              <div key={i} className="h-24 glass-card-static animate-pulse" />
             ))}
           </div>
         </div>
@@ -141,169 +135,178 @@ export default function EarlyWarningPanel() {
 
       {/* Hero Card — #1 Risk Zone */}
       {hero && (
-        <div className="relative overflow-hidden rounded-xl border border-signal-red/30 bg-gradient-to-br from-signal-red/[0.08] to-surface">
-          {/* Pulsing glow */}
-          <div className="absolute inset-0 bg-signal-red/[0.04] animate-pulse pointer-events-none" />
-          <div className="absolute top-0 right-0 w-40 h-40 bg-signal-red/10 rounded-full blur-3xl pointer-events-none" />
+        <ScrollReveal delay={100}>
+          <div className="glass-card border-neon-red/30 bg-gradient-to-br from-neon-red/[0.08] to-transparent relative overflow-hidden">
+            {/* Pulsing glow */}
+            <div className="absolute inset-0 bg-neon-red/[0.04] animate-pulse pointer-events-none" />
+            <div className="absolute top-0 right-0 w-40 h-40 bg-neon-red/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative p-5">
-            {/* Top row */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 bg-signal-red text-white text-[10px] font-bold uppercase tracking-wider rounded">
-                  PHANTOM BLOCKAGE ALERT
-                </span>
-                <span className="px-2 py-0.5 bg-signal-red/20 text-signal-red text-[10px] font-bold rounded">
-                  #{hero.rank}
-                </span>
+            <div className="relative p-5">
+              {/* Top row */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-0.5 bg-neon-red text-white text-[10px] font-bold uppercase tracking-wider rounded">
+                    PHANTOM BLOCKAGE ALERT
+                  </span>
+                  <span className="px-2 py-0.5 bg-neon-red/20 text-neon-red text-[10px] font-bold rounded">
+                    #{hero.rank}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] text-muted uppercase tracking-wider">
+                    Risk Score
+                  </p>
+                  <p className="font-mono text-2xl font-bold text-neon-red">
+                    {hero.phantom_risk_score}
+                  </p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] text-muted uppercase tracking-wider">
-                  Risk Score
-                </p>
-                <p className="font-mono text-2xl font-bold text-signal-red">
-                  {hero.phantom_risk_score}
-                </p>
-              </div>
-            </div>
 
-            {/* Countdown */}
-            <div className="flex items-center gap-3 mb-4 p-3 bg-black/30 rounded-lg border border-signal-red/20">
-              <Clock className="w-5 h-5 text-signal-red animate-pulse shrink-0" />
-              <div>
-                <p className="text-sm font-medium text-chalk">
-                  Gridlock predicted in {formatCountdown(secondsLeft)}
-                </p>
-                <p className="text-xs text-muted mt-0.5">
-                  Window closes at {data?.next_time_block}
-                </p>
+              {/* Countdown */}
+              <div className="flex items-center gap-3 mb-4 p-3 bg-elevated/30 rounded-lg border border-neon-red/20">
+                <Clock className="w-5 h-5 text-neon-red animate-pulse shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-chalk">
+                    Gridlock predicted in {formatCountdown(secondsLeft)}
+                  </p>
+                  <p className="text-xs text-muted mt-0.5">
+                    Window closes at {data?.next_time_block}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* Details Grid */}
-            <div className="grid grid-cols-3 gap-3 mb-4">
-              <div className="p-3 bg-black/20 rounded-lg">
-                <p className="text-[10px] text-muted uppercase tracking-wider">
-                  Vehicle
-                </p>
-                <p className="text-sm font-medium text-chalk mt-0.5">
-                  {hero.vehicle_type}
-                </p>
-                <p className="text-xs text-muted">Weight: {hero.weight}</p>
+              {/* Details Grid */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="p-3 bg-elevated/20 border border-border rounded-lg">
+                  <p className="text-[10px] text-muted uppercase tracking-wider">
+                    Vehicle
+                  </p>
+                  <p className="text-sm font-medium text-chalk mt-0.5">
+                    {hero.vehicle_type}
+                  </p>
+                  <p className="text-xs text-muted mt-0.5">Weight: {hero.weight}</p>
+                </div>
+                <div className="p-3 bg-elevated/20 border border-border rounded-lg">
+                  <p className="text-[10px] text-muted uppercase tracking-wider">
+                    Location
+                  </p>
+                  <p className="text-sm font-mono text-chalk mt-0.5">
+                    {hero.latitude}, {hero.longitude}
+                  </p>
+                </div>
+                <div className="p-3 bg-elevated/20 border border-border rounded-lg">
+                  <p className="text-[10px] text-muted uppercase tracking-wider">
+                    Seeds Nearby
+                  </p>
+                  <p className="text-sm font-mono text-chalk mt-0.5">
+                    {hero.nearby_seed_count}
+                  </p>
+                  <p className="text-xs text-muted mt-0.5">
+                    within {hero.avg_distance_to_seeds}m
+                  </p>
+                </div>
               </div>
-              <div className="p-3 bg-black/20 rounded-lg">
-                <p className="text-[10px] text-muted uppercase tracking-wider">
-                  Location
-                </p>
-                <p className="text-sm font-mono text-chalk mt-0.5">
-                  {hero.latitude}, {hero.longitude}
-                </p>
-              </div>
-              <div className="p-3 bg-black/20 rounded-lg">
-                <p className="text-[10px] text-muted uppercase tracking-wider">
-                  Seeds Nearby
-                </p>
-                <p className="text-sm font-mono text-chalk mt-0.5">
-                  {hero.nearby_seed_count}
-                </p>
-                <p className="text-xs text-muted">
-                  within {hero.avg_distance_to_seeds}m
-                </p>
-              </div>
-            </div>
 
-            {/* Recommended Action */}
-            <div className="p-3 bg-signal-red/10 border border-signal-red/20 rounded-lg">
-              <p className="text-[10px] text-signal-red font-bold uppercase tracking-wider mb-1">
-                Recommended Action
-              </p>
-              <p className="text-sm text-chalk leading-relaxed">
-                {hero.recommended_action}
-              </p>
+              {/* Recommended Action */}
+              <div className="p-3 bg-neon-red/10 border border-neon-red/20 rounded-lg">
+                <p className="text-[10px] text-neon-red font-bold uppercase tracking-wider mb-1">
+                  Recommended Action
+                </p>
+                <p className="text-sm text-chalk leading-relaxed">
+                  {hero.recommended_action}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </ScrollReveal>
       )}
 
       {/* No Data */}
       {!loading && !error && !hero && (
-        <div className="text-center py-12 card">
-          <Activity className="w-10 h-10 text-signal-emerald mx-auto mb-3" />
-          <p className="text-chalk font-medium">No phantom risk detected</p>
-          <p className="text-sm text-muted mt-1">
-            {data?.message || "Current time blocks are clear"}
-          </p>
-        </div>
+        <ScrollReveal delay={100}>
+          <div className="text-center py-12 glass-card">
+            <Activity className="w-10 h-10 text-neon-green mx-auto mb-3" />
+            <p className="text-chalk font-medium">No phantom risk detected</p>
+            <p className="text-sm text-muted mt-1">
+              {data?.message || "Current time blocks are clear"}
+            </p>
+          </div>
+        </ScrollReveal>
       )}
 
       {/* Remaining Zones */}
       {rest.length > 0 && (
-        <div>
+        <ScrollReveal delay={150}>
           <h2 className="text-sm font-medium text-muted uppercase tracking-wider mb-3 flex items-center gap-2">
-            <AlertTriangle className="w-3.5 h-3.5" />
+            <AlertTriangle className="w-3.5 h-3.5 text-neon-amber" />
             Additional Risk Zones ({rest.length})
           </h2>
           <div className="space-y-2">
-            {rest.map((zone) => (
-              <ZoneCard key={zone.rank} zone={zone} />
+            {rest.map((zone, idx) => (
+              <ZoneCard key={zone.rank} zone={zone} delay={160 + idx * 30} />
             ))}
           </div>
-        </div>
+        </ScrollReveal>
       )}
 
-      {/* Tipping Point Forecast — Now uses real API */}
-      <TippingPointChart />
+      {/* Tipping Point Forecast */}
+      <ScrollReveal delay={200}>
+        <TippingPointChart />
+      </ScrollReveal>
 
       {/* Anomaly Detection Section */}
-      <AnomalyDetectionPanel />
+      <ScrollReveal delay={250}>
+        <AnomalyDetectionPanel />
+      </ScrollReveal>
     </div>
   );
 }
 
-function ZoneCard({ zone }) {
+function ZoneCard({ zone, delay = 0 }) {
   return (
-    <div className="card border border-white/[0.06] hover:border-signal-red/20 transition-colors group">
-      <div className="flex items-center gap-4">
-        {/* Rank */}
-        <div className="w-10 h-10 rounded-lg bg-elevated flex items-center justify-center shrink-0">
-          <span className="font-mono text-lg font-bold text-muted group-hover:text-signal-red transition-colors">
-            {zone.rank}
-          </span>
-        </div>
-
-        {/* Details */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <Truck className="w-3.5 h-3.5 text-muted" />
-            <span className="text-sm font-medium text-chalk">
-              {zone.vehicle_type}
-            </span>
-            <span className="text-xs text-muted">wt. {zone.weight}</span>
-            <span className="text-[10px] text-muted">·</span>
-            <span className="text-xs text-muted">
-              {zone.nearby_seed_count} seeds within {zone.avg_distance_to_seeds}
-              m
+    <ScrollReveal delay={delay}>
+      <div className="glass-card border-border hover:border-neon-red/20 transition-all duration-300 group cursor-pointer">
+        <div className="flex items-center gap-4">
+          {/* Rank */}
+          <div className="w-10 h-10 rounded-lg bg-elevated flex items-center justify-center shrink-0 border border-border">
+            <span className="font-mono text-lg font-bold text-muted group-hover:text-neon-red transition-colors">
+              {zone.rank}
             </span>
           </div>
-          <p className="text-xs text-muted truncate">
-            {zone.recommended_action}
-          </p>
-        </div>
 
-        {/* Score + Arrow */}
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="text-right">
-            <p className="text-[10px] text-muted uppercase tracking-wider">
-              Score
-            </p>
-            <p className="font-mono text-lg font-bold text-tier-high">
-              {zone.phantom_risk_score}
+          {/* Details */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <Truck className="w-3.5 h-3.5 text-muted" />
+              <span className="text-sm font-medium text-chalk">
+                {zone.vehicle_type}
+              </span>
+              <span className="text-xs text-muted font-mono">wt. {zone.weight}</span>
+              <span className="text-[10px] text-muted">·</span>
+              <span className="text-xs text-muted font-mono">
+                {zone.nearby_seed_count} seeds within {zone.avg_distance_to_seeds}m
+              </span>
+            </div>
+            <p className="text-xs text-muted truncate">
+              {zone.recommended_action}
             </p>
           </div>
-          <ChevronRight className="w-4 h-4 text-muted group-hover:text-signal-red transition-colors" />
+
+          {/* Score + Arrow */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="text-right">
+              <p className="text-[10px] text-muted uppercase tracking-wider">
+                Score
+              </p>
+              <p className="font-mono text-lg font-bold text-neon-amber">
+                {zone.phantom_risk_score}
+              </p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted group-hover:text-neon-red transition-colors" />
+          </div>
         </div>
       </div>
-    </div>
+    </ScrollReveal>
   );
 }
 
@@ -312,26 +315,37 @@ function TippingPointChart() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     const c = new AbortController();
     const t = setTimeout(() => c.abort(), 30000);
     fetch("/api/tipping-points", { signal: c.signal })
       .then((res) => {
+        if (cancelled) return null;
         clearTimeout(t);
         return res.json();
       })
       .then((json) => {
-        setData(json);
-        setLoading(false);
+        if (!cancelled && json) {
+          setData(json);
+          setLoading(false);
+        }
       })
       .catch(() => {
-        clearTimeout(t);
-        setLoading(false);
+        if (!cancelled) {
+          clearTimeout(t);
+          setLoading(false);
+        }
       });
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+      c.abort();
+    };
   }, []);
 
   if (loading) {
     return (
-      <div className="card border border-white/[0.06] animate-pulse">
+      <div className="glass-card-static animate-pulse">
         <div className="h-48 bg-elevated/50 rounded-xl" />
       </div>
     );
@@ -343,11 +357,11 @@ function TippingPointChart() {
     .slice(0, 5);
 
   return (
-    <div className="card border border-white/[0.06]">
+    <div className="glass-card">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-medium text-chalk flex items-center gap-2">
-            <Zap className="w-4 h-4 text-signal-amber" />
+            <Zap className="w-4 h-4 text-neon-amber" />
             Tipping Point Predictions
           </h3>
           <p className="text-xs text-muted mt-0.5">
@@ -355,7 +369,7 @@ function TippingPointChart() {
           </p>
         </div>
         {data && (
-          <span className="px-2 py-0.5 bg-signal-amber/10 text-signal-amber text-[10px] font-bold rounded uppercase">
+          <span className="px-2 py-0.5 bg-neon-amber/10 text-neon-amber text-[10px] font-bold rounded uppercase border border-neon-amber/20">
             {data.total_junctions_with_tipping_points} Detected
           </span>
         )}
@@ -363,7 +377,7 @@ function TippingPointChart() {
 
       {critical.length === 0 ? (
         <div className="text-center py-8">
-          <Activity className="w-8 h-8 text-signal-emerald mx-auto mb-2" />
+          <Activity className="w-8 h-8 text-neon-green mx-auto mb-2" />
           <p className="text-sm text-muted">
             No critical tipping points detected
           </p>
@@ -373,10 +387,10 @@ function TippingPointChart() {
           {critical.map((pred, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between p-3 rounded-lg bg-elevated/30 border border-white/[0.04] hover:border-signal-red/20 transition-colors"
+              className="flex items-center justify-between p-3 rounded-lg bg-elevated/30 border border-border hover:border-neon-red/20 transition-all duration-300"
             >
               <div className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-signal-red" />
+                <Clock className="w-4 h-4 text-neon-red" />
                 <div>
                   <p className="text-sm font-medium text-chalk">
                     {pred.junction}
@@ -387,8 +401,8 @@ function TippingPointChart() {
               <span
                 className={`px-2 py-0.5 text-[10px] font-bold rounded ${
                   pred.status === "CRITICAL"
-                    ? "bg-signal-red/10 text-signal-red"
-                    : "bg-signal-amber/10 text-signal-amber"
+                    ? "bg-neon-red/10 text-neon-red border border-neon-red/20"
+                    : "bg-neon-amber/10 text-neon-amber border border-neon-amber/20"
                 }`}
               >
                 {pred.predicted_time}
@@ -399,9 +413,9 @@ function TippingPointChart() {
       )}
 
       {/* Methodology */}
-      <div className="mt-4 p-3 bg-black/20 rounded-lg text-xs text-muted">
-        <p className="flex items-center gap-1.5">
-          <Activity className="w-3.5 h-3.5" />
+      <div className="mt-4 p-3 bg-elevated/20 border border-border rounded-lg text-xs text-muted">
+        <p className="flex items-center gap-1.5 font-mono">
+          <Activity className="w-3.5 h-3.5 text-neon-blue" />
           {data?.methodology ||
             "7-hour rolling window, 3-sigma spike detection"}
         </p>
@@ -415,44 +429,53 @@ function AnomalyDetectionPanel() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let cancelled = false;
     const c = new AbortController();
     const t = setTimeout(() => c.abort(), 30000);
     fetch("/api/anomaly-scores", { signal: c.signal })
       .then((res) => {
+        if (cancelled) return null;
         clearTimeout(t);
         return res.json();
       })
       .then((json) => {
-        setData(json);
-        setLoading(false);
+        if (!cancelled && json) {
+          setData(json);
+          setLoading(false);
+        }
       })
       .catch(() => {
-        clearTimeout(t);
-        setLoading(false);
+        if (!cancelled) {
+          clearTimeout(t);
+          setLoading(false);
+        }
       });
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+      c.abort();
+    };
   }, []);
 
-  if (loading) {
-    return null;
-  }
+  if (loading) return null;
 
   const anomalies =
     data?.anomalies?.filter((a) => a.is_anomaly).slice(0, 3) || [];
   if (anomalies.length === 0) return null;
 
   return (
-    <div className="card border border-signal-amber/20">
+    <div className="glass-card border-neon-amber/20">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-medium text-chalk flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-signal-amber" />
+            <AlertTriangle className="w-4 h-4 text-neon-amber" />
             Isolation Forest Anomalies
           </h3>
           <p className="text-xs text-muted mt-0.5">
             First-in-India ML for parking violations
           </p>
         </div>
-        <span className="px-2 py-0.5 bg-signal-amber/10 text-signal-amber text-[10px] font-bold rounded uppercase">
+        <span className="px-2 py-0.5 bg-neon-amber/10 text-neon-amber text-[10px] font-bold rounded uppercase border border-neon-amber/20">
           {data?.anomaly_count || 0} Anomalies
         </span>
       </div>
@@ -461,7 +484,7 @@ function AnomalyDetectionPanel() {
         {anomalies.map((a, idx) => (
           <div
             key={idx}
-            className="flex items-center justify-between p-3 rounded-lg bg-signal-amber/5 border border-signal-amber/10"
+            className="flex items-center justify-between p-3 rounded-lg bg-neon-amber/5 border border-neon-amber/10 hover:border-neon-amber/30 transition-all duration-300"
           >
             <div>
               <p className="text-sm font-medium text-chalk">{a.junction}</p>
@@ -469,7 +492,7 @@ function AnomalyDetectionPanel() {
             </div>
             <div className="text-right">
               <p className="text-[10px] text-muted">Score</p>
-              <p className="font-mono text-lg font-bold text-signal-amber">
+              <p className="font-mono text-lg font-bold text-neon-amber">
                 {a.anomaly_score.toFixed(3)}
               </p>
             </div>

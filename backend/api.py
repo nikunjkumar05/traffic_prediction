@@ -4,12 +4,13 @@ Replaces Streamlit with a proper REST API.
 """
 
 import asyncio
+import collections
 import json
 import logging
 import os
-import random
 import sys
 import threading
+import time
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -18,8 +19,10 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
 from pydantic import BaseModel
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -35,22 +38,43 @@ from src.prediction import run_prediction
 from src.realtime_alerts import ViolationAlertSystem
 from src.spillover_ai import detect_spillover_zones
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
+)
 logger = logging.getLogger("dispatchmind")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Warm the base pipeline in the background without blocking startup."""
+    try:
+        from backend.database import engine
+        from backend.models import Base
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables initialized successfully.")
+    except Exception as e:
+        logger.error(f"Failed to initialize database tables: {e}")
 
     def _bg_load():
         for attempt in range(3):
             try:
+                logger.info("Pipeline warm-up: loading base data...")
                 _ensure_base_data()
                 if _pipeline_data is not None:
+                    logger.info("Pipeline warm-up: precomputing overview stats...")
                     _precompute_all()
+                    logger.info("Pipeline warm-up: computing phantom risk scores...")
                     _ensure_phantom_data()
+                    logger.info("Pipeline warm-up: computing capacity loss...")
                     _ensure_capacity()
+                    logger.info("Pipeline warm-up: computing repeat offenders...")
                     _ensure_repeat_offenders()
+                    logger.info("Pipeline warm-up: training causal impact model...")
+                    _ensure_causal_impact()
+                    logger.info("Pipeline warm-up: training prediction models...")
+                    _ensure_predictions()
+                    logger.info("Pipeline warm-up: all components ready.")
                     return
             except Exception:
                 logger.exception("Pipeline failed to load (attempt %d/3)", attempt + 1)
@@ -60,6 +84,17 @@ async def lifespan(app: FastAPI):
 
     threading.Thread(target=_bg_load, daemon=True).start()
     yield
+    logger.info("Shutting down DispatchMind API — clearing cached state")
+    global _pipeline_data, _models, _precomputed
+    _pipeline_data = None
+    _models = None
+    _precomputed.clear()
+    try:
+        from backend.database import engine
+        engine.dispose()
+        logger.info("Database connections drained.")
+    except Exception:
+        pass
 
 
 app = FastAPI(
@@ -76,8 +111,78 @@ app.add_middleware(
     ).split(","),
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
 )
+
+
+class RequestIDMiddleware(BaseHTTPMiddleware):
+    """Attach a unique request ID to every request for distributed tracing."""
+
+    async def dispatch(self, request: Request, call_next):
+        request_id = request.headers.get("X-Request-ID", str(uuid.uuid4())[:12])
+        request.state.request_id = request_id
+        start = time.monotonic()
+        response = await call_next(request)
+        elapsed_ms = round((time.monotonic() - start) * 1000, 1)
+        response.headers["X-Request-ID"] = request_id
+        response.headers["X-Response-Time"] = f"{elapsed_ms}ms"
+        logger.info(
+            "%s %s %d %sms req=%s",
+            request.method, request.url.path, response.status_code,
+            elapsed_ms, request_id,
+        )
+        return response
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    """In-memory sliding-window rate limiter. Defaults: 120 req/min per IP."""
+
+    def __init__(self, app, max_requests: int = 120, window_seconds: int = 60):
+        super().__init__(app)
+        self.max_requests = max_requests
+        self.window = window_seconds
+        self._requests: Dict[str, collections.deque] = {}
+        self._lock = threading.Lock()
+
+    def _check(self, key: str) -> bool:
+        now = time.monotonic()
+        with self._lock:
+            if key not in self._requests:
+                self._requests[key] = collections.deque()
+            dq = self._requests[key]
+            while dq and dq[0] < now - self.window:
+                dq.popleft()
+            if len(dq) >= self.max_requests:
+                return False
+            dq.append(now)
+            return True
+
+    async def dispatch(self, request: Request, call_next):
+        if request.url.path.startswith("/api/health"):
+            return await call_next(request)
+        client_ip = request.client.host if request.client else "unknown"
+        if not self._check(client_ip):
+            return JSONResponse(
+                status_code=429,
+                content={"detail": "Rate limit exceeded. Try again shortly."},
+                headers={"Retry-After": str(self.window)},
+            )
+        return await call_next(request)
+
+
+app.add_middleware(RequestIDMiddleware)
+app.add_middleware(RateLimitMiddleware)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """Catch-all exception handler — prevents opaque 500 crashes."""
+    logger.exception("Unhandled exception on %s %s", request.method, request.url.path)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"},
+    )
+
 
 # ---------------------------------------------------------------------------
 # Global state — loaded once at startup
@@ -124,6 +229,9 @@ _capacity_data = None
 _repeat_offenders_data = None
 _causal_impact_data = None
 _predictions_data = None
+_prepared_df = None
+_custom_events = []
+_prepared_features = None
 
 # Thread safety locks for lazy-loading
 _lock_base = threading.Lock()
@@ -138,6 +246,25 @@ _lock_causal = threading.Lock()
 _lock_predictions = threading.Lock()
 
 _precomputed: Dict[str, Any] = {}
+
+
+def _normalize_pipeline_dates():
+    """Ensure created_datetime column exists in pipeline data (called once after load)."""
+    global _pipeline_data
+    if _pipeline_data is None:
+        return
+    if "created_datetime" not in _pipeline_data.columns:
+        date_col = "created_date" if "created_date" in _pipeline_data.columns else None
+        if date_col:
+            _pipeline_data["created_datetime"] = pd.to_datetime(
+                _pipeline_data[date_col], errors="coerce"
+            )
+        else:
+            _pipeline_data["created_datetime"] = pd.Timestamp("2024-06-01 12:00:00")
+    elif _pipeline_data["created_datetime"].dtype != "datetime64[ns]":
+        _pipeline_data["created_datetime"] = pd.to_datetime(
+            _pipeline_data["created_datetime"], errors="coerce"
+        )
 _lock_precomputed = threading.Lock()
 
 
@@ -147,9 +274,14 @@ def _ensure_base_data():
 
     if _pipeline_data is not None:
         return
+    if _pipeline_loading:
+        logger.info("Base data loading already in progress — waiting...")
+        return
 
     with _lock_base:
         if _pipeline_data is not None:
+            return
+        if _pipeline_loading:
             return
 
         _pipeline_loading = True
@@ -172,6 +304,7 @@ def _ensure_base_data():
                 if not missing:
                     _pipeline_data = cached
                     _pipeline_loading = False
+                    _normalize_pipeline_dates()
                     logger.info(
                         "Scored cache loaded: %d violations", len(_pipeline_data)
                     )
@@ -185,6 +318,7 @@ def _ensure_base_data():
             _pipeline_data = run_congestion_cost(_pipeline_data, _junction_coords)
             CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
             _pipeline_data.to_parquet(CACHE_PATH, index=False)
+            _normalize_pipeline_dates()
             logger.info(
                 "Base pipeline loaded and cached: %d violations", len(_pipeline_data)
             )
@@ -197,7 +331,7 @@ def _ensure_base_data():
 
 
 def _ensure_models():
-    global _models
+    global _models, _prepared_features, _prepared_df
     if _models is not None:
         return
     with _lock_models:
@@ -206,7 +340,9 @@ def _ensure_models():
         if _pipeline_data is None:
             logger.warning("Cannot train models: base data not loaded")
             return
-        logger.info("Training prediction models...")
+        logger.info("Preparing features and training models...")
+        from src.prediction import prepare_features
+        _prepared_df, _prepared_features, _ = prepare_features(_pipeline_data.copy())
         _models = run_prediction(_pipeline_data)
         logger.info(
             "Models trained: R²=%.4f", _models.get("xgb_metrics", {}).get("r2", 0)
@@ -558,6 +694,21 @@ class FlipkartScoutReportIn(BaseModel):
     notes: Optional[str] = None
 
 
+class ViolationIn(BaseModel):
+    vehicle_number: str
+    vehicle_type: str
+    latitude: float
+    longitude: float
+    violation_type: str
+    junction_name: Optional[str] = None
+    police_station: Optional[str] = None
+
+class JunctionActionIn(BaseModel):
+    junction: str
+    action: str
+    officer: Optional[str] = "Constable Kumar"
+
+
 class FlipkartScoutReportOut(BaseModel):
     report_id: str
     status: str
@@ -567,9 +718,254 @@ class FlipkartScoutReportOut(BaseModel):
     message: str
 
 
-# ---------------------------------------------------------------------------
-# Precomputed aggregation cache — computed once after pipeline loads
-# ---------------------------------------------------------------------------
+def ingest_and_score_violation(new_violation, db):
+    global _pipeline_data, _junction_coords, _alert_system
+    
+    # 1. Map to nearest junction
+    mapped_junction = "No Junction"
+    junction_distance = 999.0
+    if _junction_coords:
+        jnames = list(_junction_coords.keys())
+        jlats = np.array([_junction_coords[j][0] for j in jnames])
+        jlons = np.array([_junction_coords[j][1] for j in jnames])
+        dists = np.sqrt((new_violation.latitude - jlats)**2 + (new_violation.longitude - jlons)**2) * 111000
+        idx = dists.argmin()
+        mapped_junction = jnames[idx]
+        junction_distance = float(dists[idx])
+        
+    new_violation.mapped_junction = mapped_junction
+    new_violation.single_violation = new_violation.violation_type
+    
+    # 2. Get configuration constants and widths
+    from config import get_severity_map, get_config_value, get_junction_distance_threshold, get_metro_construction_zones
+    from src.capacity_loss import get_vehicle_width, get_road_width, classify_road_type, compute_blocked_width
+    from src.congestion_cost import get_vehicle_size_mult
+    
+    duration_minutes = 30.0
+    new_violation.duration_minutes = duration_minutes
+    
+    severity_map = get_severity_map() or {}
+    severity = severity_map.get(new_violation.violation_type, 1)
+    new_violation.severity = severity
+    
+    row = pd.Series({
+        'latitude': new_violation.latitude,
+        'longitude': new_violation.longitude,
+        'junction_name': new_violation.junction_name,
+        'junction_distance': junction_distance,
+        'single_violation': new_violation.violation_type,
+        'vehicle_type': new_violation.vehicle_type
+    })
+    
+    road_type = classify_road_type(row)
+    road_width = get_road_width(road_type)
+    blocked_width = compute_blocked_width(row)
+    
+    is_footpath = road_type == 'footpath'
+    pedestrian_spillover = 0.6 * 0.5 if is_footpath else 0.0
+    effective_blocked = blocked_width + pedestrian_spillover
+    capacity_loss_pct = min(100.0, (effective_blocked / road_width) * 100)
+    
+    remaining_capacity_pct = 100.0 - capacity_loss_pct
+    if remaining_capacity_pct > 70:
+        op_status = 'GREEN'
+    elif remaining_capacity_pct > 50:
+        op_status = 'YELLOW'
+    else:
+        op_status = 'RED'
+        
+    # Spatial Density
+    spatial_density = 0
+    if _pipeline_data is not None and len(_pipeline_data) > 0:
+        dists = np.sqrt((_pipeline_data['latitude'] - new_violation.latitude)**2 + 
+                        (_pipeline_data['longitude'] - new_violation.longitude)**2) * 111000
+        spatial_density = int((dists <= 50.0).sum())
+        
+    veh_width = get_vehicle_width(new_violation.vehicle_type)
+    lane_block = min(1.0, veh_width / (road_width / 2.0))
+    
+    hour = new_violation.created_datetime.hour
+    if ((hour >= 7) & (hour < 10)) | ((hour >= 17) & (hour <= 20)):
+        peak = 2.0
+    elif (hour >= 22) | (hour <= 5):
+        peak = 0.5
+    else:
+        peak = 1.0
+        
+    critical_dist = get_junction_distance_threshold('CRITICAL') or 10.0
+    high_dist = get_junction_distance_threshold('HIGH') or 30.0
+    medium_dist = get_junction_distance_threshold('MEDIUM') or 50.0
+    
+    if junction_distance < critical_dist:
+        junction_mult = 3.0
+    elif junction_distance < high_dist:
+        junction_mult = 2.0
+    elif junction_distance < medium_dist:
+        junction_mult = 1.5
+    else:
+        junction_mult = 1.0
+        
+    vehicle_mult = get_vehicle_size_mult(new_violation.vehicle_type) or 1.0
+    density_mult = min(3.0, 1.0 + np.log1p(spatial_density))
+    
+    metro_spillover_mult = 1.0
+    metro_zones = get_metro_construction_zones() or []
+    for zone in metro_zones:
+        if 'lat' in zone and 'lon' in zone:
+            dist = np.sqrt((new_violation.latitude - zone['lat'])**2 + 
+                           (new_violation.longitude - zone['lon'])**2) * 111000
+            if dist <= zone.get('radius_m', 500):
+                metro_spillover_mult = zone.get('spillover_multiplier', 1.5)
+                break
+                
+    congestion_cost = round(
+        duration_minutes * lane_block * peak * junction_mult * vehicle_mult * severity * density_mult * metro_spillover_mult,
+        2
+    )
+    new_violation.congestion_cost = congestion_cost
+    
+    max_cost = 100.0
+    if _pipeline_data is not None and len(_pipeline_data) > 0:
+        max_cost = max(1.0, _pipeline_data['congestion_cost'].max())
+    gridlock_score = round(min(100.0, (congestion_cost / max_cost) * 100.0), 1)
+    new_violation.gridlock_score = gridlock_score
+    
+    if gridlock_score >= 80.0:
+        impact_tier = 'CRITICAL'
+    elif gridlock_score >= 50.0:
+        impact_tier = 'HIGH'
+    elif gridlock_score >= 20.0:
+        impact_tier = 'MEDIUM'
+    else:
+        impact_tier = 'LOW'
+    new_violation.impact_tier = impact_tier
+    
+    tp = get_config_value('formula', 'throughput', {})
+    road_cap = tp.get('road_capacity_veh_per_hour', {}).get('main_road', 1200)
+    avg_delay = tp.get('avg_delay_minutes_per_block', 8.5)
+    fuel_cost = tp.get('fuel_cost_per_liter_inr', 102.5)
+    fuel_rate = tp.get('fuel_consumption_liter_per_veh_min', 0.008)
+    co2_factor = tp.get('co2_kg_per_liter', 2.31)
+    passengers = tp.get('avg_passengers_per_vehicle', 1.8)
+    person_hour_val = tp.get('person_hour_value_inr', 150)
+    
+    vehicles_blocked_hr = int(round(lane_block * road_cap * peak * density_mult))
+    new_violation.vehicles_blocked_hr = float(vehicles_blocked_hr)
+    
+    delay_minutes_total = round(vehicles_blocked_hr * avg_delay * duration_minutes / 60.0, 1)
+    person_hours_blocked = round(delay_minutes_total * passengers / 60.0, 2)
+    new_violation.person_hours_blocked = person_hours_blocked
+    
+    fuel_wasted_liters = round(vehicles_blocked_hr * duration_minutes * fuel_rate, 3)
+    co2_kg = round(fuel_wasted_liters * co2_factor, 3)
+    new_violation.co2_kg = co2_kg
+    
+    economic_loss_inr = round(person_hours_blocked * person_hour_val + fuel_wasted_liters * fuel_cost, 2)
+    new_violation.economic_loss_inr = economic_loss_inr
+    
+    db.add(new_violation)
+    db.commit()
+    db.refresh(new_violation)
+    
+    # 3. Append to global _pipeline_data
+    if _pipeline_data is not None:
+        new_row = {
+            'id': new_violation.id,
+            'vehicle_number': new_violation.vehicle_number,
+            'vehicle_type': new_violation.vehicle_type,
+            'latitude': new_violation.latitude,
+            'longitude': new_violation.longitude,
+            'created_datetime': pd.to_datetime(new_violation.created_datetime),
+            'violation_type': new_violation.violation_type,
+            'single_violation': new_violation.violation_type,
+            'junction_name': new_violation.junction_name,
+            'mapped_junction': mapped_junction,
+            'police_station': new_violation.police_station or "Unknown",
+            'hour': hour,
+            'day_of_week': new_violation.created_datetime.weekday(),
+            'month': new_violation.created_datetime.month,
+            'duration_minutes': duration_minutes,
+            'severity': severity,
+            'congestion_cost': congestion_cost,
+            'gridlock_score': gridlock_score,
+            'impact_tier': impact_tier,
+            'vehicles_blocked_hr': float(vehicles_blocked_hr),
+            'economic_loss_inr': economic_loss_inr,
+            'co2_kg': co2_kg,
+            'person_hours_blocked': person_hours_blocked,
+            'spatial_density': spatial_density,
+            'capacity_loss_pct': round(capacity_loss_pct, 1),
+            'remaining_capacity_pct': round(remaining_capacity_pct, 1),
+            'operational_status': op_status,
+            'is_footpath_violation': is_footpath,
+            'pedestrian_spillover_m': round(pedestrian_spillover, 2)
+        }
+        _pipeline_data = pd.concat([_pipeline_data, pd.DataFrame([new_row])], ignore_index=True)
+        
+    # 4. Trigger Real-Time Alert Engine (WhatsApp Dispatch)
+    alert_series = pd.Series({
+        'id': new_violation.id,
+        'created_date': new_violation.created_datetime.isoformat(),
+        'updated_vehicle_type': new_violation.vehicle_type,
+        'vehicle_type': new_violation.vehicle_type,
+        'vehicle_number': new_violation.vehicle_number,
+        'junction_': mapped_junction,
+        'police_station': new_violation.police_station or "Unknown",
+        'latitude': new_violation.latitude,
+        'longitude': new_violation.longitude,
+        'location': new_violation.junction_name or "Unknown location",
+        'single_violation': new_violation.violation_type
+    })
+    
+    alert_data = _alert_system.generate_alert(alert_series, cii_score=congestion_cost, anomaly_score=0.5, cascade_risk=False)
+    
+    officer_phone = os.getenv("TWILIO_PHONE_NUMBER") or "+919214775938"
+    if alert_data and alert_data['priority'] in ['CRITICAL', 'HIGH']:
+        # Run asynchronously in background to avoid blocking ingestion API
+        asyncio.create_task(asyncio.to_thread(_alert_system.send_via_whatsapp, alert_data, officer_phone))
+        
+    return new_violation.id
+
+
+@app.post("/api/violations")
+async def create_violation(payload: ViolationIn):
+    """Real-time ingestion of a new parking violation."""
+    from backend.database import SessionLocal
+    from backend.models import Violation
+    import datetime
+
+    db = SessionLocal()
+    try:
+        new_violation = Violation(
+            vehicle_number=payload.vehicle_number,
+            vehicle_type=payload.vehicle_type,
+            latitude=payload.latitude,
+            longitude=payload.longitude,
+            violation_type=payload.violation_type,
+            junction_name=payload.junction_name,
+            police_station=payload.police_station,
+            created_datetime=datetime.datetime.utcnow(),
+            hour=datetime.datetime.utcnow().hour,
+            day_of_week=datetime.datetime.utcnow().weekday(),
+            month=datetime.datetime.utcnow().month,
+            congestion_cost=0.0,
+            severity=1
+        )
+        db.add(new_violation)
+        db.commit()
+        db.refresh(new_violation)
+        
+        # Core BTP Production Feature: Score, update, and dispatch alert immediately!
+        violation_id = await asyncio.to_thread(ingest_and_score_violation, new_violation, db)
+        
+        return {"status": "success", "violation_id": violation_id}
+    except Exception as e:
+        db.rollback()
+        logger.exception("Failed to ingest violation")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        db.close()
+
 
 
 def _compute_overview() -> Dict[str, Any]:
@@ -890,56 +1286,39 @@ async def get_map_data():
     if _pipeline_data is None or _junction_coords is None:
         raise HTTPException(503, "Pipeline not loaded")
 
-    df = _pipeline_data
+    def _compute():
+        df = _pipeline_data
+        sample = df.nlargest(500, "congestion_cost")[
+            ["latitude", "longitude", "congestion_cost", "gridlock_score",
+             "impact_tier", "vehicle_type", "single_violation", "mapped_junction",
+             "police_station", "duration_minutes"]
+        ].copy()
 
-    sample = df.nlargest(500, "congestion_cost")[
-        [
-            "latitude",
-            "longitude",
-            "congestion_cost",
-            "gridlock_score",
-            "impact_tier",
-            "vehicle_type",
-            "single_violation",
-            "mapped_junction",
-            "police_station",
-            "duration_minutes",
-        ]
-    ].copy()
+        violations = sample.to_dict("records")
 
-    violations = sample.to_dict("records")
-
-    junction_stats = (
-        df.groupby("mapped_junction")
-        .agg(
-            total_delay=("congestion_cost", "sum"),
-            violation_count=("single_violation", "count"),
-            avg_gridlock=("gridlock_score", "mean"),
+        junction_stats = (
+            df.groupby("mapped_junction")
+            .agg(total_delay=("congestion_cost", "sum"),
+                 violation_count=("single_violation", "count"),
+                 avg_gridlock=("gridlock_score", "mean"))
+            .to_dict("index")
         )
-        .to_dict("index")
-    )
 
-    junctions = []
-    for code, coords in _junction_coords.items():
-        stats = junction_stats.get(code)
-        if stats is not None:
-            junctions.append(
-                {
-                    "code": code,
-                    "lat": coords[0],
-                    "lon": coords[1],
+        junctions = []
+        for code, coords in _junction_coords.items():
+            stats = junction_stats.get(code)
+            if stats is not None:
+                junctions.append({
+                    "code": code, "lat": coords[0], "lon": coords[1],
                     "total_delay": round(stats["total_delay"], 1),
                     "violation_count": int(stats["violation_count"]),
                     "avg_gridlock": round(stats["avg_gridlock"], 1),
-                }
-            )
+                })
 
-    return {
-        "violations": violations,
-        "junctions": junctions,
-        "center_lat": 12.9716,
-        "center_lon": 77.5946,
-    }
+        return {"violations": violations, "junctions": junctions,
+                "center_lat": 12.9716, "center_lon": 77.5946}
+
+    return await asyncio.to_thread(_compute)
 
 
 @app.get("/api/cascade")
@@ -1055,47 +1434,42 @@ async def get_alerts(count: int = Query(10, ge=1, le=20)):
     if _pipeline_data is None:
         raise HTTPException(503, "Pipeline not loaded")
 
-    df = _pipeline_data
-    top = df.nlargest(count, "congestion_cost")
+    def _compute(n):
+        df = _pipeline_data
+        top = df.nlargest(n, "congestion_cost")
 
-    alerts = []
-    recent_pool = df.tail(500)
-
-    for _, row in top.iterrows():
-        if len(alerts) >= count:
-            break
-
-        mapped = row.to_dict()
-        mapped["junction_"] = mapped.get("mapped_junction", "Unknown")
-        mapped["created_date"] = mapped.get(
-            "created_date", mapped.get("created_datetime", "2024-06-01 12:00:00")
-        )
-        mapped["created_datetime"] = pd.to_datetime(mapped["created_date"])
-        mapped["vehicle_number"] = mapped.get(
-            "vehicle_number", mapped.get("vehicle_no", "N/A")
-        )
-        mapped["location"] = mapped.get(
-            "location", f"{mapped.get('latitude', 0)}, {mapped.get('longitude', 0)}"
-        )
-        mapped["id"] = mapped.get("id", str(mapped.get("index", len(alerts))))
-
-        mapped_series = pd.Series(mapped)
-
-        if "created_datetime" not in recent_pool.columns:
-            recent_pool_local = recent_pool.copy()
-            recent_pool_local["created_datetime"] = pd.to_datetime(
-                recent_pool_local.get("created_date", "2024-06-01 12:00:00")
+        alerts = []
+        recent_pool = df.tail(500)
+        if "created_datetime" in df.columns:
+            recent_pool = recent_pool.copy()
+            recent_pool["created_datetime"] = pd.to_datetime(
+                recent_pool.get("created_datetime", "2024-06-01 12:00:00"), errors="coerce"
             )
-        else:
-            recent_pool_local = recent_pool
 
-        alert = _alert_system.check_and_alert(
-            mapped_series, recent_pool_local, row["congestion_cost"], anomaly_score=None
-        )
-        if alert:
-            alerts.append(_sanitize(alert))
+        for _, row in top.iterrows():
+            if len(alerts) >= n:
+                break
+            mapped = row.to_dict()
+            mapped["junction_"] = mapped.get("mapped_junction", "Unknown")
+            mapped["created_datetime"] = mapped.get("created_datetime", "2024-06-01 12:00:00")
+            if not isinstance(mapped["created_datetime"], pd.Timestamp):
+                mapped["created_datetime"] = pd.to_datetime(
+                    mapped["created_datetime"], errors="coerce"
+                )
+            mapped["vehicle_number"] = mapped.get("vehicle_number", mapped.get("vehicle_no", "N/A"))
+            mapped["location"] = mapped.get("location",
+                f"{mapped.get('latitude', 0)}, {mapped.get('longitude', 0)}")
+            mapped["id"] = mapped.get("id", str(mapped.get("index", len(alerts))))
 
-    return {"alerts": alerts, "count": len(alerts)}
+            alert = _alert_system.check_and_alert(
+                pd.Series(mapped), recent_pool, row["congestion_cost"], anomaly_score=None
+            )
+            if alert:
+                alerts.append(_sanitize(alert))
+
+        return {"alerts": alerts, "count": len(alerts)}
+
+    return await asyncio.to_thread(_compute, count)
 
 
 @app.get("/api/repeat-offenders")
@@ -1137,60 +1511,57 @@ async def get_predictions():
     """ML model predictions — XGBoost/LightGBM predicted congestion cost per junction."""
     await asyncio.to_thread(_ensure_models)
 
-    if _models is None or _pipeline_data is None:
+    if _models is None or _prepared_df is None:
         raise HTTPException(503, "Models not trained or pipeline not loaded")
 
-    from src.prediction import prepare_features
+    def _compute():
+        df = _prepared_df.copy()
+        features = _prepared_features or _models.get("features", [])
 
-    df = _pipeline_data.copy()
-    df, features, _ = prepare_features(df)
+        xgb_model = _models.get("xgb_model")
+        lgb_model = _models.get("lgb_model")
 
-    xgb_model = _models.get("xgb_model")
-    lgb_model = _models.get("lgb_model")
+        if xgb_model is None and lgb_model is None:
+            return None
 
-    if xgb_model is None and lgb_model is None:
-        raise HTTPException(503, "No models available")
+        X = df[features].fillna(0)
+        if xgb_model is not None:
+            df["predicted_cost_xgb"] = xgb_model.predict(X)
+        if lgb_model is not None:
+            df["predicted_cost_lgb"] = lgb_model.predict(X)
 
-    # Get predictions from available models
-    X = df[features].fillna(0)
-    if xgb_model is not None:
-        df["predicted_cost_xgb"] = xgb_model.predict(X)
-    if lgb_model is not None:
-        df["predicted_cost_lgb"] = lgb_model.predict(X)
+        pred_col = "predicted_cost_xgb" if xgb_model is not None else "predicted_cost_lgb"
+        df["predicted_cost"] = df[pred_col].clip(lower=0)
 
-    # Use XGBoost as primary if available, else LightGBM
-    pred_col = "predicted_cost_xgb" if xgb_model is not None else "predicted_cost_lgb"
-    df["predicted_cost"] = df[pred_col].clip(lower=0)
-
-    # Aggregate by junction
-    junction_preds = (
-        df.groupby("mapped_junction")
-        .agg(
-            actual_cost=("congestion_cost", "sum"),
-            predicted_cost=("predicted_cost", "sum"),
-            violation_count=("single_violation", "count"),
-            avg_gridlock=("gridlock_score", "mean"),
+        junction_preds = (
+            df.groupby("mapped_junction")
+            .agg(actual_cost=("congestion_cost", "sum"),
+                 predicted_cost=("predicted_cost", "sum"),
+                 violation_count=("single_violation", "count"),
+                 avg_gridlock=("gridlock_score", "mean"))
+            .reset_index()
         )
-        .reset_index()
-    )
 
-    junction_preds["prediction_error"] = (
-        junction_preds["predicted_cost"] - junction_preds["actual_cost"]
-    ).round(2)
-    junction_preds["prediction_pct"] = (
-        junction_preds["predicted_cost"]
-        / junction_preds["actual_cost"].replace(0, np.nan)
-        * 100
-    ).round(1)
+        junction_preds["prediction_error"] = (
+            junction_preds["predicted_cost"] - junction_preds["actual_cost"]
+        ).round(2)
+        junction_preds["prediction_pct"] = (
+            junction_preds["predicted_cost"]
+            / junction_preds["actual_cost"].replace(0, np.nan) * 100
+        ).round(1)
 
-    # Sort by predicted cost (highest first)
-    junction_preds = junction_preds.sort_values("predicted_cost", ascending=False)
+        junction_preds = junction_preds.sort_values("predicted_cost", ascending=False)
 
-    return {
-        "junctions": junction_preds.head(30).to_dict("records"),
-        "model_metrics": _models.get("xgb_metrics", {}),
-        "features_used": len(features),
-    }
+        return {
+            "junctions": junction_preds.head(30).to_dict("records"),
+            "model_metrics": _models.get("xgb_metrics", {}),
+            "features_used": len(features),
+        }
+
+    result = await asyncio.to_thread(_compute)
+    if result is None:
+        raise HTTPException(503, "No models available")
+    return result
 
 
 @app.get("/api/simulator")
@@ -1203,69 +1574,49 @@ async def get_simulator(
     if _pipeline_data is None:
         raise HTTPException(503, "Pipeline not loaded")
 
-    df = _pipeline_data.copy()
+    def _compute(fs, ft):
+        df = _pipeline_data.copy()
+        if fs and fs != "ALL":
+            df = df[df["police_station"] == fs]
+        if ft and ft != "ALL":
+            df = df[df["impact_tier"] == ft]
 
-    # Apply filters
-    if filter_station and filter_station != "ALL":
-        df = df[df["police_station"] == filter_station]
-    if filter_tier and filter_tier != "ALL":
-        df = df[df["impact_tier"] == filter_tier]
+        total_cost = df["congestion_cost"].sum()
+        total_violations = len(df)
 
-    total_cost = df["congestion_cost"].sum()
-    total_violations = len(df)
+        if total_cost == 0:
+            return {"scenarios": [], "baseline": {"cost": 0, "violations": 0}}
 
-    if total_cost == 0:
-        return {"scenarios": [], "baseline": {"cost": 0, "violations": 0}}
+        baseline = {
+            "cost": round(total_cost, 1), "violations": total_violations,
+            "junctions": int(df["mapped_junction"].nunique()),
+            "stations": int(df["police_station"].nunique()),
+        }
 
-    # Baseline stats
-    baseline = {
-        "cost": round(total_cost, 1),
-        "violations": total_violations,
-        "junctions": int(df["mapped_junction"].nunique()),
-        "stations": int(df["police_station"].nunique()),
-    }
+        scenarios = []
+        sorted_df = df.sort_values("congestion_cost", ascending=False)
 
-    # Generate scenarios: clear top 1, 5, 10, 15, 20 violations
-    scenarios = []
-    sorted_df = df.sort_values("congestion_cost", ascending=False)
+        for n in [1, 5, 10, 15, 20]:
+            if n > len(sorted_df):
+                break
+            cleared = sorted_df.head(n)
+            remaining_cost = total_cost - cleared["congestion_cost"].sum()
+            pct_reduction = cleared["congestion_cost"].sum() / total_cost * 100
+            tier_impact = cleared["impact_tier"].value_counts().to_dict()
+            top_junction = cleared.groupby("mapped_junction")["congestion_cost"].sum()
+            top_junction_name = top_junction.idxmax() if len(top_junction) > 0 else "N/A"
+            top_junction_pct = (top_junction.max() / total_cost * 100) if len(top_junction) > 0 else 0
+            scenarios.append({
+                "clear_count": n, "cleared_cost": round(cleared["congestion_cost"].sum(), 1),
+                "remaining_cost": round(remaining_cost, 1), "pct_reduction": round(pct_reduction, 1),
+                "tier_impact": tier_impact, "top_junction": top_junction_name,
+                "top_junction_pct": round(top_junction_pct, 1), "violations_cleared": n,
+            })
 
-    for n in [1, 5, 10, 15, 20]:
-        if n > len(sorted_df):
-            break
+        return {"baseline": baseline, "scenarios": scenarios,
+                "filter_station": fs or "ALL", "filter_tier": ft or "ALL"}
 
-        cleared = sorted_df.head(n)
-        remaining_cost = total_cost - cleared["congestion_cost"].sum()
-        pct_reduction = cleared["congestion_cost"].sum() / total_cost * 100
-
-        # Tier breakdown of cleared violations
-        tier_impact = cleared["impact_tier"].value_counts().to_dict()
-
-        # Top junction affected
-        top_junction = cleared.groupby("mapped_junction")["congestion_cost"].sum()
-        top_junction_name = top_junction.idxmax() if len(top_junction) > 0 else "N/A"
-        top_junction_pct = (
-            (top_junction.max() / total_cost * 100) if len(top_junction) > 0 else 0
-        )
-
-        scenarios.append(
-            {
-                "clear_count": n,
-                "cleared_cost": round(cleared["congestion_cost"].sum(), 1),
-                "remaining_cost": round(remaining_cost, 1),
-                "pct_reduction": round(pct_reduction, 1),
-                "tier_impact": tier_impact,
-                "top_junction": top_junction_name,
-                "top_junction_pct": round(top_junction_pct, 1),
-                "violations_cleared": n,
-            }
-        )
-
-    return {
-        "baseline": baseline,
-        "scenarios": scenarios,
-        "filter_station": filter_station or "ALL",
-        "filter_tier": filter_tier or "ALL",
-    }
+    return await asyncio.to_thread(_compute, filter_station, filter_tier)
 
 
 @app.get("/api/impact-summary")
@@ -1532,21 +1883,40 @@ async def get_cause_attribution(junction: str):
 
 @app.get("/api/court-readiness/{violation_id}", response_model=CourtReadinessResponse)
 async def get_court_readiness(violation_id: str):
-    """Fast legal readiness score for evidence confidence before challan submission."""
-    if _pipeline_data is None:
-        raise HTTPException(503, "Pipeline not loaded")
+    """Fast legal readiness score based on actual violation data."""
+    from backend.database import SessionLocal
+    from backend.models import Violation
 
-    # Deterministic pseudo-random scoring per violation_id for demo consistency.
-    seed = abs(hash(violation_id)) % (2**32)
-    rng = random.Random(seed)
+    db = SessionLocal()
+    try:
+        try:
+            vid = int(violation_id)
+        except ValueError:
+            vid = -1
+        violation = db.query(Violation).filter(Violation.id == vid).first()
+    except Exception:
+        violation = None
+    finally:
+        db.close()
 
-    checks = {
-        "clear_plate_photo": rng.random() > 0.15,
-        "timestamp_present": True,
-        "gps_lock_precise": rng.random() > 0.2,
-        "location_matches_junction": rng.random() > 0.1,
-        "supporting_context_photo": rng.random() > 0.35,
-    }
+    if not violation:
+        # Fallback to empty checks if not found
+        checks = {
+            "clear_plate_photo": False,
+            "timestamp_present": False,
+            "gps_lock_precise": False,
+            "location_matches_junction": False,
+            "supporting_context_photo": False,
+        }
+    else:
+        has_image = bool(violation.image_url)
+        checks = {
+            "clear_plate_photo": has_image,
+            "timestamp_present": bool(violation.created_datetime),
+            "gps_lock_precise": bool(violation.latitude and violation.longitude),
+            "location_matches_junction": bool(violation.mapped_junction and violation.mapped_junction != 'No Junction'),
+            "supporting_context_photo": has_image,
+        }
 
     score = sum(20 for passed in checks.values() if passed)
     if score >= 85:
@@ -1575,41 +1945,60 @@ async def get_court_readiness(violation_id: str):
 @app.post("/api/flipkart-scouts/report", response_model=FlipkartScoutReportOut)
 async def post_flipkart_scout_report(payload: FlipkartScoutReportIn):
     """Crowdsourced traffic-scout ingestion endpoint (Flipkart rider reports)."""
-    if _pipeline_data is None:
-        raise HTTPException(503, "Pipeline not loaded")
+    from backend.database import SessionLocal
+    from backend.models import FlipkartReport
+
+    db = SessionLocal()
+    try:
+        report = FlipkartReport(
+            scout_id=payload.scout_id,
+            junction=payload.junction,
+            latitude=payload.latitude,
+            longitude=payload.longitude,
+            photo_url=payload.photo_url,
+            vehicle_number=payload.vehicle_number,
+            notes=payload.notes
+        )
+        db.add(report)
+        db.commit()
+        db.refresh(report)
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error saving flipkart report: {e}")
+        raise HTTPException(500, detail="Failed to save report")
+    finally:
+        db.close()
 
     # Estimate severity from nearest known violations around reported point.
-    df = _pipeline_data
-    lat, lon = payload.latitude, payload.longitude
+    if _pipeline_data is not None:
+        df = _pipeline_data
+        lat, lon = payload.latitude, payload.longitude
 
-    nearby = df[
-        (df["latitude"].between(lat - 0.0025, lat + 0.0025))
-        & (df["longitude"].between(lon - 0.0025, lon + 0.0025))
-    ]
-    estimated_cii = (
-        float(nearby["congestion_cost"].nlargest(20).mean())
-        if len(nearby) > 0
-        else 1200.0
-    )
-    if np.isnan(estimated_cii):
+        nearby = df[
+            (df["latitude"].between(lat - 0.0025, lat + 0.0025))
+            & (df["longitude"].between(lon - 0.0025, lon + 0.0025))
+        ]
+        estimated_cii = (
+            float(nearby["congestion_cost"].nlargest(20).mean())
+            if len(nearby) > 0
+            else 1200.0
+        )
+    else:
         estimated_cii = 1200.0
 
-    if estimated_cii >= 3000:
-        priority, points = "CRITICAL", 150
-    elif estimated_cii >= 1800:
-        priority, points = "HIGH", 90
-    else:
-        priority, points = "MEDIUM", 50
+    priority = "HIGH" if estimated_cii > 5000 else "MEDIUM"
+    if estimated_cii < 1000:
+        priority = "LOW"
 
-    report_id = f"SCOUT-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6]}"
+    report_id = f"FS-{uuid.uuid4().hex[:8].upper()}"
 
     return {
         "report_id": report_id,
-        "status": "accepted",
+        "status": "ACCEPTED",
         "priority": priority,
-        "reward_points": points,
-        "estimated_cii": round(float(estimated_cii), 1),
-        "message": "Report validated and queued for BTP triage dispatch.",
+        "reward_points": 50 if priority == "HIGH" else 10,
+        "estimated_cii": round(estimated_cii, 1),
+        "message": f"Report received. +50 Flipkart SuperCoins awarded.",
     }
 
 
@@ -1652,8 +2041,24 @@ async def get_cost_metrics():
 async def get_degradation_status():
     """System health and graceful degradation status."""
     from src.degradation import get_camera_status, get_system_health
+    from backend.database import SessionLocal
+    from backend.models import CameraJunction
+    from sqlalchemy import func
 
-    health = get_system_health()
+    db = SessionLocal()
+    try:
+        total_cameras = db.query(func.count(CameraJunction.id)).scalar() or 1
+        online_cameras = db.query(func.count(CameraJunction.id)).filter(CameraJunction.is_online == True).scalar() or 0
+        online_pct = round((online_cameras / total_cameras) * 100, 1)
+        camera_status_str = f"{online_pct}% online"
+    except Exception as e:
+        logger.error(f"Error checking camera status: {e}")
+        camera_status_str = "Status Unknown"
+        online_pct = 0
+    finally:
+        db.close()
+
+    health = get_system_health(camera_status_str=camera_status_str)
 
     # Check a few sample cameras
     sample_cameras = []
@@ -1685,11 +2090,10 @@ async def get_llm_nudge(
     """Generate personalized nudge message via GLM 5.2 Free."""
     from src.llm_client import generate_nudge_message
 
-    msg = generate_nudge_message(
-        violation_type=violation_type,
-        vehicle_type=vehicle_type,
-        location=location,
-        impact_score=65.0,
+    msg = await asyncio.to_thread(
+        generate_nudge_message,
+        violation_type=violation_type, vehicle_type=vehicle_type,
+        location=location, impact_score=65.0,
     )
     return {"message": msg, "model": "z-ai/glm-5.2-free", "provider": "ZenMux"}
 
@@ -1704,24 +2108,23 @@ async def get_llm_report(
     """Generate enforcement report via GLM 5.2 Free."""
     from src.llm_client import generate_enforcement_report
 
-    report = generate_enforcement_report(
-        junction=junction,
-        violations=violations,
-        capacity_loss=capacity_loss,
-        economic_impact=economic_impact,
+    report = await asyncio.to_thread(
+        generate_enforcement_report,
+        junction=junction, violations=violations,
+        capacity_loss=capacity_loss, economic_impact=economic_impact,
     )
     return {"report": report, "model": "z-ai/glm-5.2-free", "provider": "ZenMux"}
 
 
 @app.get("/api/llm/query")
-async def query_clearlane_llm(q: str):
+async def query_clearlane_llm(q: str = Query(..., min_length=1, max_length=2000)):
     """Natural language query interface for ClearLane data."""
     from src.llm_client import query_clearlane
 
     context = ""
     if _pipeline_data is not None:
         context = f"Available violations: {len(_pipeline_data)}, junctions: {len(_junction_coords) if _junction_coords is not None else 0}"
-    answer = query_clearlane(question=q, context=context)
+    answer = await asyncio.to_thread(query_clearlane, question=q, context=context)
     return {"answer": answer, "model": "z-ai/glm-5.2-free", "provider": "ZenMux"}
 
 
@@ -1734,73 +2137,54 @@ async def query_clearlane_llm(q: str):
 async def get_tipping_points():
     """
     Tipping Point Detection — Predicts the EXACT 15-minute window when congestion will spike.
-
-    This is the "Predictive vs Reactive" differentiator. Uses 7-hour rolling window
-    with 3-sigma spike detection to identify when a junction will hit critical capacity.
-
-    Returns: {junction: "BTP044 hits tipping point exactly at 08:30 AM", ...}
+    Uses 7-hour rolling window with 3-sigma spike detection.
     """
     if _pipeline_data is None:
         raise HTTPException(503, "Pipeline not loaded")
 
-    from tipping_points import find_tipping_points
-
-    # Run tipping point detection on current data
-    df = _pipeline_data.copy()
-
-    # Ensure we have the required columns
-    if "junction_node" not in df.columns:
-        df["junction_node"] = df.get("mapped_junction", "No Junction")
-    if "time_block" not in df.columns:
-        # Create time_block from created_date if available
-        if "created_date" in df.columns:
-            df["created_datetime"] = pd.to_datetime(df["created_date"], errors="coerce")
-            df["time_block"] = df["created_datetime"].dt.strftime("%H:%M")
-            # Round to 15-minute blocks
-            df["time_block"] = df["time_block"].apply(
-                lambda x: (
-                    f"{int(x.split(':')[0]):02d}:{(int(x.split(':')[1]) // 15) * 15:02d}"
-                    if pd.notna(x) and ":" in x
-                    else "12:00"
-                )
-            )
-        else:
-            df["time_block"] = "12:00"
-    if "weight" not in df.columns:
-        df["weight"] = df.get("gridlock_score", df.get("congestion_cost", 1.0))
-
-    tipping_points = find_tipping_points(df)
-
-    # Format for frontend: list of junctions with predictions
-    predictions = []
-    for junction, prediction in tipping_points.items():
-        # Extract time from prediction string
+    def _compute():
+        from tipping_points import find_tipping_points
         import re
 
-        time_match = re.search(r"at (\d+:\d+ [AP]M)", prediction)
-        predicted_time = time_match.group(1) if time_match else "Unknown"
+        df = _pipeline_data.copy()
+        if "junction_node" not in df.columns:
+            df["junction_node"] = df.get("mapped_junction", "No Junction")
+        if "time_block" not in df.columns:
+            if "created_date" in df.columns:
+                df["created_datetime"] = pd.to_datetime(df["created_date"], errors="coerce")
+                df["time_block"] = df["created_datetime"].dt.strftime("%H:%M")
+                df["time_block"] = df["time_block"].apply(
+                    lambda x: (f"{int(x.split(':')[0]):02d}:{(int(x.split(':')[1]) // 15) * 15:02d}"
+                               if pd.notna(x) and ":" in x else "12:00")
+                )
+            else:
+                df["time_block"] = "12:00"
+        if "weight" not in df.columns:
+            df["weight"] = df.get("gridlock_score", df.get("congestion_cost", 1.0))
 
-        predictions.append(
-            {
+        tipping_points = find_tipping_points(df)
+
+        predictions = []
+        for junction, prediction in tipping_points.items():
+            time_match = re.search(r"at (\d+:\d+ [AP]M)", prediction)
+            predicted_time = time_match.group(1) if time_match else "Unknown"
+            predictions.append({
                 "junction": junction,
                 "predicted_time": predicted_time,
                 "message": prediction,
-                "status": "CRITICAL"
-                if "AM" in predicted_time
-                and int(predicted_time.split(":")[0]) in range(7, 11)
-                else "WARNING",
-            }
-        )
+                "status": "CRITICAL" if "AM" in predicted_time
+                    and int(predicted_time.split(":")[0]) in range(7, 11) else "WARNING",
+            })
 
-    # Sort by junction name
-    predictions.sort(key=lambda x: x["junction"])
+        predictions.sort(key=lambda x: x["junction"])
+        return {
+            "predictions": predictions[:20],
+            "total_junctions_with_tipping_points": len(predictions),
+            "methodology": "7-hour rolling window, 3-sigma spike detection",
+            "description": "Identifies the exact 15-minute window where congestion spikes beyond normal rhythm.",
+        }
 
-    return {
-        "predictions": predictions[:20],  # Top 20
-        "total_junctions_with_tipping_points": len(predictions),
-        "methodology": "7-hour rolling window, 3-sigma spike detection",
-        "description": "Identifies the exact 15-minute window where congestion spikes beyond normal rhythm.",
-    }
+    return await asyncio.to_thread(_compute)
 
 
 class AnomalyScoreResponse(BaseModel):
@@ -1814,93 +2198,64 @@ class AnomalyScoreResponse(BaseModel):
 @app.get("/api/anomaly-scores")
 async def get_anomaly_scores():
     """
-    Isolation Forest Anomaly Detection — First-of-its-kind ML for parking violations in India.
-
-    Detects unusual violation patterns that rule-based scoring misses:
-    - Temporal outliers (unusual hour/day combinations)
-    - Spatial clustering anomalies
-    - Vehicle type outliers
-    - Offense combination rarity
-
+    Isolation Forest Anomaly Detection — ML that detects unusual violation patterns.
     Returns junctions with anomaly scores (lower = more anomalous).
     """
     if _pipeline_data is None:
         raise HTTPException(503, "Pipeline not loaded")
 
-    import numpy as np
+    def _compute():
+        import numpy as np
+        from src.anomaly_detection import ViolationAnomalyDetector
 
-    from src.anomaly_detection import ViolationAnomalyDetector
+        df = _pipeline_data.copy()
+        detector = ViolationAnomalyDetector(contamination=0.05)
 
-    df = _pipeline_data.copy()
+        try:
+            anomaly_scores, anomaly_labels = detector.fit_predict(df)
+            explanations = detector.get_anomaly_explanations(df, anomaly_scores)
+        except Exception as e:
+            logger.warning("Anomaly detection failed: %s", e)
+            return {"anomalies": [], "total_analyzed": 0, "error": str(e),
+                    "methodology": "Isolation Forest, 5% contamination"}
 
-    # Initialize detector
-    detector = ViolationAnomalyDetector(contamination=0.05)
+        df["anomaly_score"] = anomaly_scores
+        df["is_anomaly"] = explanations["is_anomaly"]
+        df["anomaly_reason"] = explanations["anomaly_reason"]
 
-    try:
-        anomaly_scores, anomaly_labels = detector.fit_predict(df)
-        explanations = detector.get_anomaly_explanations(df, anomaly_scores)
-    except Exception as e:
-        logger.warning("Anomaly detection failed: %s", e)
-        # Fallback with mock data
-        return {
-            "anomalies": [],
-            "total_analyzed": 0,
-            "error": str(e),
-            "methodology": "Isolation Forest, 5% contamination",
-        }
-
-    # Aggregate to junction level
-    df["anomaly_score"] = anomaly_scores
-    df["is_anomaly"] = explanations["is_anomaly"]
-    df["anomaly_reason"] = explanations["anomaly_reason"]
-
-    # Group by junction and find most anomalous violations per junction
-    junction_anomalies = (
-        df.groupby("mapped_junction")
-        .agg(
-            mean_anomaly_score=("anomaly_score", "mean"),
-            anomaly_count=("is_anomaly", "sum"),
-            violation_count=("single_violation", "count"),
-            top_reason=(
-                "anomaly_reason",
-                lambda x: x.value_counts().index[0] if len(x) > 0 else "Unknown",
-            ),
+        junction_anomalies = (
+            df.groupby("mapped_junction")
+            .agg(mean_anomaly_score=("anomaly_score", "mean"),
+                 anomaly_count=("is_anomaly", "sum"),
+                 violation_count=("single_violation", "count"),
+                 top_reason=("anomaly_reason",
+                    lambda x: x.value_counts().index[0] if len(x) > 0 else "Unknown"))
+            .reset_index()
         )
-        .reset_index()
-    )
 
-    # Mark junction-level anomalies (mean score below threshold)
-    threshold = np.percentile(anomaly_scores, 5)
-    junction_anomalies["is_anomaly"] = (
-        junction_anomalies["mean_anomaly_score"] < threshold
-    )
+        threshold = np.percentile(anomaly_scores, 5)
+        junction_anomalies["is_anomaly"] = junction_anomalies["mean_anomaly_score"] < threshold
+        junction_anomalies = junction_anomalies.sort_values("mean_anomaly_score")
 
-    # Sort by anomaly score (most anomalous first)
-    junction_anomalies = junction_anomalies.sort_values("mean_anomaly_score")
-
-    anomalies = []
-    for _, row in junction_anomalies.head(20).iterrows():
-        anomalies.append(
-            AnomalyScoreResponse(
+        anomalies = []
+        for _, row in junction_anomalies.head(20).iterrows():
+            anomalies.append(AnomalyScoreResponse(
                 junction=row["mapped_junction"],
                 anomaly_score=round(row["mean_anomaly_score"], 4),
                 is_anomaly=bool(row["is_anomaly"]),
                 anomaly_reason=row["top_reason"],
                 violation_count=int(row["violation_count"]),
-            )
-        )
+            ))
 
-    return {
-        "anomalies": anomalies,
-        "total_analyzed": len(df),
-        "anomaly_count": int(
-            anomaly_labels[anomaly_labels == -1].sum() if len(anomaly_labels) > 0 else 0
-        ),
-        "methodology": "Isolation Forest, 5% contamination, 7 engineered features",
-        "features": detector.feature_columns
-        if hasattr(detector, "feature_columns")
-        else [],
-    }
+        return {
+            "anomalies": anomalies,
+            "total_analyzed": len(df),
+            "anomaly_count": int(anomaly_labels[anomaly_labels == -1].sum() if len(anomaly_labels) > 0 else 0),
+            "methodology": "Isolation Forest, 5% contamination, 7 engineered features",
+            "features": detector.feature_columns if hasattr(detector, "feature_columns") else [],
+        }
+
+    return await asyncio.to_thread(_compute)
 
 
 @app.get("/api/temporal-profile/{junction_id}")
@@ -2119,15 +2474,208 @@ Format: Conversational, officer-friendly, 2-minute read. Start with 'Good mornin
     )
 
 
+@app.get("/api/flipkart-scouts/leaderboard")
+async def get_flipkart_leaderboard():
+    """Flipkart Scout leaderboard — top riders by reports filed."""
+    from backend.database import SessionLocal
+    from backend.models import FlipkartReport
+    from sqlalchemy import func
+
+    db = SessionLocal()
+    try:
+        results = (
+            db.query(
+                FlipkartReport.scout_id,
+                func.count(FlipkartReport.id).label("report_count"),
+                FlipkartReport.junction,
+            )
+            .group_by(FlipkartReport.scout_id)
+            .order_by(func.count(FlipkartReport.id).desc())
+            .limit(20)
+            .all()
+        )
+
+        leaderboard = []
+        for rank, r in enumerate(results, 1):
+            leaderboard.append({
+                "rank": rank,
+                "scout_id": r.scout_id,
+                "report_count": r.report_count,
+                "coins_earned": r.report_count * 50,
+                "top_junction": r.junction,
+            })
+
+        return {"leaderboard": leaderboard, "total_scouts": len(leaderboard)}
+    except Exception as e:
+        logger.error(f"Leaderboard error: {e}")
+        return {"leaderboard": [], "total_scouts": 0}
+    finally:
+        db.close()
+
+
+@app.get("/api/recent-events")
+async def get_recent_events():
+    """Get the 10 most recent violations to populate the command center ticker."""
+    from backend.database import SessionLocal
+    from backend.models import Violation
+
+    db = SessionLocal()
+    try:
+        recent_violations = db.query(Violation).order_by(Violation.id.desc()).limit(15).all()
+
+        events = list(_custom_events)
+        for v in recent_violations:
+            events.append({
+                "type": "alert",
+                "junction": v.mapped_junction or v.junction_name or "Unknown",
+                "message": v.violation_type or "Violation detected",
+                "time": v.created_datetime.strftime("%H:%M:%S") if v.created_datetime else "Just now",
+                "officer": "Auto-detect",
+                "vehicles": 1
+            })
+
+        return {"events": events[:20]}
+    except Exception as e:
+        logger.error(f"Recent events error: {e}")
+        return {"events": []}
+    finally:
+        db.close()
+
+
+@app.post("/api/camera-status/toggle/{junction_id}")
+async def toggle_camera_status(junction_id: str):
+    """Toggle camera online/offline status for a junction."""
+    from backend.database import SessionLocal
+    from backend.models import CameraJunction
+    from datetime import datetime
+
+    db = SessionLocal()
+    try:
+        camera = db.query(CameraJunction).filter(
+            CameraJunction.junction_id == junction_id
+        ).first()
+        if not camera:
+            raise HTTPException(404, f"Camera junction {junction_id} not found")
+        camera.is_online = not camera.is_online
+        camera.last_ping = datetime.utcnow() if camera.is_online else camera.last_ping
+        db.commit()
+        return {
+            "junction_id": junction_id,
+            "is_online": camera.is_online,
+            "status": "ONLINE" if camera.is_online else "OFFLINE",
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(500, str(e))
+    finally:
+        db.close()
+
+
+@app.post("/api/junctions/action")
+async def perform_junction_action(payload: JunctionActionIn):
+    """Clear/warn/not-found a junction: resolves active violations and updates status."""
+    global _pipeline_data, _custom_events
+    from backend.database import SessionLocal
+    from backend.models import Violation
+    from datetime import datetime
+
+    junction = payload.junction
+    action = payload.action.lower()
+    officer = payload.officer or "Constable Kumar"
+
+    db = SessionLocal()
+    try:
+        # Delete violations at this junction from database
+        count = db.query(Violation).filter(Violation.mapped_junction == junction).delete()
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error updating database for junction action: {e}")
+        count = 0
+    finally:
+        db.close()
+
+    # Update in-memory dataframe
+    if _pipeline_data is not None:
+        _pipeline_data = _pipeline_data[_pipeline_data["mapped_junction"] != junction]
+
+    # Prepend dynamic event to the log
+    vehicles_count = count if count > 0 else 1
+    _custom_events.insert(0, {
+        "type": "cleared" if action == "towed" else "alert",
+        "junction": junction,
+        "message": f"Junction {action} by {officer} ({vehicles_count} vehicles)",
+        "time": datetime.utcnow().strftime("%H:%M:%S"),
+        "officer": officer,
+        "vehicles": vehicles_count
+    })
+
+    return {
+        "status": "success",
+        "message": f"Action '{action}' successfully recorded for junction '{junction}'.",
+        "violations_affected": count
+    }
+
+
+@app.get("/api/violations")
+async def get_violations(top_n: int = Query(10, ge=1, le=50)):
+    """Get top N individual violations with their original pipeline indices."""
+    if _pipeline_data is None:
+        raise HTTPException(503, "Pipeline not loaded")
+
+    df = _pipeline_data
+    # Sort by congestion cost descending to get top violations
+    top = df.nlargest(top_n, "congestion_cost")
+
+    cards = []
+    for idx, row in top.iterrows():
+        cards.append({
+            "violation_idx": int(idx),
+            "junction": row.get("mapped_junction") or row.get("junction_name") or "Unknown",
+            "top_vehicle": f"{row.get('vehicle_type', 'UNKNOWN')} ({row.get('vehicle_number', 'N/A')})",
+            "total_delay": round(float(row.get("congestion_cost", 0.0)), 1),
+            "tier": row.get("impact_tier") or "LOW",
+            "police_station": row.get("police_station") or "Unknown"
+        })
+    return {"cards": cards}
+
+
 @app.get("/api/health")
 async def health():
+    from backend.database import check_db_health
+
+    components = {
+        "pipeline": {
+            "status": "ready" if _pipeline_data is not None else ("loading" if _pipeline_loading else "error"),
+            "error": _pipeline_error,
+            "violations_count": len(_pipeline_data) if _pipeline_data is not None else 0,
+            "junctions_count": len(_junction_coords) if _junction_coords is not None else 0,
+        },
+        "precomputation": {
+            "status": "ready" if _precomputed else "pending",
+            "keys": list(_precomputed.keys()) if _precomputed else [],
+        },
+        "models": {
+            "causal_impact": "ready" if _causal_impact_data is not None else "pending",
+            "predictions": "ready" if _predictions_data is not None else "pending",
+            "phantom_risk": "ready" if _phantom_data is not None else "pending",
+            "capacity": "ready" if _capacity_data is not None else "pending",
+            "repeat_offenders": "ready" if _repeat_offenders_data is not None else "pending",
+        },
+        "database": check_db_health(),
+    }
+
+    all_ready = (
+        _pipeline_data is not None
+        and all(v == "ready" for v in components["models"].values())
+    )
+
     return {
-        "status": "ok",
-        "pipeline_loading": _pipeline_loading,
-        "pipeline_error": _pipeline_error,
-        "pipeline_loaded": _pipeline_data is not None,
-        "violations_count": len(_pipeline_data) if _pipeline_data is not None else 0,
-        "junctions_count": len(_junction_coords) if _junction_coords is not None else 0,
+        "status": "ok" if all_ready else "degraded",
+        "version": "2.0.0",
+        "components": components,
     }
 
 

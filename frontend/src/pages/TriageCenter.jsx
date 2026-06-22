@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Activity, HeartPulse, ShieldCheck, Truck, Send } from "lucide-react";
+import { Activity, HeartPulse, ShieldCheck, Truck, Send, Stethoscope, Scale, FileWarning, CheckCircle2 } from "lucide-react";
 import { useApi, formatNumber } from "../utils/api";
 import ErrorState from "../components/ErrorState";
+import ScrollReveal from "../components/ScrollReveal";
+import GlassCard from "../components/GlassCard";
+import PageHeader from "../components/PageHeader";
 
 function statusBand(lossPct) {
   if (lossPct >= 60) return "CRITICAL";
@@ -15,6 +18,13 @@ const BAND_STYLE = {
   URGENT: "bg-signal-amber/10 text-signal-amber border-signal-amber/25",
   STABLE: "bg-signal-emerald/10 text-signal-emerald border-signal-emerald/25",
   RESOLVED: "bg-elevated text-muted border-white/[0.08]",
+};
+
+const BAND_ICON = {
+  CRITICAL: <HeartPulse className="w-4 h-4" />,
+  URGENT: <Activity className="w-4 h-4" />,
+  STABLE: <ShieldCheck className="w-4 h-4" />,
+  RESOLVED: <CheckCircle2 className="w-4 h-4" />,
 };
 
 export default function TriageCenter() {
@@ -119,242 +129,251 @@ export default function TriageCenter() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading font-bold text-2xl text-chalk flex items-center gap-2">
-            <HeartPulse className="w-6 h-6 text-signal-red" />
-            Junction ER Triage
-          </h1>
-          <p className="text-muted text-sm mt-1">
-            Critical first: root-cause attribution + legal readiness + scout
-            ingestion.
-          </p>
-        </div>
-      </div>
+      <ScrollReveal>
+        <PageHeader
+          icon={HeartPulse}
+          iconColor="text-signal-red"
+          title="Junction ER Triage"
+          subtitle="Critical first: root-cause attribution + legal readiness + scout ingestion."
+        />
+      </ScrollReveal>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         <div className="xl:col-span-7 space-y-4">
-          {["CRITICAL", "URGENT", "STABLE", "RESOLVED"].map((band) => (
-            <div key={band} className="card">
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-xs uppercase tracking-wider text-muted font-semibold">
-                  {band}
-                </p>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] border ${BAND_STYLE[band]}`}
-                >
-                  {grouped[band].length}
-                </span>
-              </div>
-              <div className="space-y-2">
-                {grouped[band].slice(0, 6).map((j) => (
-                  <button
-                    key={j.junction}
-                    onClick={() => setSelected(j)}
-                    className={`w-full text-left p-3 rounded-lg border transition-all ${
-                      selected?.junction === j.junction
-                        ? "border-accent/35 bg-accent/5"
-                        : "border-white/[0.06] hover:border-white/[0.14] bg-elevated/40"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-sm text-chalk font-medium truncate">
-                          {j.junction}
-                        </p>
-                        <p className="text-xs text-muted mt-0.5">
-                          {j.violation_count} violations ·{" "}
-                          {j.footpath_violations} footpath
-                        </p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="font-mono font-bold text-chalk">
-                          {j.capacity_loss_pct}%
-                        </p>
-                        <p className="text-[10px] text-muted uppercase">loss</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-                {grouped[band].length === 0 && (
-                  <p className="text-xs text-muted">
-                    No junctions in this band
+          {["CRITICAL", "URGENT", "STABLE", "RESOLVED"].map((band, bandIdx) => (
+            <ScrollReveal key={band} delay={50 + bandIdx * 50}>
+              <div className="glass-card">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs uppercase tracking-wider text-muted font-semibold flex items-center gap-2">
+                    {BAND_ICON[band]}
+                    {band}
                   </p>
-                )}
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] border ${BAND_STYLE[band]}`}
+                  >
+                    {grouped[band].length}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {grouped[band].slice(0, 6).map((j) => (
+                    <button
+                      key={j.junction}
+                      onClick={() => setSelected(j)}
+                      className={`w-full text-left p-3 rounded-lg border transition-all ${
+                        selected?.junction === j.junction
+                          ? "border-neon-blue/35 bg-neon-blue/5 text-neon-blue"
+                          : "border-border hover:border-muted/20 bg-elevated/40"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-sm text-chalk font-medium truncate">
+                            {j.junction}
+                          </p>
+                          <p className="text-xs text-muted mt-0.5">
+                            <span className="font-mono">{j.violation_count}</span> violations ·{" "}
+                            <span className="font-mono">{j.footpath_violations}</span> footpath
+                          </p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="font-mono font-bold text-chalk">
+                            {j.capacity_loss_pct}%
+                          </p>
+                          <p className="text-[10px] text-muted uppercase">loss</p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                  {grouped[band].length === 0 && (
+                    <p className="text-xs text-muted">
+                      No junctions in this band
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 
         <div className="xl:col-span-5 space-y-4">
-          <div className="card">
-            {!selected ? (
-              <div className="text-center py-8 text-muted">
-                <Activity className="w-7 h-7 mx-auto mb-2" />
-                <p>Select a junction to run root-cause analysis</p>
-              </div>
-            ) : detailLoading ? (
-              <div className="py-8 text-center text-muted text-sm">
-                Loading diagnostics...
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <p className="text-[10px] uppercase tracking-wider text-muted">
-                    Selected Junction
-                  </p>
-                  <p className="text-lg font-semibold text-chalk">
-                    {selected.junction}
-                  </p>
+          <ScrollReveal delay={100}>
+            <div className="glass-card">
+              {!selected ? (
+                <div className="text-center py-8 text-muted">
+                  <Stethoscope className="w-7 h-7 mx-auto mb-2" />
+                  <p>Select a junction to run root-cause analysis</p>
                 </div>
-
-                <div className="bg-elevated rounded-lg p-3 border border-white/[0.06]">
-                  <p className="text-xs text-accent font-semibold mb-2">
-                    Cause Attribution
-                  </p>
-                  {cause?.attribution_pcts ? (
-                    <div className="space-y-2">
-                      {Object.entries(cause.attribution_pcts).map(
-                        ([label, pct]) => (
-                          <div key={label}>
-                            <div className="flex items-center justify-between text-xs text-muted mb-1">
-                              <span>{label}</span>
-                              <span className="text-chalk font-mono">
-                                {pct}%
-                              </span>
-                            </div>
-                            <div className="h-1.5 bg-base rounded overflow-hidden">
-                              <div
-                                className="h-full bg-accent"
-                                style={{ width: `${pct}%` }}
-                              />
-                            </div>
-                          </div>
-                        ),
-                      )}
-                      <p className="text-xs text-muted mt-2">
-                        {cause.action_recommendation}
-                      </p>
-                      <p className="text-xs text-chalk font-mono mt-1">
-                        Clear hotspot = ~{cause.clear_hotspot_eta_minutes} min
-                        to stabilize flow
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-muted">
-                      No attribution available
+              ) : detailLoading ? (
+                <div className="py-8 text-center text-muted text-sm">
+                  <div className="w-8 h-8 border-2 border-neon-blue/30 border-t-neon-blue rounded-full animate-spin mx-auto mb-3" />
+                  Loading diagnostics...
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-muted">
+                      Selected Junction
                     </p>
-                  )}
-                </div>
-
-                <div className="bg-elevated rounded-lg p-3 border border-white/[0.06]">
-                  <p className="text-xs text-signal-emerald font-semibold mb-2 flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Court Readiness
-                  </p>
-                  {court?.score !== undefined ? (
-                    <div>
-                      <p className="text-sm text-chalk font-medium">
-                        {court.status} ·{" "}
-                        <span className="font-mono">{court.score}%</span>
-                      </p>
-                      <p className="text-xs text-muted mt-1">
-                        {court.recommendation}
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-xs text-muted">
-                      No legal score available
+                    <p className="text-lg font-semibold text-chalk">
+                      {selected.junction}
                     </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+                  </div>
 
-          <form className="card space-y-3" onSubmit={submitScout}>
-            <p className="text-sm text-chalk font-semibold flex items-center gap-2">
-              <Truck className="w-4 h-4 text-tier-high" /> Flipkart Scout Intake
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <input
-                value={scoutPayload.scout_id}
-                onChange={(e) =>
-                  setScoutPayload((p) => ({ ...p, scout_id: e.target.value }))
-                }
-                className="bg-elevated border border-white/[0.08] rounded px-2 py-1.5 text-xs text-chalk"
-                placeholder="Scout ID"
-              />
-              <input
-                value={scoutPayload.junction}
-                onChange={(e) =>
-                  setScoutPayload((p) => ({ ...p, junction: e.target.value }))
-                }
-                className="bg-elevated border border-white/[0.08] rounded px-2 py-1.5 text-xs text-chalk"
-                placeholder="Junction"
-              />
-              <input
-                value={scoutPayload.latitude}
-                onChange={(e) =>
-                  setScoutPayload((p) => ({ ...p, latitude: e.target.value }))
-                }
-                className="bg-elevated border border-white/[0.08] rounded px-2 py-1.5 text-xs text-chalk"
-                placeholder="Latitude"
-              />
-              <input
-                value={scoutPayload.longitude}
-                onChange={(e) =>
-                  setScoutPayload((p) => ({ ...p, longitude: e.target.value }))
-                }
-                className="bg-elevated border border-white/[0.08] rounded px-2 py-1.5 text-xs text-chalk"
-                placeholder="Longitude"
-              />
+                  <div className="bg-elevated/40 rounded-lg p-3 border border-border">
+                    <p className="text-xs text-neon-blue font-semibold mb-2 flex items-center gap-1">
+                      <Stethoscope className="w-3.5 h-3.5" /> Cause Attribution
+                    </p>
+                    {cause?.attribution_pcts ? (
+                      <div className="space-y-2">
+                        {Object.entries(cause.attribution_pcts).map(
+                          ([label, pct]) => (
+                            <div key={label}>
+                              <div className="flex items-center justify-between text-xs text-muted mb-1">
+                                <span>{label}</span>
+                                <span className="text-chalk font-mono font-bold">
+                                  {pct}%
+                                </span>
+                              </div>
+                              <div className="h-1.5 bg-base rounded overflow-hidden border border-border">
+                                <div
+                                  className="h-full bg-neon-blue transition-all duration-500"
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                            </div>
+                          ),
+                        )}
+                        <p className="text-xs text-muted mt-2 leading-relaxed">
+                          {cause.action_recommendation}
+                        </p>
+                        <p className="text-xs text-chalk font-mono mt-1">
+                          Clear hotspot = ~{cause.clear_hotspot_eta_minutes} min
+                          to stabilize flow
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted">
+                        No attribution available
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="bg-elevated/40 rounded-lg p-3 border border-border">
+                    <p className="text-xs text-signal-emerald font-semibold mb-2 flex items-center gap-1">
+                      <Scale className="w-3.5 h-3.5" /> Court Readiness
+                    </p>
+                    {court?.score !== undefined ? (
+                      <div>
+                        <p className="text-sm text-chalk font-medium">
+                          {court.status} ·{" "}
+                          <span className="font-mono font-bold text-signal-emerald">{court.score}%</span>
+                        </p>
+                        <p className="text-xs text-muted mt-1 leading-relaxed">
+                          {court.recommendation}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted">
+                        No legal score available
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-            <input
-              value={scoutPayload.photo_url}
-              onChange={(e) =>
-                setScoutPayload((p) => ({ ...p, photo_url: e.target.value }))
-              }
-              className="w-full bg-elevated border border-white/[0.08] rounded px-2 py-1.5 text-xs text-chalk"
-              placeholder="Photo URL"
-            />
-            <button
-              type="submit"
-              disabled={scoutSubmitting}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-accent/15 border border-accent/30 text-accent text-sm py-2 hover:bg-accent/25 disabled:opacity-60"
-            >
-              <Send className="w-3.5 h-3.5" />
-              {scoutSubmitting ? "Submitting..." : "Submit Scout Report"}
-            </button>
+          </ScrollReveal>
 
-            {scoutResult && (
-              <div className="text-xs bg-elevated/70 border border-white/[0.06] rounded p-2 text-muted">
-                <p className="text-chalk font-medium">
-                  {scoutResult.status || "response"}
-                </p>
-                {scoutResult.priority && (
-                  <p>
-                    Priority:{" "}
-                    <span className="text-chalk font-mono">
-                      {scoutResult.priority}
-                    </span>
-                    {" · "}Points:{" "}
-                    <span className="text-chalk font-mono">
-                      {formatNumber(scoutResult.reward_points || 0)}
-                    </span>
-                  </p>
-                )}
-                {scoutResult.estimated_cii !== undefined && (
-                  <p>
-                    Estimated CII:{" "}
-                    <span className="text-chalk font-mono">
-                      {scoutResult.estimated_cii}
-                    </span>
-                  </p>
-                )}
-                <p className="mt-1">{scoutResult.message}</p>
+          <ScrollReveal delay={150}>
+            <form className="glass-card space-y-3" onSubmit={submitScout}>
+              <p className="text-sm text-chalk font-semibold flex items-center gap-2">
+                <Truck className="w-4 h-4 text-tier-high" /> Flipkart Scout Intake
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  aria-label="Scout ID"
+                  value={scoutPayload.scout_id}
+                  onChange={(e) =>
+                    setScoutPayload((p) => ({ ...p, scout_id: e.target.value }))
+                  }
+                  className="bg-elevated/60 border border-border rounded px-2 py-1.5 text-xs text-chalk input-glass"
+                  placeholder="Scout ID"
+                />
+                <input
+                  aria-label="Junction"
+                  value={scoutPayload.junction}
+                  onChange={(e) =>
+                    setScoutPayload((p) => ({ ...p, junction: e.target.value }))
+                  }
+                  className="bg-elevated/60 border border-border rounded px-2 py-1.5 text-xs text-chalk input-glass"
+                  placeholder="Junction"
+                />
+                <input
+                  aria-label="Latitude"
+                  value={scoutPayload.latitude}
+                  onChange={(e) =>
+                    setScoutPayload((p) => ({ ...p, latitude: e.target.value }))
+                  }
+                  className="bg-elevated/60 border border-border rounded px-2 py-1.5 text-xs text-chalk input-glass font-mono"
+                  placeholder="Latitude"
+                />
+                <input
+                  aria-label="Longitude"
+                  value={scoutPayload.longitude}
+                  onChange={(e) =>
+                    setScoutPayload((p) => ({ ...p, longitude: e.target.value }))
+                  }
+                  className="bg-elevated/60 border border-border rounded px-2 py-1.5 text-xs text-chalk input-glass font-mono"
+                  placeholder="Longitude"
+                />
               </div>
-            )}
-          </form>
+              <input
+                aria-label="Photo URL"
+                value={scoutPayload.photo_url}
+                onChange={(e) =>
+                  setScoutPayload((p) => ({ ...p, photo_url: e.target.value }))
+                }
+                className="w-full bg-elevated/60 border border-border rounded px-2 py-1.5 text-xs text-chalk input-glass font-mono"
+                placeholder="Photo URL"
+              />
+              <button
+                type="submit"
+                disabled={scoutSubmitting}
+                className="w-full btn-primary flex items-center justify-center gap-2"
+              >
+                <Send className="w-3.5 h-3.5" />
+                {scoutSubmitting ? "Submitting..." : "Submit Scout Report"}
+              </button>
+
+              {scoutResult && (
+                <div className="text-xs glass-card-static p-3 text-muted">
+                  <p className="text-chalk font-medium">
+                    {scoutResult.status || "response"}
+                  </p>
+                  {scoutResult.priority && (
+                    <p>
+                      Priority:{" "}
+                      <span className="text-chalk font-mono font-bold">
+                        {scoutResult.priority}
+                      </span>
+                      {" · "}Points:{" "}
+                      <span className="text-chalk font-mono font-bold">
+                        {formatNumber(scoutResult.reward_points || 0)}
+                      </span>
+                    </p>
+                  )}
+                  {scoutResult.estimated_cii !== undefined && (
+                    <p>
+                      Estimated CII:{" "}
+                      <span className="text-chalk font-mono font-bold">
+                        {scoutResult.estimated_cii}
+                      </span>
+                    </p>
+                  )}
+                  <p className="mt-1 leading-relaxed">{scoutResult.message}</p>
+                </div>
+              )}
+            </form>
+          </ScrollReveal>
         </div>
       </div>
     </div>
@@ -368,11 +387,11 @@ function PageSkeleton() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         <div className="xl:col-span-7 space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="card h-40 bg-elevated animate-pulse" />
+            <div key={i} className="glass-card-static h-40 animate-pulse" />
           ))}
         </div>
         <div className="xl:col-span-5">
-          <div className="card h-[500px] bg-elevated animate-pulse" />
+          <div className="glass-card-static h-[500px] animate-pulse" />
         </div>
       </div>
     </div>

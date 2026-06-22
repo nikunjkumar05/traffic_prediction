@@ -2,14 +2,18 @@ import { AlertTriangle, RefreshCw } from 'lucide-react'
 
 export default function ErrorState({ message = 'Something went wrong', onRetry }) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
-      <div className="bg-signal-red/10 border border-signal-red/20 rounded-xl p-6 text-center max-w-md">
-        <AlertTriangle className="w-10 h-10 text-signal-red mx-auto mb-3" />
-        <p className="text-chalk font-medium mb-1">Failed to load data</p>
-        <p className="text-muted text-sm mb-4">{message}</p>
+    <div className="flex flex-col items-center justify-center py-16 px-4">
+      <div className="glass-card-static p-8 text-center max-w-md w-full">
+        <div className="w-14 h-14 rounded-2xl bg-signal-red/10 flex items-center justify-center mb-4 mx-auto">
+          <AlertTriangle className="w-7 h-7 text-signal-red" />
+        </div>
+        <p className="text-chalk font-semibold text-lg mb-1">Failed to load data</p>
+        <p className="text-muted text-sm mb-5">{message}</p>
         {onRetry && (
-          <button onClick={onRetry}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 text-accent rounded-lg hover:bg-accent/20 transition-colors text-sm font-medium">
+          <button
+            onClick={onRetry}
+            className="btn-primary inline-flex items-center gap-2"
+          >
             <RefreshCw className="w-4 h-4" />
             Retry
           </button>

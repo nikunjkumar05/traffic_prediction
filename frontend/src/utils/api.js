@@ -125,20 +125,12 @@ export function formatDelay(minutes) {
 
 export function tierColor(tier) {
   const colors = {
-    CRITICAL: "#EF4444",
-    HIGH: "#F97316",
-    MEDIUM: "#EAB308",
-    LOW: "#22C55E",
+    CRITICAL: "#FF3366",
+    HIGH: "#FF6B35",
+    MEDIUM: "#FFB800",
+    LOW: "#00FF88",
   };
   return colors[tier] || "#6B7280";
 }
 
-export function tierGlow(tier) {
-  const glows = {
-    CRITICAL: "0 0 20px rgba(239, 68, 68, 0.15)",
-    HIGH: "0 0 20px rgba(249, 115, 22, 0.15)",
-    MEDIUM: "0 0 20px rgba(234, 179, 8, 0.15)",
-    LOW: "0 0 20px rgba(34, 197, 94, 0.15)",
-  };
-  return glows[tier] || "none";
-}
+

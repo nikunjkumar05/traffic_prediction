@@ -1,40 +1,24 @@
 import { useState, useEffect } from 'react'
 import { useApi } from '../utils/api'
-import { Shield, AlertTriangle, TrendingDown, Users, Zap, Activity, RefreshCw, Radio, Car, CheckCircle, Clock, Volume2 } from 'lucide-react'
+import { Shield, AlertTriangle, TrendingDown, Users, Zap, Activity, RefreshCw, Radio, Car, CheckCircle, ChevronRight } from 'lucide-react'
 import ErrorState from '../components/ErrorState'
+import GlassCard from '../components/GlassCard'
+import AnimatedCounter from '../components/AnimatedCounter'
+import ScrollReveal from '../components/ScrollReveal'
+import PageHeader from '../components/PageHeader'
 
 export default function CommandCenter() {
   const { data, loading, error, refetch } = useApi('/capacity-status')
   const { data: causalData } = useApi('/causal-impact')
   const [tickerItems, setTickerItems] = useState([])
   const [tickerPaused, setTickerPaused] = useState(false)
+  const { data: recentEventsData } = useApi('/recent-events', [], { enabled: !tickerPaused })
 
-  // Simulated live operations ticker
   useEffect(() => {
-    const tickerEvents = [
-      { type: 'cleared', junction: 'BTP044', officer: 'Kumar', vehicles: 3, time: 'Just now' },
-      { type: 'dispatched', junction: 'BTP067', officer: 'Singh', time: '2 min ago' },
-      { type: 'alert', junction: 'BTP089', message: 'Capacity restored to 72%', time: '5 min ago' },
-      { type: 'cleared', junction: 'BTP102', officer: 'Patel', vehicles: 2, time: '8 min ago' },
-      { type: 'predicted', junction: 'BTP148', time: '15 min ago', message: 'Tipping point predicted' },
-    ]
-    setTickerItems(tickerEvents)
-
-    // Simulate new events arriving (in real implementation, this would be Supabase Realtime)
-    const interval = setInterval(() => {
-      if (!tickerPaused) {
-        const newEvents = [
-          { type: 'cleared', junction: `BTP${Math.floor(Math.random() * 200)}`, officer: 'Sharma', vehicles: Math.floor(Math.random() * 5) + 1, time: 'Just now' },
-          { type: 'dispatched', junction: `BTP${Math.floor(Math.random() * 200)}`, officer: 'Verma', time: 'Just now' },
-          { type: 'alert', junction: `BTP${Math.floor(Math.random() * 200)}`, message: 'New violation detected', time: 'Just now' },
-        ]
-        const newItem = newEvents[Math.floor(Math.random() * newEvents.length)]
-        setTickerItems(prev => [newItem, ...prev.slice(0, 9)])
-      }
-    }, 30000) // Every 30 seconds
-
-    return () => clearInterval(interval)
-  }, [tickerPaused])
+    if (recentEventsData?.events) {
+      setTickerItems(recentEventsData.events)
+    }
+  }, [recentEventsData])
 
   if (loading) return <PageSkeleton />
   if (error) return <ErrorState message={error} onRetry={refetch} />
@@ -46,208 +30,194 @@ export default function CommandCenter() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading font-bold text-2xl text-chalk flex items-center gap-2">
-            <Shield className="w-6 h-6 text-accent" />
-            Command Center
-          </h1>
-          <p className="text-muted text-sm mt-1">ACP/DCP view — Top 5 enforcement zones</p>
-        </div>
-        <button
-          onClick={refetch}
-          className="flex items-center gap-2 px-3 py-2 bg-elevated rounded-lg text-sm text-muted hover:text-chalk transition-colors"
-        >
-          <RefreshCw className="w-4 h-4" /> Refresh
-        </button>
-      </div>
+      <PageHeader
+        icon={Shield}
+        title="Command Center"
+        subtitle="ACP/DCP view — Top 5 enforcement zones"
+        accent="text-neon-blue"
+        actions={
+          <button onClick={refetch} className="btn-ghost flex items-center gap-2 hover:bg-elevated/50 px-3 py-1.5 rounded-lg border border-border transition-all">
+            <RefreshCw className="w-4 h-4 text-neon-blue" /> <span className="text-chalk">Refresh</span>
+          </button>
+        }
+      />
 
       {/* Live Operations Ticker */}
-      <div className="card border border-accent/20 bg-accent/5 overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-2 border-b border-accent/20 bg-accent/10">
-          <div className="flex items-center gap-2">
-            <Radio className="w-4 h-4 text-accent animate-pulse" />
-            <span className="text-xs font-bold text-accent uppercase tracking-wider">Live Operations</span>
-          </div>
-          <button
-            onClick={() => setTickerPaused(!tickerPaused)}
-            className="text-xs text-muted hover:text-chalk"
-          >
-            {tickerPaused ? 'Resume' : 'Pause'}
-          </button>
-        </div>
-        <div className="max-h-40 overflow-y-auto">
-          {tickerItems.map((item, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-3 px-4 py-2 border-b border-white/[0.04] last:border-0 hover:bg-elevated/30 transition-colors"
-            >
-              {item.type === 'cleared' && (
-                <CheckCircle className="w-4 h-4 text-signal-emerald shrink-0" />
-              )}
-              {item.type === 'dispatched' && (
-                <Car className="w-4 h-4 text-accent shrink-0" />
-              )}
-              {item.type === 'alert' && (
-                <AlertTriangle className="w-4 h-4 text-signal-amber shrink-0" />
-              )}
-              {item.type === 'predicted' && (
-                <Zap className="w-4 h-4 text-signal-red shrink-0" />
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-chalk truncate">
-                  {item.type === 'cleared' && `${item.junction} cleared — ${item.vehicles} vehicles towed by ${item.officer}`}
-                  {item.type === 'dispatched' && `${item.officer} dispatched to ${item.junction}`}
-                  {item.type === 'alert' && `${item.junction}: ${item.message}`}
-                  {item.type === 'predicted' && `${item.junction}: ${item.message}`}
-                </p>
-              </div>
-              <span className="text-[10px] text-muted shrink-0">{item.time}</span>
+      <ScrollReveal delay={100}>
+        <GlassCard className="overflow-hidden border-neon-blue/10" padding={false}>
+          <div className="flex items-center justify-between px-5 py-3 border-b border-border">
+            <div className="flex items-center gap-2.5">
+              <div className="glow-dot bg-neon-green shadow-[0_0_8px_var(--color-accent-green)]" />
+              <span className="text-[10px] font-bold text-neon-blue uppercase tracking-widest">
+                Live Operations
+              </span>
             </div>
-          ))}
-        </div>
-      </div>
+            <button
+              onClick={() => setTickerPaused(!tickerPaused)}
+              className="text-[10px] text-muted hover:text-chalk transition-colors uppercase tracking-wider font-semibold"
+            >
+              {tickerPaused ? '▶ Resume' : '⏸ Pause'}
+            </button>
+          </div>
+          <div className="max-h-44 overflow-y-auto divide-y divide-border">
+            {tickerItems.length === 0 ? (
+              <div className="p-4 text-center text-xs text-muted">No active operational logs.</div>
+            ) : (
+              tickerItems.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-3 px-5 py-2.5 hover:bg-elevated/40 transition-colors"
+                >
+                  {item.type === 'cleared' && <CheckCircle className="w-4 h-4 text-neon-green shrink-0" />}
+                  {item.type === 'dispatched' && <Car className="w-4 h-4 text-neon-blue shrink-0" />}
+                  {item.type === 'alert' && <AlertTriangle className="w-4 h-4 text-neon-amber shrink-0" />}
+                  {item.type === 'predicted' && <Zap className="w-4 h-4 text-neon-red shrink-0" />}
+                  <p className="text-xs text-chalk truncate flex-1">
+                    {item.type === 'cleared' && `${item.junction} cleared — ${item.vehicles} vehicles towed by ${item.officer}`}
+                    {item.type === 'dispatched' && `${item.officer} dispatched to ${item.junction}`}
+                    {item.type === 'alert' && `${item.junction}: ${item.message}`}
+                    {item.type === 'predicted' && `${item.junction}: ${item.message}`}
+                  </p>
+                  <span className="text-[10px] text-muted/60 shrink-0 font-mono">{item.time}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </GlassCard>
+      </ScrollReveal>
 
-      {/* City Capacity Banner */}
-      <div className="card border-accent/20 bg-accent/5">
-        <p className="text-xs uppercase tracking-wider text-accent font-semibold mb-3">City Road Capacity Status</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <CapacityGauge
-            label="RED (Bottleneck)"
-            value={summary.red_junctions || 0}
-            color="bg-signal-red"
-            textColor="text-signal-red"
-          />
-          <CapacityGauge
-            label="YELLOW (Degraded)"
-            value={summary.yellow_junctions || 0}
-            color="bg-signal-amber"
-            textColor="text-signal-amber"
-          />
-          <CapacityGauge
-            label="GREEN (Normal)"
-            value={summary.green_junctions || 0}
-            color="bg-signal-emerald"
-            textColor="text-signal-emerald"
-          />
-          <CapacityGauge
-            label="Avg Capacity Loss"
-            value={`${summary.avg_capacity_loss_pct || 0}%`}
-            color="bg-accent"
-            textColor="text-accent"
-          />
-        </div>
-      </div>
+      {/* City Capacity Status */}
+      <ScrollReveal delay={200}>
+        <GlassCard className="p-6">
+          <p className="text-[10px] uppercase tracking-widest text-muted/60 font-semibold mb-5">
+            City Road Capacity Status
+          </p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <CapacityStat label="RED (Bottleneck)" value={summary.red_junctions || 0} color="neon-red" />
+            <CapacityStat label="YELLOW (Degraded)" value={summary.yellow_junctions || 0} color="neon-amber" />
+            <CapacityStat label="GREEN (Normal)" value={summary.green_junctions || 0} color="neon-green" />
+            <CapacityStat label="Avg Capacity Loss" value={summary.avg_capacity_loss_pct || 0} suffix="%" color="neon-blue" />
+          </div>
+        </GlassCard>
+      </ScrollReveal>
 
       {/* Causal Proof */}
       {model.status === 'success' && (
-        <div className="card border-signal-emerald/20 bg-signal-emerald/5">
-          <p className="text-xs uppercase tracking-wider text-signal-emerald font-semibold mb-2">
-            Causal Proof — Validated
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <p className="font-mono text-2xl font-bold text-chalk">R² = {model.r2_score}</p>
-              <p className="text-xs text-muted">Regression Accuracy</p>
-            </div>
-            <div>
-              <p className="font-mono text-2xl font-bold text-chalk">
-                {model.speed_drop_per_1pct_capacity_loss_kmh} km/h
+        <ScrollReveal delay={300}>
+          <GlassCard className="p-6 border-neon-green/10">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="glow-dot bg-neon-green shadow-[0_0_8px_var(--color-accent-green)]" />
+              <p className="text-[10px] uppercase tracking-widest text-neon-green font-semibold">
+                Causal Proof — Validated
               </p>
-              <p className="text-xs text-muted">Speed Drop per 1% Capacity Loss</p>
             </div>
-            <div>
-              <p className="font-mono text-2xl font-bold text-chalk">
-                {'>'} {model.threshold_for_12kph_drop_pct}%
-              </p>
-              <p className="text-xs text-muted">Capacity Loss → 12 km/h Drop</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-elevated/20 rounded-xl border border-border">
+                <p className="font-mono text-3xl font-bold text-chalk mb-1">R² = {model.r2_score}</p>
+                <p className="text-xs text-muted">Regression Accuracy</p>
+              </div>
+              <div className="p-4 bg-elevated/20 rounded-xl border border-border">
+                <p className="font-mono text-3xl font-bold text-chalk mb-1">
+                  {model.speed_drop_per_1pct_capacity_loss_kmh} km/h
+                </p>
+                <p className="text-xs text-muted">Speed Drop per 1% Capacity Loss</p>
+              </div>
+              <div className="p-4 bg-elevated/20 rounded-xl border border-border">
+                <p className="font-mono text-3xl font-bold text-chalk mb-1">
+                  {'>'} {model.threshold_for_12kph_drop_pct}%
+                </p>
+                <p className="text-xs text-muted">Capacity Loss → 12 km/h Drop</p>
+              </div>
             </div>
-          </div>
-        </div>
+          </GlassCard>
+        </ScrollReveal>
       )}
 
       {/* Top 5 Clear Now */}
-      <div className="card">
-        <h2 className="font-heading font-semibold text-lg text-chalk mb-4 flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-signal-red" />
-          Top 5 — Clear Now
-        </h2>
-        <div className="space-y-2">
-          {junctions.slice(0, 5).map((j, i) => (
-            <div key={i} className="flex items-center gap-4 p-3 bg-elevated rounded-xl">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-mono font-bold text-sm ${
-                j.status === 'RED' ? 'bg-signal-red text-white' :
-                j.status === 'YELLOW' ? 'bg-signal-amber text-black' :
-                'bg-signal-emerald text-white'
-              }`}>
-                {i + 1}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-chalk text-sm truncate">{j.junction}</p>
-                <p className="text-xs text-muted">{j.violation_count} violations · {j.footpath_violations} footpath</p>
-              </div>
-              <div className="text-right">
-                <p className={`font-mono font-bold text-lg ${
-                  j.capacity_loss_pct > 50 ? 'text-signal-red' :
-                  j.capacity_loss_pct > 30 ? 'text-signal-amber' : 'text-signal-emerald'
-                }`}>
-                  {j.capacity_loss_pct}%
-                </p>
-                <p className="text-[10px] text-muted uppercase">capacity loss</p>
-              </div>
+      <ScrollReveal delay={400}>
+        <GlassCard className="p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-red to-neon-amber flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-white" />
             </div>
-          ))}
+            <div>
+              <h2 className="font-heading font-semibold text-lg text-chalk">
+                Top 5 — Clear Now
+              </h2>
+              <p className="text-muted text-xs">Highest capacity loss junctions</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            {junctions.slice(0, 5).map((j, i) => (
+              <div key={i} className="flex items-center gap-4 p-3.5 bg-elevated/10 rounded-xl border border-border hover:border-neon-blue/20 transition-all duration-300 group">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-sm shrink-0 ${
+                  j.status === 'RED' ? 'bg-neon-red text-white' :
+                  j.status === 'YELLOW' ? 'bg-neon-amber text-black dark:text-white' :
+                  'bg-neon-green text-white'
+                }`}>
+                  {i + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-chalk text-sm truncate">{j.junction}</p>
+                  <p className="text-xs text-muted font-mono">{j.violation_count} violations · {j.footpath_violations} footpath</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className={`font-mono font-bold text-lg ${
+                    j.capacity_loss_pct > 50 ? 'text-neon-red' :
+                    j.capacity_loss_pct > 30 ? 'text-neon-amber' : 'text-neon-green'
+                  }`}>
+                    {j.capacity_loss_pct}%
+                  </p>
+                  <p className="text-[10px] text-muted uppercase tracking-wider">capacity loss</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted/0 group-hover:text-neon-blue transition-all shrink-0" />
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+      </ScrollReveal>
+
+      {/* Bottom Metrics */}
+      <ScrollReveal delay={500}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <MiniMetric icon={Users} label="Footpath Violations" value={summary.total_footpath_violations || 0} color="neon-amber" />
+          <MiniMetric icon={TrendingDown} label="Pedestrian Spillover" value={`${summary.total_pedestrian_spillover_m || 0}m`} color="neon-amber" />
+          <MiniMetric icon={Activity} label="Junctions Analyzed" value={summary.total_junctions || 0} color="neon-blue" />
+          <MiniMetric icon={Zap} label="Worst Junction" value={summary.worst_capacity_loss_pct ? `${summary.worst_capacity_loss_pct}%` : 'N/A'} color="neon-red" />
         </div>
-      </div>
-
-      {/* Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <MetricCard
-          icon={<Users className="w-4 h-4" />}
-          label="Footpath Violations"
-          value={summary.total_footpath_violations || 0}
-          color="text-signal-amber"
-        />
-        <MetricCard
-          icon={<TrendingDown className="w-4 h-4" />}
-          label="Pedestrian Spillover"
-          value={`${summary.total_pedestrian_spillover_m || 0}m`}
-          color="text-tier-high"
-        />
-        <MetricCard
-          icon={<Activity className="w-4 h-4" />}
-          label="Junctions Analyzed"
-          value={summary.total_junctions || 0}
-          color="text-accent"
-        />
-        <MetricCard
-          icon={<Zap className="w-4 h-4" />}
-          label="Worst Junction"
-          value={summary.worst_capacity_loss_pct ? `${summary.worst_capacity_loss_pct}%` : 'N/A'}
-          color="text-signal-red"
-        />
-      </div>
+      </ScrollReveal>
     </div>
   )
 }
 
-function CapacityGauge({ label, value, color, textColor }) {
+const COLOR_MAP = {
+  'neon-red': 'text-neon-red',
+  'neon-amber': 'text-neon-amber',
+  'neon-green': 'text-neon-green',
+  'neon-blue': 'text-neon-blue',
+}
+
+function CapacityStat({ label, value, suffix = '', color }) {
+  const textClass = COLOR_MAP[color] || 'text-chalk'
   return (
-    <div className="text-center">
-      <div className={`w-16 h-16 mx-auto rounded-full ${color} flex items-center justify-center mb-2`}>
-        <span className="font-mono font-bold text-xl text-white">{value}</span>
-      </div>
-      <p className="text-[10px] text-muted uppercase tracking-wider">{label}</p>
+    <div className="p-4 bg-elevated/15 rounded-xl border border-border text-center">
+      <AnimatedCounter
+        value={value}
+        suffix={suffix}
+        className={`text-3xl font-bold font-mono ${textClass}`}
+      />
+      <p className="text-[10px] text-muted uppercase tracking-widest mt-2 font-semibold">{label}</p>
     </div>
   )
 }
 
-function MetricCard({ icon, label, value, color }) {
+function MiniMetric({ icon: Icon, label, value, color }) {
+  const textClass = COLOR_MAP[color] || 'text-chalk'
   return (
-    <div className="card">
-      <div className={`flex justify-center mb-1 ${color}`}>{icon}</div>
-      <p className="font-mono font-bold text-xl text-chalk text-center">{value}</p>
-      <p className="text-[10px] text-muted text-center uppercase tracking-wider">{label}</p>
+    <div className="glass-card-static p-4 text-center">
+      <Icon className={`w-4 h-4 ${textClass} mx-auto mb-2`} />
+      <p className="font-mono font-bold text-lg text-chalk">{value}</p>
+      <p className="text-[10px] text-muted uppercase tracking-wider mt-1">{label}</p>
     </div>
   )
 }
@@ -255,9 +225,18 @@ function MetricCard({ icon, label, value, color }) {
 function PageSkeleton() {
   return (
     <div className="space-y-6">
-      <div className="h-8 w-48 bg-elevated rounded-lg animate-pulse" />
-      <div className="card h-32 bg-elevated animate-pulse" />
-      <div className="card h-48 bg-elevated animate-pulse" />
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-elevated animate-pulse" />
+        <div>
+          <div className="h-7 w-48 bg-elevated rounded-lg animate-pulse" />
+          <div className="h-4 w-32 bg-elevated rounded mt-2 animate-pulse" />
+        </div>
+      </div>
+      <div className="glass-card-static h-36 bg-elevated/50 animate-pulse" />
+      <div className="glass-card-static h-40 bg-elevated/50 animate-pulse" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1,2,3,4].map(i => <div key={i} className="glass-card-static h-24 bg-elevated/50 animate-pulse" />)}
+      </div>
     </div>
   )
 }

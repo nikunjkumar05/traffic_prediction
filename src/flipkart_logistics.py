@@ -258,7 +258,7 @@ def run_flipkart_logistics(df: pd.DataFrame) -> Dict:
     print(f"    Hotspots: {impact['total_delivery_hotspots']}")
     print(f"    Bays needed: {impact['total_bays_needed']}")
     print(f"    Time saved: {impact['avg_delivery_time_saved_min']} min/delivery")
-    print(f"    Annual savings: ₹{impact['annual_savings_crores']} Cr")
+    print(f"    Annual savings: Rs. {impact['annual_savings_crores']} Cr")
     
     print("Stage 10 complete.")
     print("=" * 60)

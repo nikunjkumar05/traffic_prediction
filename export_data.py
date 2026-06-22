@@ -22,7 +22,12 @@ print("Loading data...")
 with open('data/external/junction_coords.json', 'r', encoding='utf-8') as f:
     junction_coords = json.load(f)
 
-df = run_pipeline('data/raw/violations.csv', junction_coords=junction_coords)
+import os
+csv_path = os.environ.get(
+    "DISPATCHMIND_CSV",
+    "jan to may police violation_anonymized791b166.csv",
+)
+df = run_pipeline(csv_path, junction_coords=junction_coords)
 df = run_congestion_cost(df, junction_coords)
 
 # --- 1. Beat-level queue ---

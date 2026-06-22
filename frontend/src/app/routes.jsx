@@ -15,6 +15,10 @@ const EvidenceView = lazy(() => import("../pages/EvidenceView"));
 const Simulator = lazy(() => import("../pages/Simulator"));
 const RepeatOffenders = lazy(() => import("../pages/RepeatOffenders"));
 const TriageCenter = lazy(() => import("../pages/TriageCenter"));
+const AICopilot = lazy(() => import("../pages/AICopilot"));
+const LiveCapacityBoard = lazy(() => import("../pages/LiveCapacityBoard"));
+const FlipkartScout = lazy(() => import("../pages/FlipkartScout"));
+const ScoutLeaderboard = lazy(() => import("../pages/ScoutLeaderboard"));
 
 export const ROUTE_CONFIG = [
   { path: "/", component: ImpactCalculator },
@@ -32,4 +36,8 @@ export const ROUTE_CONFIG = [
   { path: "/simulator", component: Simulator },
   { path: "/repeat-offenders", component: RepeatOffenders },
   { path: "/triage", component: TriageCenter },
+  { path: "/ai-copilot", component: AICopilot },
+  { path: "/capacity-board", component: LiveCapacityBoard },
+  { path: "/flipkart-scout", component: FlipkartScout },
+  { path: "/scout-leaderboard", component: ScoutLeaderboard },
 ];

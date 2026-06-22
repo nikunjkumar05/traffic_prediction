@@ -148,5 +148,10 @@ def run_pipeline(csv_path: str, junction_coords: dict = None, output_dir: str = 
 
 
 if __name__ == '__main__':
-    df = run_pipeline(csv_path='data/raw/violations.csv', output_dir='data/processed')
+    import os
+    default_csv = os.environ.get(
+        "DISPATCHMIND_CSV",
+        "jan to may police violation_anonymized791b166.csv",
+    )
+    df = run_pipeline(csv_path=default_csv, output_dir='data/processed')
     print(f"\nShape: {df.shape}")

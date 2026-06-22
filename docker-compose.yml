@@ -1,0 +1,38 @@
+# =============================================================================
+# DispatchMind v2.0 — Docker Compose (local development)
+# =============================================================================
+
+services:
+  backend:
+    build:
+      context: .
+      target: backend
+    ports:
+      - "8000:8000"
+    environment:
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - DISPATCHMIND_CSV=jan to may police violation_anonymized791b166.csv
+      - DISPATCHMIND_CACHE=data/processed/dispatchmind_scored.parquet
+    volumes:
+      - ./data/processed:/app/data/processed
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_MAPPLS_API_KEY=${VITE_MAPPLS_API_KEY:-}
+    volumes:
+      - ./frontend/src:/app/src
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped

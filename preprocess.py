@@ -26,7 +26,7 @@ VEHICLE_WEIGHTS = {
 DEFAULT_WEIGHT = 1.0
 
 INPUT_CSV = "jan to may police violation_anonymized791b166.csv"
-OUTPUT_PARQUET = "processed_data.parquet"
+OUTPUT_PARQUET = "data/processed/processed_data.parquet"
 
 
 # ── Helpers ─────────────────────────────────────────────────────────────────

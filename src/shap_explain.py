@@ -132,7 +132,8 @@ def run_shap_analysis(df, models, output_dir='outputs/reports'):
     for _, r in global_imp.head(5).iterrows():
         print(f"    {r['description']}: {r['mean_abs_shap']:.4f}")
 
-    top_junction = df.groupby('mapped_junction')['congestion_cost'].sum().idxmax()
+    junction_agg = df.groupby('mapped_junction')['congestion_cost'].sum()
+    top_junction = junction_agg.idxmax() if len(junction_agg) > 0 else 'Unknown'
     junction_data = df[df['mapped_junction'] == top_junction].head(1)
     if len(junction_data) > 0:
         exp = explainer.explain_junction(junction_data[features])

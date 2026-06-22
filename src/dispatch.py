@@ -160,8 +160,8 @@ def plan_shift(df, junction_coords, num_trucks=2, start_junction=None, max_dista
             'summary': {'routing_method': method, 'num_trucks': num_trucks,
                         'total_stops': sum(len(r) for r in routes),
                         'total_distance_km': round(total_dist / 1000, 1),
-                        'top_hotspot': hotspot_stats.iloc[0]['mapped_junction'],
-                        'top_hotspot_delay': hotspot_stats.iloc[0]['total_delay']}}
+                        'top_hotspot': hotspot_stats.iloc[0]['mapped_junction'] if len(hotspot_stats) > 0 else 'N/A',
+                        'top_hotspot_delay': hotspot_stats.iloc[0]['total_delay'] if len(hotspot_stats) > 0 else 0}}
 
 
 def run_dispatch(df: pd.DataFrame, junction_coords: dict, num_trucks: int = 2) -> dict:

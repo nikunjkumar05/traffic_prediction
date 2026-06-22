@@ -205,6 +205,15 @@ class ViolationAlertSystem:
         """
         Format alert as human-readable message for WhatsApp/SMS.
         """
+        import os
+        production_mode = os.getenv("WHATSAPP_PRODUCTION_MODE", "false").lower() == "true"
+        
+        if production_mode:
+            # Under production mode, we must send a pre-approved template message to start conversation.
+            # Example template text registered with Meta:
+            # "BTP Alert: {{1}} priority traffic alert at {{2}} (PS: {{3}}). Vehicle: {{4}} ({{5}}). CII Score: {{6}}. Action: {{7}}. Target: {{8}}."
+            return f"BTP Alert: {alert['priority']} priority traffic alert at {alert['location']['junction']} (PS: {alert['location']['police_station']}). Vehicle: {alert['vehicle']['type']} ({alert['vehicle']['number']}). CII Score: {alert['scores']['cii']}. Action: {alert['action']['recommended']}. Target: {alert['action']['target_response_time']}."
+
         priority_emoji = {
             'CRITICAL': '🚨',
             'HIGH': '⚠️',
@@ -264,49 +273,73 @@ Reported: {alert['timing']['reported_at']}
     
     def send_via_whatsapp(self, alert: Dict, officer_phone: str) -> bool:
         """
-        Send alert via WhatsApp Business API (mock implementation).
-        
-        In production, integrate with:
-        - Twilio WhatsApp API
-        - Gupshup (popular in India)
-        - BTP's existing WhatsApp infrastructure
+        Send alert via Twilio WhatsApp Sandbox.
         """
-        # Mock implementation - logs to console
-        print(f"\n📱 WhatsApp Alert to {officer_phone}:")
-        print("-" * 50)
-        print(alert['message'])
-        print("-" * 50)
+        print(f"\n[DISPATCH] 📱 Attempting WhatsApp Alert to {officer_phone}...")
         
-        # In production:
-        # import requests
-        # response = requests.post(
-        #     'https://api.whatsapp.com/send',
-        #     json={
-        #         'to': officer_phone,
-        #         'message': alert['message']
-        #     }
-        # )
-        # return response.status_code == 200
+        # Pull credentials from environment variables
+        import os
+        import requests
+        from requests.auth import HTTPBasicAuth
+
+        account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+        auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+        from_whatsapp = os.getenv('TWILIO_WHATSAPP_NUMBER') # e.g. 'whatsapp:+14155238886'
         
-        return True
+        if not all([account_sid, auth_token, from_whatsapp]):
+            print("⚠️ Twilio credentials missing in .env. Falling back to Local Console:")
+            print("-" * 50)
+            print(alert['message'])
+            print("-" * 50)
+            return False
+
+        # Format the phone number (Twilio requires 'whatsapp:+919876543210')
+        # If officer_phone doesn't start with whatsapp:, add it
+        to_phone = officer_phone if officer_phone.startswith('whatsapp:') else f"whatsapp:{officer_phone}"
+
+        url = f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json"
+        
+        payload = {
+            'From': from_whatsapp,
+            'To': to_phone,
+            'Body': alert['message']
+        }
+
+        try:
+            response = requests.post(
+                url, 
+                data=payload, 
+                auth=HTTPBasicAuth(account_sid, auth_token)
+            )
+            
+            if response.status_code in [200, 201]:
+                print(f"✅ WhatsApp successfully dispatched! Message SID: {response.json().get('sid')}")
+                return True
+            else:
+                print(f"❌ Twilio API Error: {response.status_code} - {response.text}")
+                return False
+        except Exception as e:
+            print(f"❌ Request failed: {str(e)}")
+            return False
     
     def send_via_sms(self, alert: Dict, officer_phone: str) -> bool:
         """
-        Send alert via SMS (mock implementation).
+        Send alert via SMS (Local Dispatch Mode).
         
+        Operating in local mode (no external API keys configured).
         In production, integrate with:
         - Twilio SMS API
         - MSG91 (popular in India)
         - BTP's existing SMS gateway
         """
         # Compress message for SMS (160 char limit per segment)
-        sms_message = f"{alert['priority']} ALERT: {alert['vehicle']['type']} at {alert['location']['junction']}. CII:{alert['scores']['cii']}. Action: {alert['action']['recommended']}. {alert['location']['coordinates']}"
+        sms_message = f"{alert['priority']} ALERT: {alert['vehicle']['type']} at {alert['location']['junction']}. Action: {alert['action']['recommended']}."
         
-        print(f"\n📱 SMS Alert to {officer_phone}:")
+        # Local Dispatch Mode - logs to console securely
+        print(f"\n[LOCAL DISPATCH MODE] ✉️ SMS Alert to {officer_phone}:")
         print(f"{sms_message[:160]}...")
         
-        # In production:
-        # import requests
+        # Webhook example:
         # response = requests.post(
         #     'https://api.msg91.com/api/send',
         #     data={
