@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-# Render entrypoint — DispatchMind CLI Demo
+# Render entrypoint — runs CLI demo + minimal HTTP server for health checks
 # ============================================================================
 set -e
 
@@ -12,7 +12,7 @@ if [ ! -f "$CSV_FILE" ] && [ -f "$CSV_GZ" ]; then
     gzip -dk "$CSV_GZ"
 fi
 
-echo "Starting DispatchMind CLI Demo..."
+echo "Starting DispatchMind..."
 echo ""
 
-exec python -u scripts/cli_demo.py
+exec python -u scripts/serve_demo.py
