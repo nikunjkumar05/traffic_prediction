@@ -1,0 +1,146 @@
+[
+  {
+    "hour": 0,
+    "violation_count": 12,
+    "avg_congestion_cost": 37.64666666666667,
+    "avg_duration": 23.258333333333336
+  },
+  {
+    "hour": 1,
+    "violation_count": 15,
+    "avg_congestion_cost": 8.821333333333335,
+    "avg_duration": 19.933333333333337
+  },
+  {
+    "hour": 2,
+    "violation_count": 9,
+    "avg_congestion_cost": 41.61555555555557,
+    "avg_duration": 26.055555555555557
+  },
+  {
+    "hour": 3,
+    "violation_count": 8,
+    "avg_congestion_cost": 12.7625,
+    "avg_duration": 19.625
+  },
+  {
+    "hour": 4,
+    "violation_count": 21,
+    "avg_congestion_cost": 38.75428571428571,
+    "avg_duration": 23.66190476190476
+  },
+  {
+    "hour": 5,
+    "violation_count": 59,
+    "avg_congestion_cost": 76.66440677966101,
+    "avg_duration": 29.03559322033898
+  },
+  {
+    "hour": 6,
+    "violation_count": 50,
+    "avg_congestion_cost": 167.98219999999998,
+    "avg_duration": 30.15
+  },
+  {
+    "hour": 7,
+    "violation_count": 16,
+    "avg_congestion_cost": 559.5625,
+    "avg_duration": 51.787499999999994
+  },
+  {
+    "hour": 8,
+    "violation_count": 8,
+    "avg_congestion_cost": 400.59749999999997,
+    "avg_duration": 46.5
+  },
+  {
+    "hour": 9,
+    "violation_count": 3,
+    "avg_congestion_cost": 108.49666666666667,
+    "avg_duration": 36.4
+  },
+  {
+    "hour": 10,
+    "violation_count": 0,
+    "avg_congestion_cost": 0,
+    "avg_duration": 0
+  },
+  {
+    "hour": 11,
+    "violation_count": 0,
+    "avg_congestion_cost": 0,
+    "avg_duration": 0
+  },
+  {
+    "hour": 12,
+    "violation_count": 0,
+    "avg_congestion_cost": 0,
+    "avg_duration": 0
+  },
+  {
+    "hour": 13,
+    "violation_count": 0,
+    "avg_congestion_cost": 0,
+    "avg_duration": 0
+  },
+  {
+    "hour": 14,
+    "violation_count": 0,
+    "avg_congestion_cost": 0,
+    "avg_duration": 0
+  },
+  {
+    "hour": 15,
+    "violation_count": 0,
+    "avg_congestion_cost": 0,
+    "avg_duration": 0
+  },
+  {
+    "hour": 16,
+    "violation_count": 0,
+    "avg_congestion_cost": 0,
+    "avg_duration": 0
+  },
+  {
+    "hour": 17,
+    "violation_count": 0,
+    "avg_congestion_cost": 0,
+    "avg_duration": 0
+  },
+  {
+    "hour": 18,
+    "violation_count": 0,
+    "avg_congestion_cost": 0,
+    "avg_duration": 0
+  },
+  {
+    "hour": 19,
+    "violation_count": 5,
+    "avg_congestion_cost": 448.86199999999997,
+    "avg_duration": 52.919999999999995
+  },
+  {
+    "hour": 20,
+    "violation_count": 5,
+    "avg_congestion_cost": 536.448,
+    "avg_duration": 49.68
+  },
+  {
+    "hour": 21,
+    "violation_count": 20,
+    "avg_congestion_cost": 129.696,
+    "avg_duration": 29.325
+  },
+  {
+    "hour": 22,
+    "violation_count": 31,
+    "avg_congestion_cost": 60.82548387096774,
+    "avg_duration": 26.861290322580647
+  },
+  {
+    "hour": 23,
+    "violation_count": 18,
+    "avg_congestion_cost": 82.47888888888889,
+    "avg_duration": 29.09444444444445
+  }
+]

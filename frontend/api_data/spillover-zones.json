@@ -1,0 +1,102 @@
+[
+  {
+    "junction": "BTP001 - 10th Cross, Dr. Rajkumar Road",
+    "lat": 13.007811,
+    "lng": 77.554653,
+    "violation_count": 1577,
+    "avg_congestion_cost": 48.88476220672162,
+    "avg_gridlock_score": 0.7206087507926442,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP006 - Navarang Bar Junction",
+    "lat": 12.990978,
+    "lng": 77.557596,
+    "violation_count": 10,
+    "avg_congestion_cost": 121.883,
+    "avg_gridlock_score": 1.81,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP008 - Navarang Theatre",
+    "lat": 12.998492,
+    "lng": 77.553093,
+    "violation_count": 172,
+    "avg_congestion_cost": 22.181046511627905,
+    "avg_gridlock_score": 0.3279069767441861,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP009 - Prakash Nagar Junction",
+    "lat": 12.992518,
+    "lng": 77.557633,
+    "violation_count": 429,
+    "avg_congestion_cost": 33.28363636363636,
+    "avg_gridlock_score": 0.49044289044289047,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP010 - Rajajinagar Entrance",
+    "lat": 12.982262,
+    "lng": 77.560081,
+    "violation_count": 160,
+    "avg_congestion_cost": 41.4506875,
+    "avg_gridlock_score": 0.60875,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP011 - RR Kalyana Mantapa, Dr. Rajkumar Road",
+    "lat": 12.993695,
+    "lng": 77.553792,
+    "violation_count": 199,
+    "avg_congestion_cost": 93.074824120603,
+    "avg_gridlock_score": 1.3658291457286433,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP015 - Suguna Hospital, Dr. Rajkumar Road",
+    "lat": 12.98771,
+    "lng": 77.559499,
+    "violation_count": 29,
+    "avg_congestion_cost": 46.95620689655173,
+    "avg_gridlock_score": 0.6862068965517242,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP016 - 5th Main Road, RPC Layout",
+    "lat": 12.965246,
+    "lng": 77.537843,
+    "violation_count": 408,
+    "avg_congestion_cost": 36.1834068627451,
+    "avg_gridlock_score": 0.536029411764706,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP017 - Attiguppe Circle",
+    "lat": 12.960583,
+    "lng": 77.529638,
+    "violation_count": 476,
+    "avg_congestion_cost": 83.15159663865548,
+    "avg_gridlock_score": 1.2262605042016805,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP018 - Dhobi Ghat Junction",
+    "lat": 12.987612,
+    "lng": 77.549819,
+    "violation_count": 79,
+    "avg_congestion_cost": 97.46721518987344,
+    "avg_gridlock_score": 1.4379746835443037,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  }
+]

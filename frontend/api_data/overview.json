@@ -1,0 +1,20 @@
+{
+  "total_violations": 50000,
+  "unique_junctions": 168,
+  "violation_types": 664,
+  "vehicle_types": 22,
+  "date_range": {
+    "start": "2023-11-09 19:11:46",
+    "end": "2024-04-08 17:30:46"
+  },
+  "severity_distribution": {
+    "1": 45078,
+    "3": 3715,
+    "2": 1207
+  },
+  "peak_hours_violations": 8012,
+  "avg_duration_minutes": 26.83245,
+  "total_economic_loss_inr": 2857521189.56,
+  "total_co2_kg": 36231147.25999999,
+  "total_person_hours_blocked": 8332413.37
+}

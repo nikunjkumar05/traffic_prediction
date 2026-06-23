@@ -1,0 +1,125 @@
+{
+  "warnings": [
+    {
+      "junction": "BTP089 - Police Quarters, Sultan Road",
+      "risk_score": 8.727777777777778,
+      "avg_congestion_cost": 589.2355555555555,
+      "violation_count": 18,
+      "total_loss_inr": 4012815.93,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP092 - Bangalore Builders Junction",
+      "risk_score": 4.13103448275862,
+      "avg_congestion_cost": 280.2034482758621,
+      "violation_count": 29,
+      "total_loss_inr": 3247723.15,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP114 - KR Road Junction, Near JSS",
+      "risk_score": 3.021428571428572,
+      "avg_congestion_cost": 205.48714285714283,
+      "violation_count": 14,
+      "total_loss_inr": 1664766.56,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP096 - Gali Anjaneya Temple",
+      "risk_score": 2.934920634920635,
+      "avg_congestion_cost": 199.00883597883598,
+      "violation_count": 189,
+      "total_loss_inr": 20351431.1,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP094 - Sri Skanda Complex, Mysore Road",
+      "risk_score": 2.9206896551724135,
+      "avg_congestion_cost": 198.4244827586207,
+      "violation_count": 29,
+      "total_loss_inr": 2088903.9900000002,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP140 - Madiwala Check Post",
+      "risk_score": 2.791818181818182,
+      "avg_congestion_cost": 189.3309090909091,
+      "violation_count": 110,
+      "total_loss_inr": 11134166.42,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP179 - 9th Block, 28th Main, Jayanagar",
+      "risk_score": 2.7365384615384616,
+      "avg_congestion_cost": 185.3075,
+      "violation_count": 52,
+      "total_loss_inr": 4041083.16,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP156 - Kamakya Junction",
+      "risk_score": 2.187962962962963,
+      "avg_congestion_cost": 148.58805555555557,
+      "violation_count": 108,
+      "total_loss_inr": 9224357.68,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP138 - Sarjapur Road Check Post",
+      "risk_score": 2.1205128205128205,
+      "avg_congestion_cost": 143.39307692307693,
+      "violation_count": 39,
+      "total_loss_inr": 3459851.02,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP058 - Subbanna Junction",
+      "risk_score": 2.0990255785627285,
+      "avg_congestion_cost": 142.62751522533495,
+      "violation_count": 821,
+      "total_loss_inr": 97954939.87,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP093 - Toll Gate, Mysore Road",
+      "risk_score": 2.0949999999999998,
+      "avg_congestion_cost": 142.0555,
+      "violation_count": 20,
+      "total_loss_inr": 2126363.69,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP206 - Shankara Mutt Circle, Vijayanagar",
+      "risk_score": 2.0160714285714287,
+      "avg_congestion_cost": 136.32435714285714,
+      "violation_count": 280,
+      "total_loss_inr": 21664672.82,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP203 - RRMR Junction",
+      "risk_score": 1.988888888888889,
+      "avg_congestion_cost": 134.69259259259258,
+      "violation_count": 27,
+      "total_loss_inr": 3257671.42,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP168 - MSR Building, JC Road",
+      "risk_score": 1.9857142857142858,
+      "avg_congestion_cost": 134.71428571428572,
+      "violation_count": 14,
+      "total_loss_inr": 1437675.9,
+      "recommendation": "Monitor"
+    },
+    {
+      "junction": "BTP136 - Hosur-Tavarkere Road Junction",
+      "risk_score": 1.9432,
+      "avg_congestion_cost": 131.82191999999998,
+      "violation_count": 125,
+      "total_loss_inr": 10430561.3,
+      "recommendation": "Monitor"
+    }
+  ],
+  "total_high_risk": 0
+}

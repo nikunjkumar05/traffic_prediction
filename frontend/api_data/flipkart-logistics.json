@@ -1,0 +1,2170 @@
+{
+  "status": "success",
+  "recommendations": [
+    {
+      "zone_name": "Zone (12.9678, 77.5778)",
+      "center_lat": 12.967752,
+      "center_lon": 77.577821,
+      "delivery_violations_per_week": 307,
+      "recommended_bays": 219,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 15,
+      "estimated_daily_cost_saving_inr": 2192,
+      "priority": "HIGH"
+    },
+    {
+      "zone_name": "Zone (13.0086, 77.6955)",
+      "center_lat": 13.008591,
+      "center_lon": 77.695507,
+      "delivery_violations_per_week": 31,
+      "recommended_bays": 22,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 2.2,
+      "estimated_daily_cost_saving_inr": 222,
+      "priority": "MEDIUM"
+    },
+    {
+      "zone_name": "Zone (12.9817, 77.6078)",
+      "center_lat": 12.981667,
+      "center_lon": 77.607785,
+      "delivery_violations_per_week": 27,
+      "recommended_bays": 19,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 1.9,
+      "estimated_daily_cost_saving_inr": 190,
+      "priority": "MEDIUM"
+    },
+    {
+      "zone_name": "Zone (12.9920, 77.5526)",
+      "center_lat": 12.992039,
+      "center_lon": 77.552612,
+      "delivery_violations_per_week": 21,
+      "recommended_bays": 14,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 1.5,
+      "estimated_daily_cost_saving_inr": 148,
+      "priority": "MEDIUM"
+    },
+    {
+      "zone_name": "Zone (12.9070, 77.6312)",
+      "center_lat": 12.907008,
+      "center_lon": 77.631231,
+      "delivery_violations_per_week": 17,
+      "recommended_bays": 12,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 1.2,
+      "estimated_daily_cost_saving_inr": 123,
+      "priority": "MEDIUM"
+    },
+    {
+      "zone_name": "Zone (12.9392, 77.6974)",
+      "center_lat": 12.939213,
+      "center_lon": 77.697406,
+      "delivery_violations_per_week": 17,
+      "recommended_bays": 12,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 1.2,
+      "estimated_daily_cost_saving_inr": 120,
+      "priority": "MEDIUM"
+    },
+    {
+      "zone_name": "Zone (13.0065, 77.5268)",
+      "center_lat": 13.00645,
+      "center_lon": 77.526792,
+      "delivery_violations_per_week": 15,
+      "recommended_bays": 11,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 1.1,
+      "estimated_daily_cost_saving_inr": 110,
+      "priority": "MEDIUM"
+    },
+    {
+      "zone_name": "Zone (13.0346, 77.6240)",
+      "center_lat": 13.034623,
+      "center_lon": 77.624034,
+      "delivery_violations_per_week": 11,
+      "recommended_bays": 8,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.8,
+      "estimated_daily_cost_saving_inr": 80,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9951, 77.6115)",
+      "center_lat": 12.995126,
+      "center_lon": 77.611528,
+      "delivery_violations_per_week": 10,
+      "recommended_bays": 7,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.8,
+      "estimated_daily_cost_saving_inr": 75,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9333, 77.6892)",
+      "center_lat": 12.933298,
+      "center_lon": 77.68916,
+      "delivery_violations_per_week": 10,
+      "recommended_bays": 7,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.8,
+      "estimated_daily_cost_saving_inr": 75,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9781, 77.5502)",
+      "center_lat": 12.978134,
+      "center_lon": 77.550199,
+      "delivery_violations_per_week": 10,
+      "recommended_bays": 7,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.8,
+      "estimated_daily_cost_saving_inr": 75,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0195, 77.5316)",
+      "center_lat": 13.01947,
+      "center_lon": 77.531612,
+      "delivery_violations_per_week": 10,
+      "recommended_bays": 7,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.7,
+      "estimated_daily_cost_saving_inr": 72,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8884, 77.6399)",
+      "center_lat": 12.888396,
+      "center_lon": 77.639875,
+      "delivery_violations_per_week": 10,
+      "recommended_bays": 7,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.7,
+      "estimated_daily_cost_saving_inr": 70,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9509, 77.6998)",
+      "center_lat": 12.950878,
+      "center_lon": 77.699842,
+      "delivery_violations_per_week": 9,
+      "recommended_bays": 6,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.7,
+      "estimated_daily_cost_saving_inr": 68,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8419, 77.6448)",
+      "center_lat": 12.841934,
+      "center_lon": 77.644831,
+      "delivery_violations_per_week": 9,
+      "recommended_bays": 6,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.7,
+      "estimated_daily_cost_saving_inr": 65,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9800, 77.6296)",
+      "center_lat": 12.980018,
+      "center_lon": 77.629583,
+      "delivery_violations_per_week": 8,
+      "recommended_bays": 6,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.6,
+      "estimated_daily_cost_saving_inr": 60,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9516, 77.7175)",
+      "center_lat": 12.951582,
+      "center_lon": 77.717462,
+      "delivery_violations_per_week": 8,
+      "recommended_bays": 5,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.6,
+      "estimated_daily_cost_saving_inr": 55,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9104, 77.5740)",
+      "center_lat": 12.910421,
+      "center_lon": 77.574008,
+      "delivery_violations_per_week": 8,
+      "recommended_bays": 5,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.6,
+      "estimated_daily_cost_saving_inr": 55,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0102, 77.5516)",
+      "center_lat": 13.010211,
+      "center_lon": 77.551551,
+      "delivery_violations_per_week": 7,
+      "recommended_bays": 5,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.5,
+      "estimated_daily_cost_saving_inr": 52,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9607, 77.5594)",
+      "center_lat": 12.960671,
+      "center_lon": 77.559422,
+      "delivery_violations_per_week": 7,
+      "recommended_bays": 4,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.5,
+      "estimated_daily_cost_saving_inr": 48,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9276, 77.6092)",
+      "center_lat": 12.927582,
+      "center_lon": 77.609197,
+      "delivery_violations_per_week": 7,
+      "recommended_bays": 4,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.5,
+      "estimated_daily_cost_saving_inr": 48,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0304, 77.5368)",
+      "center_lat": 13.030437,
+      "center_lon": 77.536847,
+      "delivery_violations_per_week": 6,
+      "recommended_bays": 4,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.5,
+      "estimated_daily_cost_saving_inr": 45,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9643, 77.5556)",
+      "center_lat": 12.964278,
+      "center_lon": 77.555586,
+      "delivery_violations_per_week": 6,
+      "recommended_bays": 4,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.4,
+      "estimated_daily_cost_saving_inr": 40,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9792, 77.6950)",
+      "center_lat": 12.979219,
+      "center_lon": 77.694977,
+      "delivery_violations_per_week": 6,
+      "recommended_bays": 4,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.4,
+      "estimated_daily_cost_saving_inr": 40,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9615, 77.7165)",
+      "center_lat": 12.961539,
+      "center_lon": 77.716457,
+      "delivery_violations_per_week": 6,
+      "recommended_bays": 4,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.4,
+      "estimated_daily_cost_saving_inr": 40,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9497, 77.5227)",
+      "center_lat": 12.949732,
+      "center_lon": 77.522673,
+      "delivery_violations_per_week": 5,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.4,
+      "estimated_daily_cost_saving_inr": 38,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9964, 77.6687)",
+      "center_lat": 12.996385,
+      "center_lon": 77.668693,
+      "delivery_violations_per_week": 5,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.4,
+      "estimated_daily_cost_saving_inr": 38,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9960, 77.6949)",
+      "center_lat": 12.995962,
+      "center_lon": 77.694931,
+      "delivery_violations_per_week": 5,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.3,
+      "estimated_daily_cost_saving_inr": 32,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9757, 77.5607)",
+      "center_lat": 12.975705,
+      "center_lon": 77.560677,
+      "delivery_violations_per_week": 5,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.3,
+      "estimated_daily_cost_saving_inr": 32,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0370, 77.5893)",
+      "center_lat": 13.037042,
+      "center_lon": 77.589282,
+      "delivery_violations_per_week": 5,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.3,
+      "estimated_daily_cost_saving_inr": 32,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0966, 77.5997)",
+      "center_lat": 13.096582,
+      "center_lon": 77.59974,
+      "delivery_violations_per_week": 4,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.3,
+      "estimated_daily_cost_saving_inr": 30,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9991, 77.5712)",
+      "center_lat": 12.999054,
+      "center_lon": 77.571171,
+      "delivery_violations_per_week": 4,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.3,
+      "estimated_daily_cost_saving_inr": 30,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9365, 77.6046)",
+      "center_lat": 12.936542,
+      "center_lon": 77.604634,
+      "delivery_violations_per_week": 4,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.3,
+      "estimated_daily_cost_saving_inr": 30,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9544, 77.5441)",
+      "center_lat": 12.954376,
+      "center_lon": 77.544091,
+      "delivery_violations_per_week": 4,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.3,
+      "estimated_daily_cost_saving_inr": 28,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9469, 77.5950)",
+      "center_lat": 12.946857,
+      "center_lon": 77.595025,
+      "delivery_violations_per_week": 4,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.3,
+      "estimated_daily_cost_saving_inr": 28,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0479, 77.5768)",
+      "center_lat": 13.047949,
+      "center_lon": 77.57676,
+      "delivery_violations_per_week": 4,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.3,
+      "estimated_daily_cost_saving_inr": 28,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0255, 77.5854)",
+      "center_lat": 13.025495,
+      "center_lon": 77.585401,
+      "delivery_violations_per_week": 4,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 25,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9256, 77.6760)",
+      "center_lat": 12.925584,
+      "center_lon": 77.676047,
+      "delivery_violations_per_week": 4,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 25,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9577, 77.7019)",
+      "center_lat": 12.957682,
+      "center_lon": 77.701912,
+      "delivery_violations_per_week": 3,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 22,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0056, 77.6857)",
+      "center_lat": 13.005603,
+      "center_lon": 77.685661,
+      "delivery_violations_per_week": 3,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 22,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9270, 77.5971)",
+      "center_lat": 12.926968,
+      "center_lon": 77.597094,
+      "delivery_violations_per_week": 3,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 20,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9900, 77.6003)",
+      "center_lat": 12.990033,
+      "center_lon": 77.600278,
+      "delivery_violations_per_week": 3,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 20,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9653, 77.5378)",
+      "center_lat": 12.965303,
+      "center_lon": 77.53785,
+      "delivery_violations_per_week": 3,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 20,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.1837, 77.6797)",
+      "center_lat": 13.183714,
+      "center_lon": 77.679685,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 18,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9421, 77.5256)",
+      "center_lat": 12.942147,
+      "center_lon": 77.525614,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 18,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9542, 77.5908)",
+      "center_lat": 12.954201,
+      "center_lon": 77.590803,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 18,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0071, 77.5709)",
+      "center_lat": 13.007075,
+      "center_lon": 77.570857,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 18,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9580, 77.5192)",
+      "center_lat": 12.958011,
+      "center_lon": 77.519206,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 18,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9425, 77.7479)",
+      "center_lat": 12.942512,
+      "center_lon": 77.747866,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 18,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0533, 77.7619)",
+      "center_lat": 13.053312,
+      "center_lon": 77.761897,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 18,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0275, 77.5791)",
+      "center_lat": 13.027465,
+      "center_lon": 77.579099,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.2,
+      "estimated_daily_cost_saving_inr": 18,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0003, 77.6768)",
+      "center_lat": 13.000338,
+      "center_lon": 77.67682,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0705, 77.5926)",
+      "center_lat": 13.070454,
+      "center_lon": 77.592572,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8709, 77.6546)",
+      "center_lat": 12.870885,
+      "center_lon": 77.654643,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9824, 77.5613)",
+      "center_lat": 12.982419,
+      "center_lon": 77.561346,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9256, 77.6188)",
+      "center_lat": 12.925575,
+      "center_lon": 77.618796,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9691, 77.5695)",
+      "center_lat": 12.96911,
+      "center_lon": 77.569527,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9360, 77.5190)",
+      "center_lat": 12.936045,
+      "center_lon": 77.51896,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9098, 77.5502)",
+      "center_lat": 12.909848,
+      "center_lon": 77.550235,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0535, 77.4848)",
+      "center_lat": 13.053526,
+      "center_lon": 77.48482,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9173, 77.5963)",
+      "center_lat": 12.917289,
+      "center_lon": 77.596281,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 15,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9899, 77.5740)",
+      "center_lat": 12.989921,
+      "center_lon": 77.574008,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9927, 77.7162)",
+      "center_lat": 12.99266,
+      "center_lon": 77.716249,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9068, 77.5431)",
+      "center_lat": 12.906809,
+      "center_lon": 77.543128,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0188, 77.5390)",
+      "center_lat": 13.018826,
+      "center_lon": 77.538966,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9381, 77.5926)",
+      "center_lat": 12.938116,
+      "center_lon": 77.592629,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8752, 77.6703)",
+      "center_lat": 12.875227,
+      "center_lon": 77.670309,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9721, 77.7110)",
+      "center_lat": 12.972093,
+      "center_lon": 77.710953,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9719, 77.6177)",
+      "center_lat": 12.971941,
+      "center_lon": 77.617665,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9718, 77.5076)",
+      "center_lat": 12.971783,
+      "center_lon": 77.507646,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0208, 77.6138)",
+      "center_lat": 13.02082,
+      "center_lon": 77.613804,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0595, 77.5884)",
+      "center_lat": 13.059476,
+      "center_lon": 77.588405,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9362, 77.6167)",
+      "center_lat": 12.936228,
+      "center_lon": 77.616664,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8979, 77.6063)",
+      "center_lat": 12.897932,
+      "center_lon": 77.606307,
+      "delivery_violations_per_week": 2,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 12,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9605, 77.6409)",
+      "center_lat": 12.960466,
+      "center_lon": 77.640914,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8757, 77.6480)",
+      "center_lat": 12.875738,
+      "center_lon": 77.647961,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9607, 77.5128)",
+      "center_lat": 12.96074,
+      "center_lon": 77.512801,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9257, 77.5858)",
+      "center_lat": 12.925729,
+      "center_lon": 77.585822,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9724, 77.6247)",
+      "center_lat": 12.972392,
+      "center_lon": 77.624711,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8287, 77.6818)",
+      "center_lat": 12.828708,
+      "center_lon": 77.681762,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8407, 77.6513)",
+      "center_lat": 12.84065,
+      "center_lon": 77.651346,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9709, 77.5657)",
+      "center_lat": 12.970883,
+      "center_lon": 77.565729,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9687, 77.6007)",
+      "center_lat": 12.968666,
+      "center_lon": 77.600696,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.1915, 77.6465)",
+      "center_lat": 13.191472,
+      "center_lon": 77.646456,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9878, 77.5375)",
+      "center_lat": 12.987765,
+      "center_lon": 77.537472,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9697, 77.6474)",
+      "center_lat": 12.969683,
+      "center_lon": 77.647358,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0459, 77.7504)",
+      "center_lat": 13.045929,
+      "center_lon": 77.750431,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0175, 77.5578)",
+      "center_lat": 13.017516,
+      "center_lon": 77.55777,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9604, 77.6493)",
+      "center_lat": 12.960353,
+      "center_lon": 77.649348,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 10,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0584, 77.4664)",
+      "center_lat": 13.058442,
+      "center_lon": 77.466393,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0035, 77.7235)",
+      "center_lat": 13.003457,
+      "center_lon": 77.723498,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0575, 77.5466)",
+      "center_lat": 13.057495,
+      "center_lon": 77.546633,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9137, 77.6074)",
+      "center_lat": 12.91373,
+      "center_lon": 77.607378,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9489, 77.5361)",
+      "center_lat": 12.948888,
+      "center_lon": 77.536077,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0381, 77.5182)",
+      "center_lat": 13.038113,
+      "center_lon": 77.518182,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0165, 77.5493)",
+      "center_lat": 13.016504,
+      "center_lon": 77.549318,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9207, 77.6205)",
+      "center_lat": 12.920728,
+      "center_lon": 77.620536,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9165, 77.6317)",
+      "center_lat": 12.916452,
+      "center_lon": 77.63172,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8982, 77.6346)",
+      "center_lat": 12.898171,
+      "center_lon": 77.634619,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9380, 77.7466)",
+      "center_lat": 12.938031,
+      "center_lon": 77.746642,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9558, 77.6915)",
+      "center_lat": 12.955752,
+      "center_lon": 77.691547,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9124, 77.6354)",
+      "center_lat": 12.912383,
+      "center_lon": 77.635444,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9701, 77.6399)",
+      "center_lat": 12.970106,
+      "center_lon": 77.639901,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9144, 77.5858)",
+      "center_lat": 12.914425,
+      "center_lon": 77.585807,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9562, 77.7315)",
+      "center_lat": 12.956211,
+      "center_lon": 77.731531,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9742, 77.6071)",
+      "center_lat": 12.97416,
+      "center_lon": 77.607103,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9903, 77.5040)",
+      "center_lat": 12.990318,
+      "center_lon": 77.504011,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8990, 77.6754)",
+      "center_lat": 12.899042,
+      "center_lon": 77.675418,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0338, 77.5573)",
+      "center_lat": 13.03379,
+      "center_lon": 77.557282,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0359, 77.7354)",
+      "center_lat": 13.035862,
+      "center_lon": 77.735375,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9670, 77.5473)",
+      "center_lat": 12.967015,
+      "center_lon": 77.547308,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0106, 77.5057)",
+      "center_lat": 13.01059,
+      "center_lon": 77.505688,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.1222, 77.6297)",
+      "center_lat": 13.122197,
+      "center_lon": 77.629706,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9743, 77.5132)",
+      "center_lat": 12.974281,
+      "center_lon": 77.513175,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0282, 77.5621)",
+      "center_lat": 13.028157,
+      "center_lon": 77.562112,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0599, 77.5765)",
+      "center_lat": 13.059949,
+      "center_lon": 77.5765,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9569, 77.7388)",
+      "center_lat": 12.956904,
+      "center_lon": 77.738768,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0133, 77.5345)",
+      "center_lat": 13.013284,
+      "center_lon": 77.5345,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9671, 77.5936)",
+      "center_lat": 12.967121,
+      "center_lon": 77.593629,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9446, 77.5713)",
+      "center_lat": 12.944609,
+      "center_lon": 77.571265,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0629, 77.5920)",
+      "center_lat": 13.062944,
+      "center_lon": 77.591952,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9528, 77.5956)",
+      "center_lat": 12.952823,
+      "center_lon": 77.59563,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9904, 77.5080)",
+      "center_lat": 12.990419,
+      "center_lon": 77.508001,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9150, 77.5534)",
+      "center_lat": 12.914971,
+      "center_lon": 77.553445,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.9249, 77.6949)",
+      "center_lat": 12.924868,
+      "center_lon": 77.694875,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (13.0033, 77.5956)",
+      "center_lat": 13.00326,
+      "center_lon": 77.595558,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    },
+    {
+      "zone_name": "Zone (12.8360, 77.6790)",
+      "center_lat": 12.836029,
+      "center_lon": 77.679028,
+      "delivery_violations_per_week": 1,
+      "recommended_bays": 3,
+      "recommended_window": "11:00-13:00, 17:00-19:00",
+      "peak_hours": [
+        4,
+        5,
+        21
+      ],
+      "estimated_delay_reduction_min": 0.1,
+      "estimated_daily_cost_saving_inr": 8,
+      "priority": "LOW"
+    }
+  ],
+  "impact": {
+    "total_delivery_hotspots": 127,
+    "total_violations_per_week": 770,
+    "violations_reducible_pct": 35,
+    "total_bays_needed": 715,
+    "avg_delivery_time_saved_min": 0.4,
+    "daily_savings_inr": 5572,
+    "annual_savings_inr": 2033780,
+    "annual_savings_crores": 0.2
+  },
+  "hourly_patterns": [
+    {
+      "hour": 0,
+      "violation_count": 164,
+      "avg_congestion": 65.9525
+    },
+    {
+      "hour": 1,
+      "violation_count": 128,
+      "avg_congestion": 72.682734375
+    },
+    {
+      "hour": 2,
+      "violation_count": 189,
+      "avg_congestion": 78.73507936507937
+    },
+    {
+      "hour": 3,
+      "violation_count": 164,
+      "avg_congestion": 68.38371951219513
+    },
+    {
+      "hour": 4,
+      "violation_count": 203,
+      "avg_congestion": 70.79866995073891
+    },
+    {
+      "hour": 5,
+      "violation_count": 208,
+      "avg_congestion": 62.07
+    },
+    {
+      "hour": 6,
+      "violation_count": 184,
+      "avg_congestion": 134.9670652173913
+    },
+    {
+      "hour": 7,
+      "violation_count": 111,
+      "avg_congestion": 531.6186486486487
+    },
+    {
+      "hour": 8,
+      "violation_count": 50,
+      "avg_congestion": 440.723
+    },
+    {
+      "hour": 9,
+      "violation_count": 23,
+      "avg_congestion": 500.42304347826087
+    },
+    {
+      "hour": 10,
+      "violation_count": 1,
+      "avg_congestion": 239.12
+    },
+    {
+      "hour": 11,
+      "violation_count": 1,
+      "avg_congestion": 174.36
+    },
+    {
+      "hour": 12,
+      "violation_count": 2,
+      "avg_congestion": 336.86
+    },
+    {
+      "hour": 13,
+      "violation_count": 1,
+      "avg_congestion": 358.68
+    },
+    {
+      "hour": 14,
+      "violation_count": 2,
+      "avg_congestion": 423.445
+    },
+    {
+      "hour": 15,
+      "violation_count": 1,
+      "avg_congestion": 174.36
+    },
+    {
+      "hour": 16,
+      "violation_count": 19,
+      "avg_congestion": 274.91263157894736
+    },
+    {
+      "hour": 17,
+      "violation_count": 30,
+      "avg_congestion": 734.1726666666667
+    },
+    {
+      "hour": 18,
+      "violation_count": 46,
+      "avg_congestion": 495.00282608695653
+    },
+    {
+      "hour": 19,
+      "violation_count": 150,
+      "avg_congestion": 451.60406666666665
+    },
+    {
+      "hour": 20,
+      "violation_count": 173,
+      "avg_congestion": 510.6601156069364
+    },
+    {
+      "hour": 21,
+      "violation_count": 265,
+      "avg_congestion": 127.71675471698114
+    },
+    {
+      "hour": 22,
+      "violation_count": 182,
+      "avg_congestion": 66.70379120879122
+    },
+    {
+      "hour": 23,
+      "violation_count": 186,
+      "avg_congestion": 68.04360215053764
+    }
+  ],
+  "cluster_count": 127
+}

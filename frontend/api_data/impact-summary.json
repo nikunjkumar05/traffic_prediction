@@ -1,0 +1,10 @@
+{
+  "total_violations_analyzed": 50000,
+  "delivery_vehicle_violations": 0,
+  "annual_savings_inr": 2033780.0,
+  "hours_saved": 0.0,
+  "fuel_liters_saved": 0.0,
+  "co2_kg_reduced": 0.0,
+  "green_zones": 127,
+  "clusters": 127
+}

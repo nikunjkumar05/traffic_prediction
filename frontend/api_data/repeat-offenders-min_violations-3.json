@@ -1,0 +1,373 @@
+[
+  {
+    "vehicle_number": "FKN00GL3514",
+    "violation_count": 11,
+    "vehicle_type": "PASSENGER AUTO",
+    "violation_types": [
+      "[\"WRONG PARKING\",\"DEFECTIVE NUMBER PLATE\",\"REFUSE TO GO FOR HIRE\",\"DEMANDING EXCESS FARE\"]",
+      "[\"WRONG PARKING\"]",
+      "[\"NO PARKING\",\"REFUSE TO GO FOR HIRE\",\"DEMANDING EXCESS FARE\"]",
+      "[\"NO PARKING\"]",
+      "[\"WRONG PARKING\",\"REFUSE TO GO FOR HIRE\"]"
+    ],
+    "police_stations": [
+      "Shivajinagar"
+    ],
+    "top_junctions": {
+      "BTP051 - Safina Plaza Junction": 11
+    },
+    "total_economic_loss": 1487958.8299999996,
+    "avg_gridlock_score": 1.1090909090909091
+  },
+  {
+    "vehicle_number": "FKN00GL2445",
+    "violation_count": 10,
+    "vehicle_type": "MOTOR CYCLE",
+    "violation_types": [
+      "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]"
+    ],
+    "police_stations": [
+      "HAL Old Airport"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 10
+    },
+    "total_economic_loss": 119423.51999999999,
+    "avg_gridlock_score": 0.26999999999999996
+  },
+  {
+    "vehicle_number": "FKN00GL4424",
+    "violation_count": 10,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"NO PARKING\"]",
+      "[\"WRONG PARKING\"]"
+    ],
+    "police_stations": [
+      "Kodigehalli"
+    ],
+    "top_junctions": {
+      "BTP030 - Mekhri Circle": 10
+    },
+    "total_economic_loss": 176541.78999999998,
+    "avg_gridlock_score": 0.14000000000000004
+  },
+  {
+    "vehicle_number": "FKN00GL2817",
+    "violation_count": 8,
+    "vehicle_type": "MOTOR CYCLE",
+    "violation_types": [
+      "[\"WRONG PARKING\"]",
+      "[\"WRONG PARKING\",\"DEFECTIVE NUMBER PLATE\"]"
+    ],
+    "police_stations": [
+      "Shivajinagar"
+    ],
+    "top_junctions": {
+      "BTP051 - Safina Plaza Junction": 8
+    },
+    "total_economic_loss": 92995.67,
+    "avg_gridlock_score": 0.125
+  },
+  {
+    "vehicle_number": "FKN00GL14399",
+    "violation_count": 8,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"NO PARKING\"]",
+      "[\"WRONG PARKING\"]"
+    ],
+    "police_stations": [
+      "Shivajinagar",
+      "Malleshwaram"
+    ],
+    "top_junctions": {
+      "BTP042 - Minsk Square Junction (CTO)": 7,
+      "BTP054 - Shivananda Circle": 1
+    },
+    "total_economic_loss": 173228.42,
+    "avg_gridlock_score": 0.3125
+  },
+  {
+    "vehicle_number": "FKN00GL23579",
+    "violation_count": 8,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\",\"DEFECTIVE NUMBER PLATE\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"NO PARKING\",\"DEFECTIVE NUMBER PLATE\"]"
+    ],
+    "police_stations": [
+      "HAL Old Airport"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 8
+    },
+    "total_economic_loss": 110966.88,
+    "avg_gridlock_score": 0.2875
+  },
+  {
+    "vehicle_number": "FKN00GL0990",
+    "violation_count": 7,
+    "vehicle_type": "MOTOR CYCLE",
+    "violation_types": [
+      "[\"NO PARKING\"]",
+      "[\"WRONG PARKING\"]",
+      "[\"NO PARKING\",\"WRONG PARKING\",\"PARKING IN A MAIN ROAD\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"DOUBLE PARKING\",\"WRONG PARKING\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]"
+    ],
+    "police_stations": [
+      "HAL Old Airport"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 7
+    },
+    "total_economic_loss": 90938.44999999998,
+    "avg_gridlock_score": 0.22857142857142862
+  },
+  {
+    "vehicle_number": "FKN00GL20170",
+    "violation_count": 7,
+    "vehicle_type": "LGV",
+    "violation_types": [
+      "[\"PARKING IN A MAIN ROAD\",\"NO PARKING\"]",
+      "[\"NO PARKING\",\"PARKING IN A MAIN ROAD\"]"
+    ],
+    "police_stations": [
+      "Rajajinagar"
+    ],
+    "top_junctions": {
+      "BTP206 - Shankara Mutt Circle, Vijayanagar": 7
+    },
+    "total_economic_loss": 1320751.1999999997,
+    "avg_gridlock_score": 6.471428571428572
+  },
+  {
+    "vehicle_number": "FKN00GL2735",
+    "violation_count": 7,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"NO PARKING\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]",
+      "[\"NO PARKING\",\"WRONG PARKING\",\"PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC\",\"DOUBLE PARKING\",\"PARKING OPPOSITE TO ANOTHER PARKED VEHICLE\",\"PARKING IN A MAIN ROAD\"]",
+      "[\"NO PARKING\",\"WRONG PARKING\"]",
+      "[\"PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC\",\"WRONG PARKING\"]"
+    ],
+    "police_stations": [
+      "HAL Old Airport"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 7
+    },
+    "total_economic_loss": 95836.73000000001,
+    "avg_gridlock_score": 0.15714285714285717
+  },
+  {
+    "vehicle_number": "FKN00GL3173",
+    "violation_count": 7,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"NO PARKING\"]",
+      "[\"WRONG PARKING\"]",
+      "[\"NO PARKING\",\"DEFECTIVE NUMBER PLATE\"]"
+    ],
+    "police_stations": [
+      "Upparpet"
+    ],
+    "top_junctions": {
+      "BTP040 - Elite Junction": 6,
+      "BTP044 - Sagar Theatre Junction": 1
+    },
+    "total_economic_loss": 87430.58,
+    "avg_gridlock_score": 0.09999999999999999
+  },
+  {
+    "vehicle_number": "FKN00GL12732",
+    "violation_count": 7,
+    "vehicle_type": "PASSENGER AUTO",
+    "violation_types": [
+      "[\"WRONG PARKING\",\"DEFECTIVE NUMBER PLATE\",\"REFUSE TO GO FOR HIRE\"]",
+      "[\"NO PARKING\",\"DEMANDING EXCESS FARE\",\"REFUSE TO GO FOR HIRE\"]",
+      "[\"WRONG PARKING\"]",
+      "[\"NO PARKING\"]"
+    ],
+    "police_stations": [
+      "Shivajinagar"
+    ],
+    "top_junctions": {
+      "BTP051 - Safina Plaza Junction": 7
+    },
+    "total_economic_loss": 496093.06,
+    "avg_gridlock_score": 0.5857142857142856
+  },
+  {
+    "vehicle_number": "FKN00GL89730",
+    "violation_count": 7,
+    "vehicle_type": "MAXI-CAB",
+    "violation_types": [
+      "[\"NO PARKING\",\"PARKING IN A MAIN ROAD\",\"PARKING NEAR ROAD CROSSING\",\"DOUBLE PARKING\",\"WRONG PARKING\"]"
+    ],
+    "police_stations": [
+      "Mahadevapura"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 7
+    },
+    "total_economic_loss": 254808.0,
+    "avg_gridlock_score": 1.2428571428571427
+  },
+  {
+    "vehicle_number": "FKN00GL15753",
+    "violation_count": 7,
+    "vehicle_type": "PASSENGER AUTO",
+    "violation_types": [
+      "[\"WRONG PARKING\"]",
+      "[\"NO PARKING\"]",
+      "[\"NO PARKING\",\"DOUBLE PARKING\"]",
+      "[\"NO PARKING\",\"DEFECTIVE NUMBER PLATE\"]"
+    ],
+    "police_stations": [
+      "Shivajinagar"
+    ],
+    "top_junctions": {
+      "BTP051 - Safina Plaza Junction": 7
+    },
+    "total_economic_loss": 821841.81,
+    "avg_gridlock_score": 1.1714285714285713
+  },
+  {
+    "vehicle_number": "FKN00GL4303",
+    "violation_count": 7,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"NO PARKING\",\"PARKING IN A MAIN ROAD\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]",
+      "[\"WRONG PARKING\"]",
+      "[\"NO PARKING\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC\",\"WRONG PARKING\"]"
+    ],
+    "police_stations": [
+      "HAL Old Airport"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 7
+    },
+    "total_economic_loss": 172995.40999999995,
+    "avg_gridlock_score": 0.28571428571428575
+  },
+  {
+    "vehicle_number": "FKN00GL25393",
+    "violation_count": 7,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"NO PARKING\",\"PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC\"]",
+      "[\"WRONG PARKING\",\"NO PARKING\",\"PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC\",\"PARKING IN A MAIN ROAD\"]",
+      "[\"NO PARKING\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]",
+      "[\"WRONG PARKING\"]"
+    ],
+    "police_stations": [
+      "HAL Old Airport"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 7
+    },
+    "total_economic_loss": 82355.53000000001,
+    "avg_gridlock_score": 0.17142857142857146
+  },
+  {
+    "vehicle_number": "FKN00GL18293",
+    "violation_count": 7,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"NO PARKING\",\"WRONG PARKING\",\"PARKING NEAR BUSTOP/SCHOOL/HOSPITAL ETC\",\"DOUBLE PARKING\",\"PARKING OPPOSITE TO ANOTHER PARKED VEHICLE\",\"PARKING IN A MAIN ROAD\",\"PARKING NEAR ROAD CROSSING\",\"DEFECTIVE NUMBER PLATE\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"DOUBLE PARKING\",\"WRONG PARKING\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"NO PARKING\",\"WRONG PARKING\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"NO PARKING\"]"
+    ],
+    "police_stations": [
+      "HAL Old Airport"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 7
+    },
+    "total_economic_loss": 328996.54,
+    "avg_gridlock_score": 0.6857142857142857
+  },
+  {
+    "vehicle_number": "FKN00GL35780",
+    "violation_count": 6,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"NO PARKING\",\"PARKING ON FOOTPATH\"]",
+      "[\"NO PARKING\",\"DEFECTIVE NUMBER PLATE\"]",
+      "[\"NO PARKING\"]",
+      "[\"DEFECTIVE NUMBER PLATE\",\"NO PARKING\"]"
+    ],
+    "police_stations": [
+      "Upparpet"
+    ],
+    "top_junctions": {
+      "BTP044 - Sagar Theatre Junction": 6
+    },
+    "total_economic_loss": 92473.28,
+    "avg_gridlock_score": 0.11666666666666665
+  },
+  {
+    "vehicle_number": "FKN00GL0954",
+    "violation_count": 6,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"NO PARKING\",\"DEFECTIVE NUMBER PLATE\"]",
+      "[\"NO PARKING\",\"WRONG PARKING\",\"PARKING IN A MAIN ROAD\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"NO PARKING\"]",
+      "[\"NO PARKING\"]"
+    ],
+    "police_stations": [
+      "HAL Old Airport"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 6
+    },
+    "total_economic_loss": 82384.55,
+    "avg_gridlock_score": 0.20000000000000004
+  },
+  {
+    "vehicle_number": "FKN00GL5130",
+    "violation_count": 6,
+    "vehicle_type": "PASSENGER AUTO",
+    "violation_types": [
+      "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\",\"DOUBLE PARKING\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]",
+      "[\"PARKING IN A MAIN ROAD\",\"NO PARKING\"]",
+      "[\"NO PARKING\"]"
+    ],
+    "police_stations": [
+      "Mahadevapura",
+      "Banaswadi"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 6
+    },
+    "total_economic_loss": 248215.57,
+    "avg_gridlock_score": 0.8166666666666668
+  },
+  {
+    "vehicle_number": "FKN00GL177425",
+    "violation_count": 6,
+    "vehicle_type": "SCOOTER",
+    "violation_types": [
+      "[\"PARKING ON FOOTPATH\",\"DOUBLE PARKING\",\"WRONG PARKING\",\"NO PARKING\"]",
+      "[\"PARKING ON FOOTPATH\",\"WRONG PARKING\",\"NO PARKING\",\"DOUBLE PARKING\"]"
+    ],
+    "police_stations": [
+      "Mahadevapura"
+    ],
+    "top_junctions": {
+      "BTP148 - 17th Main, Doopanahalli Bus Stop": 6
+    },
+    "total_economic_loss": 127783.97,
+    "avg_gridlock_score": 0.35000000000000003
+  }
+]

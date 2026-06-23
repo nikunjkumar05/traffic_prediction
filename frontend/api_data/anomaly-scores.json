@@ -1,0 +1,170 @@
+[
+  {
+    "hour": 0,
+    "mean_duration": 23.12409259788511,
+    "std_duration": 4.229048819156377,
+    "violation_count": 3499,
+    "anomaly_score": 1.4656122230483022
+  },
+  {
+    "hour": 1,
+    "mean_duration": 23.461013923598717,
+    "std_duration": 4.25789865680147,
+    "violation_count": 2801,
+    "anomaly_score": 1.4134411664266366
+  },
+  {
+    "hour": 2,
+    "mean_duration": 23.868834025910534,
+    "std_duration": 4.433381273967719,
+    "violation_count": 4091,
+    "anomaly_score": 1.3502916890105088
+  },
+  {
+    "hour": 3,
+    "mean_duration": 23.14716937886775,
+    "std_duration": 4.201317792375741,
+    "violation_count": 4363,
+    "anomaly_score": 1.4620388664353268
+  },
+  {
+    "hour": 4,
+    "mean_duration": 23.383920430998757,
+    "std_duration": 4.314927751133459,
+    "violation_count": 4826,
+    "anomaly_score": 1.4253788167343928
+  },
+  {
+    "hour": 5,
+    "mean_duration": 23.44413397814795,
+    "std_duration": 4.361472337511154,
+    "violation_count": 5583,
+    "anomaly_score": 1.4160549653246952
+  },
+  {
+    "hour": 6,
+    "mean_duration": 23.239080199365656,
+    "std_duration": 4.425791902024919,
+    "violation_count": 4414,
+    "anomaly_score": 1.4478068061459295
+  },
+  {
+    "hour": 7,
+    "mean_duration": 39.58326230143355,
+    "std_duration": 7.701198862963331,
+    "violation_count": 2581,
+    "anomaly_score": 1.0830310625338708
+  },
+  {
+    "hour": 8,
+    "mean_duration": 40.23531827515401,
+    "std_duration": 8.07289128397491,
+    "violation_count": 1461,
+    "anomaly_score": 1.1839995870207465
+  },
+  {
+    "hour": 9,
+    "mean_duration": 41.02647584973166,
+    "std_duration": 8.558766718243868,
+    "violation_count": 559,
+    "anomaly_score": 1.3065074945642297
+  },
+  {
+    "hour": 10,
+    "mean_duration": 42.00697674418605,
+    "std_duration": 8.215190960476814,
+    "violation_count": 86,
+    "anomaly_score": 1.458334534820078
+  },
+  {
+    "hour": 11,
+    "mean_duration": 36.155660377358494,
+    "std_duration": 8.019132837440111,
+    "violation_count": 106,
+    "anomaly_score": 0.5522792210506944
+  },
+  {
+    "hour": 12,
+    "mean_duration": 37.17045454545455,
+    "std_duration": 6.572443513798492,
+    "violation_count": 44,
+    "anomaly_score": 0.7094164515033555
+  },
+  {
+    "hour": 13,
+    "mean_duration": 31.615384615384617,
+    "std_duration": 6.321767441921886,
+    "violation_count": 13,
+    "anomaly_score": 0.15076616604143142
+  },
+  {
+    "hour": 14,
+    "mean_duration": 38.5,
+    "std_duration": 9.15969431804359,
+    "violation_count": 6,
+    "anomaly_score": 0.9152917876615962
+  },
+  {
+    "hour": 15,
+    "mean_duration": 34.84615384615385,
+    "std_duration": 6.063499455019819,
+    "violation_count": 13,
+    "anomaly_score": 0.349506840165576
+  },
+  {
+    "hour": 16,
+    "mean_duration": 36.657534246575345,
+    "std_duration": 7.525362999886509,
+    "violation_count": 73,
+    "anomaly_score": 0.6299925863070786
+  },
+  {
+    "hour": 17,
+    "mean_duration": 41.83529411764706,
+    "std_duration": 9.215893526861734,
+    "violation_count": 153,
+    "anomaly_score": 1.4317500970105943
+  },
+  {
+    "hour": 18,
+    "mean_duration": 41.439204545454544,
+    "std_duration": 8.328849901156259,
+    "violation_count": 352,
+    "anomaly_score": 1.3704170500319295
+  },
+  {
+    "hour": 19,
+    "mean_duration": 43.105825242718446,
+    "std_duration": 8.097650018800008,
+    "violation_count": 1854,
+    "anomaly_score": 1.6284872763069629
+  },
+  {
+    "hour": 20,
+    "mean_duration": 42.50868939030245,
+    "std_duration": 8.415452620386668,
+    "violation_count": 2083,
+    "anomaly_score": 1.5360229352586834
+  },
+  {
+    "hour": 21,
+    "mean_duration": 24.366165182683453,
+    "std_duration": 5.036971157428367,
+    "violation_count": 3257,
+    "anomaly_score": 1.273281746452663
+  },
+  {
+    "hour": 22,
+    "mean_duration": 23.70857070193286,
+    "std_duration": 4.896507697168108,
+    "violation_count": 3932,
+    "anomaly_score": 1.3751078888515447
+  },
+  {
+    "hour": 23,
+    "mean_duration": 23.70761038961039,
+    "std_duration": 4.567183513038756,
+    "violation_count": 3850,
+    "anomaly_score": 1.375256589763973
+  }
+]

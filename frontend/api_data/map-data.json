@@ -1,0 +1,1682 @@
+[
+  {
+    "junction": "BTP001 - 10th Cross, Dr. Rajkumar Road",
+    "lat": 13.007811,
+    "lng": 77.554653,
+    "violation_count": 1577,
+    "avg_congestion_cost": 48.88476220672162,
+    "avg_gridlock_score": 0.7206087507926442,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP006 - Navarang Bar Junction",
+    "lat": 12.990978,
+    "lng": 77.557596,
+    "violation_count": 10,
+    "avg_congestion_cost": 121.883,
+    "avg_gridlock_score": 1.81,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP008 - Navarang Theatre",
+    "lat": 12.998492,
+    "lng": 77.553093,
+    "violation_count": 172,
+    "avg_congestion_cost": 22.181046511627905,
+    "avg_gridlock_score": 0.3279069767441861,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP009 - Prakash Nagar Junction",
+    "lat": 12.992518,
+    "lng": 77.557633,
+    "violation_count": 429,
+    "avg_congestion_cost": 33.28363636363636,
+    "avg_gridlock_score": 0.49044289044289047,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP010 - Rajajinagar Entrance",
+    "lat": 12.982262,
+    "lng": 77.560081,
+    "violation_count": 160,
+    "avg_congestion_cost": 41.4506875,
+    "avg_gridlock_score": 0.60875,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP011 - RR Kalyana Mantapa, Dr. Rajkumar Road",
+    "lat": 12.993695,
+    "lng": 77.553792,
+    "violation_count": 199,
+    "avg_congestion_cost": 93.074824120603,
+    "avg_gridlock_score": 1.3658291457286433,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP015 - Suguna Hospital, Dr. Rajkumar Road",
+    "lat": 12.98771,
+    "lng": 77.559499,
+    "violation_count": 29,
+    "avg_congestion_cost": 46.95620689655173,
+    "avg_gridlock_score": 0.6862068965517242,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP016 - 5th Main Road, RPC Layout",
+    "lat": 12.965246,
+    "lng": 77.537843,
+    "violation_count": 408,
+    "avg_congestion_cost": 36.1834068627451,
+    "avg_gridlock_score": 0.536029411764706,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP017 - Attiguppe Circle",
+    "lat": 12.960583,
+    "lng": 77.529638,
+    "violation_count": 476,
+    "avg_congestion_cost": 83.15159663865548,
+    "avg_gridlock_score": 1.2262605042016805,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP018 - Dhobi Ghat Junction",
+    "lat": 12.987612,
+    "lng": 77.549819,
+    "violation_count": 79,
+    "avg_congestion_cost": 97.46721518987344,
+    "avg_gridlock_score": 1.4379746835443037,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP020 - Hosahalli Metro Station",
+    "lat": 12.974144,
+    "lng": 77.545294,
+    "violation_count": 660,
+    "avg_congestion_cost": 13.659651515151513,
+    "avg_gridlock_score": 0.20151515151515156,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP022 - Marenahalli Junction, Vijayanagar",
+    "lat": 12.96878,
+    "lng": 77.536735,
+    "violation_count": 172,
+    "avg_congestion_cost": 23.203313953488372,
+    "avg_gridlock_score": 0.3424418604651163,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP023 - Mahalaxmi Layout Entrance",
+    "lat": 13.008974,
+    "lng": 77.549205,
+    "violation_count": 1570,
+    "avg_congestion_cost": 86.79201910828026,
+    "avg_gridlock_score": 1.2801910828025478,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP024 - NPS, Vijayanagar",
+    "lat": 12.982913,
+    "lng": 77.548824,
+    "violation_count": 92,
+    "avg_congestion_cost": 56.196739130434764,
+    "avg_gridlock_score": 0.8271739130434779,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP025 - Puttamma Choultry, Nagarbhavi",
+    "lat": 12.978674,
+    "lng": 77.538198,
+    "violation_count": 10,
+    "avg_congestion_cost": 61.673,
+    "avg_gridlock_score": 0.9199999999999999,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP026 - 1st Block Junction, Rajajinagar",
+    "lat": 13.002439,
+    "lng": 77.550094,
+    "violation_count": 145,
+    "avg_congestion_cost": 40.02531034482759,
+    "avg_gridlock_score": 0.5993103448275863,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP027 - Modi Bridge Junction",
+    "lat": 12.998897,
+    "lng": 77.549416,
+    "violation_count": 659,
+    "avg_congestion_cost": 21.067769347496206,
+    "avg_gridlock_score": 0.31305007587253414,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP028 - Vijayanagar Bus Stand Junction",
+    "lat": 12.972569,
+    "lng": 77.538061,
+    "violation_count": 121,
+    "avg_congestion_cost": 49.10487603305785,
+    "avg_gridlock_score": 0.7247933884297519,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP030 - Mekhri Circle",
+    "lat": 13.013624,
+    "lng": 77.583974,
+    "violation_count": 4980,
+    "avg_congestion_cost": 87.61461044176707,
+    "avg_gridlock_score": 1.2918875502008034,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP032 - Windsor Circle",
+    "lat": 12.993088,
+    "lng": 77.588184,
+    "violation_count": 560,
+    "avg_congestion_cost": 25.60242857142857,
+    "avg_gridlock_score": 0.3816071428571428,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP033 - Sophia High School, Sankey Road",
+    "lat": 12.990445,
+    "lng": 77.588665,
+    "violation_count": 42,
+    "avg_congestion_cost": 15.793333333333335,
+    "avg_gridlock_score": 0.23095238095238094,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP034 - LRDE Junction",
+    "lat": 12.988339,
+    "lng": 77.591756,
+    "violation_count": 58,
+    "avg_congestion_cost": 38.03137931034483,
+    "avg_gridlock_score": 0.5689655172413793,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP035 - Basaweshwara Circle (LH) Junction",
+    "lat": 12.98461,
+    "lng": 77.588162,
+    "violation_count": 5,
+    "avg_congestion_cost": 101.866,
+    "avg_gridlock_score": 1.5,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP036 - Police Thimmaiah Circle (GPO)",
+    "lat": 12.981054,
+    "lng": 77.594322,
+    "violation_count": 13,
+    "avg_congestion_cost": 122.97230769230772,
+    "avg_gridlock_score": 1.8153846153846156,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP037 - KR Circle",
+    "lat": 12.976535,
+    "lng": 77.586539,
+    "violation_count": 31,
+    "avg_congestion_cost": 47.25580645161289,
+    "avg_gridlock_score": 0.6967741935483872,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP038 - Mysore Bank Junction",
+    "lat": 12.97343,
+    "lng": 77.581244,
+    "violation_count": 343,
+    "avg_congestion_cost": 39.56204081632653,
+    "avg_gridlock_score": 0.5819241982507288,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP040 - Elite Junction",
+    "lat": 12.976597,
+    "lng": 77.576602,
+    "violation_count": 1606,
+    "avg_congestion_cost": 39.59599626400996,
+    "avg_gridlock_score": 0.5817559153175591,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP041 - Gopal Gowda Circle",
+    "lat": 12.977296,
+    "lng": 77.590265,
+    "violation_count": 59,
+    "avg_congestion_cost": 67.89576271186439,
+    "avg_gridlock_score": 0.9983050847457627,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP042 - Minsk Square Junction (CTO)",
+    "lat": 12.981176,
+    "lng": 77.598457,
+    "violation_count": 307,
+    "avg_congestion_cost": 19.865667752443,
+    "avg_gridlock_score": 0.29283387622149837,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP043 - Upparpet Junction",
+    "lat": 12.97114,
+    "lng": 77.575572,
+    "violation_count": 388,
+    "avg_congestion_cost": 30.671597938144334,
+    "avg_gridlock_score": 0.45077319587628867,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP044 - Sagar Theatre Junction",
+    "lat": 12.974939,
+    "lng": 77.578896,
+    "violation_count": 1596,
+    "avg_congestion_cost": 47.86248746867168,
+    "avg_gridlock_score": 0.7044486215538847,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP045 - Danvanthri Road Junction",
+    "lat": 12.977065,
+    "lng": 77.57479,
+    "violation_count": 511,
+    "avg_congestion_cost": 76.12690802348337,
+    "avg_gridlock_score": 1.1223091976516635,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP047 - Vidhan Soudha Metro Station",
+    "lat": 12.979836,
+    "lng": 77.592513,
+    "violation_count": 30,
+    "avg_congestion_cost": 41.41733333333334,
+    "avg_gridlock_score": 0.6099999999999999,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP048 - Shanthala Junction",
+    "lat": 12.976961,
+    "lng": 77.570755,
+    "violation_count": 346,
+    "avg_congestion_cost": 97.59982658959538,
+    "avg_gridlock_score": 1.439306358381503,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP051 - Safina Plaza Junction",
+    "lat": 12.981212,
+    "lng": 77.608695,
+    "violation_count": 3657,
+    "avg_congestion_cost": 40.099789444900196,
+    "avg_gridlock_score": 0.5883784522832922,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP052 - CID Carlton House Junction",
+    "lat": 12.980863,
+    "lng": 77.587622,
+    "violation_count": 16,
+    "avg_congestion_cost": 36.229375000000005,
+    "avg_gridlock_score": 0.53125,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP053 - Three Let Junction",
+    "lat": 12.983894,
+    "lng": 77.581772,
+    "violation_count": 5,
+    "avg_congestion_cost": 69.50800000000001,
+    "avg_gridlock_score": 1.02,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP054 - Shivananda Circle",
+    "lat": 12.986267,
+    "lng": 77.578863,
+    "violation_count": 730,
+    "avg_congestion_cost": 44.64880821917808,
+    "avg_gridlock_score": 0.6591780821917808,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP057 - Anand Rao Junction",
+    "lat": 12.979395,
+    "lng": 77.574388,
+    "violation_count": 613,
+    "avg_congestion_cost": 83.06407830342577,
+    "avg_gridlock_score": 1.2216965742251222,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP058 - Subbanna Junction",
+    "lat": 12.979022,
+    "lng": 77.578661,
+    "violation_count": 821,
+    "avg_congestion_cost": 142.62751522533495,
+    "avg_gridlock_score": 2.0990255785627285,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP061 - Bhashyam Circle",
+    "lat": 12.985184,
+    "lng": 77.553923,
+    "violation_count": 178,
+    "avg_congestion_cost": 31.93938202247191,
+    "avg_gridlock_score": 0.46966292134831455,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP062 - Basava Mantapa, Dr. Rajkumar Road",
+    "lat": 12.979912,
+    "lng": 77.55465,
+    "violation_count": 78,
+    "avg_congestion_cost": 71.00243589743589,
+    "avg_gridlock_score": 1.0448717948717947,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP063 - Siddalingaiah Circle",
+    "lat": 12.971527,
+    "lng": 77.596703,
+    "violation_count": 190,
+    "avg_congestion_cost": 67.79973684210526,
+    "avg_gridlock_score": 0.9994736842105263,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP064 - Devanga Hostel Junction",
+    "lat": 12.962733,
+    "lng": 77.589905,
+    "violation_count": 16,
+    "avg_congestion_cost": 84.08812499999999,
+    "avg_gridlock_score": 1.23125,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP067 - Jai Muni Rao Circle",
+    "lat": 12.978518,
+    "lng": 77.542737,
+    "violation_count": 49,
+    "avg_congestion_cost": 42.563265306122446,
+    "avg_gridlock_score": 0.6306122448979592,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP068 - Veeresh Theatre Junction",
+    "lat": 12.977227,
+    "lng": 77.545621,
+    "violation_count": 75,
+    "avg_congestion_cost": 28.240399999999998,
+    "avg_gridlock_score": 0.4213333333333334,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP069 - MC Circle",
+    "lat": 12.974621,
+    "lng": 77.547518,
+    "violation_count": 162,
+    "avg_congestion_cost": 28.538950617283948,
+    "avg_gridlock_score": 0.41851851851851857,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP070 - Cholurpalya Junction, Magadi Road",
+    "lat": 12.973484,
+    "lng": 77.550806,
+    "violation_count": 367,
+    "avg_congestion_cost": 35.08269754768392,
+    "avg_gridlock_score": 0.5179836512261581,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP071 - Prasanna Junction",
+    "lat": 12.97437,
+    "lng": 77.552034,
+    "violation_count": 109,
+    "avg_congestion_cost": 23.224403669724772,
+    "avg_gridlock_score": 0.34311926605504595,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP074 - Leprosy Hospital Junction",
+    "lat": 12.975847,
+    "lng": 77.561796,
+    "violation_count": 325,
+    "avg_congestion_cost": 24.06304615384615,
+    "avg_gridlock_score": 0.3495384615384616,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP075 - Police Corner",
+    "lat": 12.968846,
+    "lng": 77.586283,
+    "violation_count": 41,
+    "avg_congestion_cost": 39.13487804878049,
+    "avg_gridlock_score": 0.573170731707317,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP076 - Hudson Circle",
+    "lat": 12.96803,
+    "lng": 77.588809,
+    "violation_count": 57,
+    "avg_congestion_cost": 61.14122807017544,
+    "avg_gridlock_score": 0.9035087719298247,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP077 - Halasuru Gate Junction",
+    "lat": 12.966807,
+    "lng": 77.587036,
+    "violation_count": 3,
+    "avg_congestion_cost": 83.82333333333334,
+    "avg_gridlock_score": 1.2333333333333334,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP078 - NR Square Junction",
+    "lat": 12.965873,
+    "lng": 77.585407,
+    "violation_count": 38,
+    "avg_congestion_cost": 46.00763157894737,
+    "avg_gridlock_score": 0.6868421052631578,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP079 - Town Hall Junction",
+    "lat": 12.964742,
+    "lng": 77.58479,
+    "violation_count": 23,
+    "avg_congestion_cost": 31.416521739130438,
+    "avg_gridlock_score": 0.45652173913043465,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP080 - NR Road, SP Road Junction",
+    "lat": 12.964397,
+    "lng": 77.583168,
+    "violation_count": 554,
+    "avg_congestion_cost": 41.17871841155235,
+    "avg_gridlock_score": 0.6110108303249098,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP082 - KR Market Junction",
+    "lat": 12.964424,
+    "lng": 77.577241,
+    "violation_count": 1776,
+    "avg_congestion_cost": 73.05103603603604,
+    "avg_gridlock_score": 1.076295045045045,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP083 - AS Char Street, Mysore Road",
+    "lat": 12.96645,
+    "lng": 77.574403,
+    "violation_count": 503,
+    "avg_congestion_cost": 115.88666003976141,
+    "avg_gridlock_score": 1.7017892644135189,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP085 - Briyand Circle",
+    "lat": 12.966069,
+    "lng": 77.56949,
+    "violation_count": 42,
+    "avg_congestion_cost": 93.64214285714286,
+    "avg_gridlock_score": 1.3880952380952383,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP089 - Police Quarters, Sultan Road",
+    "lat": 12.960983,
+    "lng": 77.563533,
+    "violation_count": 18,
+    "avg_congestion_cost": 589.2355555555555,
+    "avg_gridlock_score": 8.72777777777778,
+    "top_violation": "[\"PARKING IN A MAIN ROAD\",\"NO PARKING\"]",
+    "impact_tier": "CRITICAL"
+  },
+  {
+    "junction": "BTP091 - Sirsi Circle",
+    "lat": 12.962208,
+    "lng": 77.558628,
+    "violation_count": 58,
+    "avg_congestion_cost": 105.29189655172414,
+    "avg_gridlock_score": 1.5482758620689654,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP092 - Bangalore Builders Junction",
+    "lat": 12.959324,
+    "lng": 77.555697,
+    "violation_count": 29,
+    "avg_congestion_cost": 280.2034482758621,
+    "avg_gridlock_score": 4.13103448275862,
+    "top_violation": "[\"PARKING IN A MAIN ROAD\",\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP093 - Toll Gate, Mysore Road",
+    "lat": 12.958754,
+    "lng": 77.552138,
+    "violation_count": 20,
+    "avg_congestion_cost": 142.0555,
+    "avg_gridlock_score": 2.0949999999999998,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP094 - Sri Skanda Complex, Mysore Road",
+    "lat": 12.955816,
+    "lng": 77.546178,
+    "violation_count": 29,
+    "avg_congestion_cost": 198.4244827586207,
+    "avg_gridlock_score": 2.9206896551724135,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP095 - Satellite Bus Stand, Mysore Road",
+    "lat": 12.953825,
+    "lng": 77.543398,
+    "violation_count": 135,
+    "avg_congestion_cost": 82.76392592592593,
+    "avg_gridlock_score": 1.2214814814814816,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP096 - Gali Anjaneya Temple",
+    "lat": 12.952595,
+    "lng": 77.541216,
+    "violation_count": 189,
+    "avg_congestion_cost": 199.008835978836,
+    "avg_gridlock_score": 2.934920634920635,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP098 - Nayandahalli Junction",
+    "lat": 12.944824,
+    "lng": 77.527685,
+    "violation_count": 335,
+    "avg_congestion_cost": 116.37134328358209,
+    "avg_gridlock_score": 1.7182089552238806,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP099 - Cash Pharmacy, Residency Road",
+    "lat": 12.969121,
+    "lng": 77.600302,
+    "violation_count": 211,
+    "avg_congestion_cost": 79.82999999999998,
+    "avg_gridlock_score": 1.177251184834123,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP100 - Richmond Circle",
+    "lat": 12.9628,
+    "lng": 77.59827,
+    "violation_count": 43,
+    "avg_congestion_cost": 13.64232558139535,
+    "avg_gridlock_score": 0.20465116279069764,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP101 - Blood Bank Circle, KH Road",
+    "lat": 12.961948,
+    "lng": 77.596179,
+    "violation_count": 68,
+    "avg_congestion_cost": 28.84455882352941,
+    "avg_gridlock_score": 0.4294117647058823,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP102 - BMTC Junction, KH Road",
+    "lat": 12.955459,
+    "lng": 77.592902,
+    "violation_count": 25,
+    "avg_congestion_cost": 38.0676,
+    "avg_gridlock_score": 0.564,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP103 - Shanti Nagar TTMC",
+    "lat": 12.953874,
+    "lng": 77.591623,
+    "violation_count": 26,
+    "avg_congestion_cost": 35.385384615384616,
+    "avg_gridlock_score": 0.5230769230769231,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP104 - Medical College Circle",
+    "lat": 12.959563,
+    "lng": 77.576614,
+    "violation_count": 222,
+    "avg_congestion_cost": 126.16923423423424,
+    "avg_gridlock_score": 1.8662162162162164,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP105 - Shivasankara Circle",
+    "lat": 12.956903,
+    "lng": 77.574166,
+    "violation_count": 25,
+    "avg_congestion_cost": 37.9988,
+    "avg_gridlock_score": 0.556,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP106 - VV Puram College",
+    "lat": 12.952855,
+    "lng": 77.574495,
+    "violation_count": 30,
+    "avg_congestion_cost": 93.13366666666666,
+    "avg_gridlock_score": 1.3733333333333335,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP107 - National College Junction",
+    "lat": 12.948955,
+    "lng": 77.57295,
+    "violation_count": 9,
+    "avg_congestion_cost": 14.850000000000001,
+    "avg_gridlock_score": 0.21111111111111114,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP108 - Tagore Park Junction",
+    "lat": 12.943901,
+    "lng": 77.571431,
+    "violation_count": 315,
+    "avg_congestion_cost": 29.499269841269843,
+    "avg_gridlock_score": 0.4346031746031746,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP109 - Dewan Madhava Rao Junction",
+    "lat": 12.940864,
+    "lng": 77.572435,
+    "violation_count": 63,
+    "avg_congestion_cost": 22.783809523809524,
+    "avg_gridlock_score": 0.3365079365079366,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP110 - Bharathi Nursing Home, Basavanagudi",
+    "lat": 12.93743,
+    "lng": 77.572305,
+    "violation_count": 1,
+    "avg_congestion_cost": 5.43,
+    "avg_gridlock_score": 0.1,
+    "top_violation": "[\"PARKING NEAR ROAD CROSSING\",\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP112 - 14th Cross, KR Road",
+    "lat": 12.929347,
+    "lng": 77.573209,
+    "violation_count": 4,
+    "avg_congestion_cost": 24.147499999999997,
+    "avg_gridlock_score": 0.3500000000000001,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP113 - 27th Cross, Pai Vista, KR Road",
+    "lat": 12.917533,
+    "lng": 77.573111,
+    "violation_count": 20,
+    "avg_congestion_cost": 31.074,
+    "avg_gridlock_score": 0.45499999999999996,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP114 - KR Road Junction, Near JSS",
+    "lat": 12.924224,
+    "lng": 77.574918,
+    "violation_count": 14,
+    "avg_congestion_cost": 205.4871428571429,
+    "avg_gridlock_score": 3.021428571428572,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP115 - Sahasra Hospital, Jayanagar",
+    "lat": 12.917284,
+    "lng": 77.573813,
+    "violation_count": 57,
+    "avg_congestion_cost": 113.00122807017543,
+    "avg_gridlock_score": 1.6719298245614036,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP117 - 9th Cross, Kanakapura Road",
+    "lat": 12.912148,
+    "lng": 77.573349,
+    "violation_count": 51,
+    "avg_congestion_cost": 115.9805882352941,
+    "avg_gridlock_score": 1.7058823529411768,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP118 - Basappa Circle",
+    "lat": 12.958166,
+    "lng": 77.577567,
+    "violation_count": 98,
+    "avg_congestion_cost": 76.82877551020408,
+    "avg_gridlock_score": 1.1377551020408163,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP119 - Minerva Circle",
+    "lat": 12.955163,
+    "lng": 77.580396,
+    "violation_count": 36,
+    "avg_congestion_cost": 55.27666666666667,
+    "avg_gridlock_score": 0.8166666666666667,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP120 - Lalbagh Main Gate Junction",
+    "lat": 12.954084,
+    "lng": 77.584413,
+    "violation_count": 42,
+    "avg_congestion_cost": 46.88666666666667,
+    "avg_gridlock_score": 0.6880952380952381,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP121 - KH Circle",
+    "lat": 12.951854,
+    "lng": 77.590375,
+    "violation_count": 18,
+    "avg_congestion_cost": 123.67777777777776,
+    "avg_gridlock_score": 1.8222222222222224,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP122 - Siddapura Junction",
+    "lat": 12.9484,
+    "lng": 77.592796,
+    "violation_count": 38,
+    "avg_congestion_cost": 39.03184210526316,
+    "avg_gridlock_score": 0.5710526315789474,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP123 - 10th Cross, Wilson Garden",
+    "lat": 12.946002,
+    "lng": 77.596073,
+    "violation_count": 99,
+    "avg_congestion_cost": 51.85818181818181,
+    "avg_gridlock_score": 0.7595959595959595,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP126 - Dairy Circle",
+    "lat": 12.936744,
+    "lng": 77.602429,
+    "violation_count": 64,
+    "avg_congestion_cost": 99.496875,
+    "avg_gridlock_score": 1.4703125,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP127 - Sagar Hospital, Jayanagar",
+    "lat": 12.927947,
+    "lng": 77.598251,
+    "violation_count": 26,
+    "avg_congestion_cost": 90.54269230769229,
+    "avg_gridlock_score": 1.3461538461538463,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP128 - Gorappanapalya Junction",
+    "lat": 12.920461,
+    "lng": 77.600406,
+    "violation_count": 7,
+    "avg_congestion_cost": 95.92142857142856,
+    "avg_gridlock_score": 1.4142857142857144,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP130 - GD Mara Junction",
+    "lat": 12.90807,
+    "lng": 77.600817,
+    "violation_count": 92,
+    "avg_congestion_cost": 28.606086956521743,
+    "avg_gridlock_score": 0.4195652173913044,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP132 - Anepalya Junction",
+    "lat": 12.951251,
+    "lng": 77.606905,
+    "violation_count": 25,
+    "avg_congestion_cost": 73.4152,
+    "avg_gridlock_score": 1.088,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP133 - Adugodi Junction",
+    "lat": 12.941854,
+    "lng": 77.608607,
+    "violation_count": 12,
+    "avg_congestion_cost": 51.71333333333333,
+    "avg_gridlock_score": 0.7749999999999999,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP134 - Mico Bande",
+    "lat": 12.945697,
+    "lng": 77.602548,
+    "violation_count": 8,
+    "avg_congestion_cost": 31.333750000000002,
+    "avg_gridlock_score": 0.45000000000000007,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP135 - UCO Bank Junction",
+    "lat": 12.935622,
+    "lng": 77.614978,
+    "violation_count": 303,
+    "avg_congestion_cost": 61.99801980198019,
+    "avg_gridlock_score": 0.9122112211221122,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP136 - Hosur-Tavarkere Road Junction",
+    "lat": 12.934327,
+    "lng": 77.608447,
+    "violation_count": 125,
+    "avg_congestion_cost": 131.82192,
+    "avg_gridlock_score": 1.9431999999999998,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP137 - Madiwala Traffic PS Junction",
+    "lat": 12.923326,
+    "lng": 77.619871,
+    "violation_count": 1072,
+    "avg_congestion_cost": 62.19276119402986,
+    "avg_gridlock_score": 0.9195895522388059,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP138 - Sarjapur Road Check Post",
+    "lat": 12.927103,
+    "lng": 77.61689,
+    "violation_count": 39,
+    "avg_congestion_cost": 143.39307692307693,
+    "avg_gridlock_score": 2.12051282051282,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP140 - Madiwala Check Post",
+    "lat": 12.932306,
+    "lng": 77.613281,
+    "violation_count": 110,
+    "avg_congestion_cost": 189.3309090909091,
+    "avg_gridlock_score": 2.791818181818181,
+    "top_violation": "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP141 - Palmgroove Junction",
+    "lat": 12.968293,
+    "lng": 77.613494,
+    "violation_count": 230,
+    "avg_congestion_cost": 46.19913043478261,
+    "avg_gridlock_score": 0.6821739130434782,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP142 - Lower Agram Road Junction",
+    "lat": 12.961824,
+    "lng": 77.615496,
+    "violation_count": 30,
+    "avg_congestion_cost": 78.88033333333331,
+    "avg_gridlock_score": 1.1566666666666667,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP143 - ASC Junction",
+    "lat": 12.969499,
+    "lng": 77.619746,
+    "violation_count": 293,
+    "avg_congestion_cost": 48.29918088737201,
+    "avg_gridlock_score": 0.7129692832764505,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP144 - Commando Hospital Junction",
+    "lat": 12.969204,
+    "lng": 77.626344,
+    "violation_count": 311,
+    "avg_congestion_cost": 68.49302250803859,
+    "avg_gridlock_score": 1.0128617363344052,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP145 - Sri Hatti Maramma Circle, Domluru",
+    "lat": 12.961283,
+    "lng": 77.636154,
+    "violation_count": 43,
+    "avg_congestion_cost": 98.99232558139533,
+    "avg_gridlock_score": 1.4651162790697674,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP146 - Domlur Water Tank",
+    "lat": 12.960488,
+    "lng": 77.638869,
+    "violation_count": 84,
+    "avg_congestion_cost": 40.042500000000004,
+    "avg_gridlock_score": 0.5952380952380953,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP148 - 17th Main, Doopanahalli Bus Stop",
+    "lat": 12.963664,
+    "lng": 77.642234,
+    "violation_count": 9976,
+    "avg_congestion_cost": 95.19423115477144,
+    "avg_gridlock_score": 1.4043504410585403,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP154 - Itmadu Junction",
+    "lat": 12.929791,
+    "lng": 77.546565,
+    "violation_count": 68,
+    "avg_congestion_cost": 30.256176470588237,
+    "avg_gridlock_score": 0.44411764705882356,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP155 - Katriguppe Junction",
+    "lat": 12.926699,
+    "lng": 77.550743,
+    "violation_count": 63,
+    "avg_congestion_cost": 58.76174603174602,
+    "avg_gridlock_score": 0.8634920634920634,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP156 - Kamakya Junction",
+    "lat": 12.92372,
+    "lng": 77.553606,
+    "violation_count": 108,
+    "avg_congestion_cost": 148.58805555555554,
+    "avg_gridlock_score": 2.187962962962963,
+    "top_violation": "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP157 - Kadirenahalli Cross",
+    "lat": 12.913022,
+    "lng": 77.567002,
+    "violation_count": 8,
+    "avg_congestion_cost": 73.17624999999998,
+    "avg_gridlock_score": 1.075,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP158 - Devegowda Petrol Bunk",
+    "lat": 12.921245,
+    "lng": 77.560296,
+    "violation_count": 6,
+    "avg_congestion_cost": 36.42166666666666,
+    "avg_gridlock_score": 0.5500000000000002,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP159 - JP Nagar Metro, ORR",
+    "lat": 12.906413,
+    "lng": 77.572884,
+    "violation_count": 161,
+    "avg_congestion_cost": 79.05024844720496,
+    "avg_gridlock_score": 1.1645962732919255,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP161 - 15th Cross, 35th Main, JP Nagar",
+    "lat": 12.906264,
+    "lng": 77.577652,
+    "violation_count": 4,
+    "avg_congestion_cost": 12.492500000000001,
+    "avg_gridlock_score": 0.175,
+    "top_violation": "[\"PARKING ON FOOTPATH\",\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP163 - 16th Main Road, BTM Layout",
+    "lat": 12.914995,
+    "lng": 77.60852,
+    "violation_count": 110,
+    "avg_congestion_cost": 64.63336363636363,
+    "avg_gridlock_score": 0.9499999999999997,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP164 - 29th Main Road, BTM Layout",
+    "lat": 12.916027,
+    "lng": 77.615356,
+    "violation_count": 970,
+    "avg_congestion_cost": 97.14067010309277,
+    "avg_gridlock_score": 1.433298969072165,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP166 - Coffee Board Junction",
+    "lat": 12.984921,
+    "lng": 77.594337,
+    "violation_count": 13,
+    "avg_congestion_cost": 44.839230769230774,
+    "avg_gridlock_score": 0.6692307692307692,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP167 - JC Road Junction",
+    "lat": 12.958271,
+    "lng": 77.581262,
+    "violation_count": 47,
+    "avg_congestion_cost": 71.60744680851064,
+    "avg_gridlock_score": 1.0574468085106383,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP168 - MSR Building, JC Road",
+    "lat": 12.961181,
+    "lng": 77.584289,
+    "violation_count": 14,
+    "avg_congestion_cost": 134.71428571428572,
+    "avg_gridlock_score": 1.9857142857142855,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP170 - Dr. Bheem Rao Palace, Chord Road",
+    "lat": 12.990372,
+    "lng": 77.551226,
+    "violation_count": 92,
+    "avg_congestion_cost": 80.1361956521739,
+    "avg_gridlock_score": 1.1782608695652175,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP171 - Indian Express (Balekundri)",
+    "lat": 12.986302,
+    "lng": 77.598642,
+    "violation_count": 225,
+    "avg_congestion_cost": 45.37288888888889,
+    "avg_gridlock_score": 0.6662222222222222,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP172 - Nanjappa Circle",
+    "lat": 12.961702,
+    "lng": 77.599489,
+    "violation_count": 108,
+    "avg_congestion_cost": 15.868703703703705,
+    "avg_gridlock_score": 0.23240740740740745,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP173 - TMC",
+    "lat": 12.98233,
+    "lng": 77.598716,
+    "violation_count": 21,
+    "avg_congestion_cost": 50.215714285714284,
+    "avg_gridlock_score": 0.7333333333333334,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP176 - Rajalakshmi Kalyana Mantapa, JP Nagar",
+    "lat": 12.917309,
+    "lng": 77.578319,
+    "violation_count": 47,
+    "avg_congestion_cost": 116.64978723404253,
+    "avg_gridlock_score": 1.729787234042553,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP177 - Aurobindo Circle, ORR",
+    "lat": 12.916612,
+    "lng": 77.585246,
+    "violation_count": 26,
+    "avg_congestion_cost": 57.88115384615384,
+    "avg_gridlock_score": 0.8538461538461539,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP178 - 18th Main, Marenahalli",
+    "lat": 12.916898,
+    "lng": 77.589567,
+    "violation_count": 1,
+    "avg_congestion_cost": 12.53,
+    "avg_gridlock_score": 0.2,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP179 - 9th Block, 28th Main, Jayanagar",
+    "lat": 12.916956,
+    "lng": 77.595086,
+    "violation_count": 52,
+    "avg_congestion_cost": 185.30749999999995,
+    "avg_gridlock_score": 2.7365384615384616,
+    "top_violation": "[\"NO PARKING\",\"WRONG PARKING\",\"PARKING ON FOOTPATH\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP180 - Swagath Poornima Theatre",
+    "lat": 12.960464,
+    "lng": 77.587318,
+    "violation_count": 32,
+    "avg_congestion_cost": 93.74125000000001,
+    "avg_gridlock_score": 1.3875,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP181 - Bileka Halli Junction",
+    "lat": 12.901994,
+    "lng": 77.601121,
+    "violation_count": 674,
+    "avg_congestion_cost": 68.95750741839763,
+    "avg_gridlock_score": 1.0195845697329375,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP182 - 19th Main Junction, Rajajinagar",
+    "lat": 12.999007,
+    "lng": 77.550852,
+    "violation_count": 197,
+    "avg_congestion_cost": 30.271269035533,
+    "avg_gridlock_score": 0.4502538071065989,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP184 - Lalbagh West Gate",
+    "lat": 12.948435,
+    "lng": 77.580181,
+    "violation_count": 33,
+    "avg_congestion_cost": 28.07363636363636,
+    "avg_gridlock_score": 0.41515151515151516,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP185 - RV Teachers College",
+    "lat": 12.944586,
+    "lng": 77.580738,
+    "violation_count": 23,
+    "avg_congestion_cost": 88.06826086956521,
+    "avg_gridlock_score": 1.3130434782608693,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP186 - 9th Cross, 4th Main, Jayanagar",
+    "lat": 12.939329,
+    "lng": 77.582996,
+    "violation_count": 120,
+    "avg_congestion_cost": 45.410333333333334,
+    "avg_gridlock_score": 0.6724999999999999,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP187 - South End Circle",
+    "lat": 12.937437,
+    "lng": 77.581863,
+    "violation_count": 7,
+    "avg_congestion_cost": 27.87857142857143,
+    "avg_gridlock_score": 0.4285714285714285,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP188 - 27th Cross, 4th Main, Jayanagar",
+    "lat": 12.929681,
+    "lng": 77.580569,
+    "violation_count": 48,
+    "avg_congestion_cost": 28.505625,
+    "avg_gridlock_score": 0.40416666666666673,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP189 - New Diagonal Road, Jayanagar",
+    "lat": 12.928112,
+    "lng": 77.580698,
+    "violation_count": 99,
+    "avg_congestion_cost": 68.96676767676767,
+    "avg_gridlock_score": 1.015151515151515,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP190 - 36th Cross, 4th Main, Jayanagar",
+    "lat": 12.922585,
+    "lng": 77.581277,
+    "violation_count": 19,
+    "avg_congestion_cost": 12.801578947368421,
+    "avg_gridlock_score": 0.18947368421052635,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP191 - 40th Cross, 4th Main, Jayanagar",
+    "lat": 12.920106,
+    "lng": 77.582201,
+    "violation_count": 25,
+    "avg_congestion_cost": 57.006400000000006,
+    "avg_gridlock_score": 0.8360000000000001,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP192 - Urvashi Theater",
+    "lat": 12.956508,
+    "lng": 77.586033,
+    "violation_count": 92,
+    "avg_congestion_cost": 46.00891304347826,
+    "avg_gridlock_score": 0.6771739130434782,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP193 - Vasavi Circle",
+    "lat": 12.949798,
+    "lng": 77.576795,
+    "violation_count": 15,
+    "avg_congestion_cost": 43.11599999999999,
+    "avg_gridlock_score": 0.6333333333333333,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP196 - Sarakki Main Road",
+    "lat": 12.910996,
+    "lng": 77.578338,
+    "violation_count": 18,
+    "avg_congestion_cost": 116.11777777777777,
+    "avg_gridlock_score": 1.7166666666666666,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "HIGH"
+  },
+  {
+    "junction": "BTP197 - 9th Cross, 24th Main, JP Nagar",
+    "lat": 12.91155,
+    "lng": 77.58599,
+    "violation_count": 48,
+    "avg_congestion_cost": 60.257083333333334,
+    "avg_gridlock_score": 0.8895833333333334,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP198 - 9th Cross, 8th Main, JP Nagar",
+    "lat": 12.91034,
+    "lng": 77.595722,
+    "violation_count": 4,
+    "avg_congestion_cost": 13.219999999999999,
+    "avg_gridlock_score": 0.2,
+    "top_violation": "[\"PARKING IN A MAIN ROAD\",\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP200 - 15th Cross, 33rd Main, JP Nagar",
+    "lat": 12.906328,
+    "lng": 77.581388,
+    "violation_count": 9,
+    "avg_congestion_cost": 73.35,
+    "avg_gridlock_score": 1.0777777777777777,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP202 - East End Main Road, Jayanagar",
+    "lat": 12.917187,
+    "lng": 77.597012,
+    "violation_count": 51,
+    "avg_congestion_cost": 90.76058823529412,
+    "avg_gridlock_score": 1.337254901960784,
+    "top_violation": "[\"NO PARKING\",\"WRONG PARKING\",\"PARKING ON FOOTPATH\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP203 - RRMR Junction",
+    "lat": 12.967439,
+    "lng": 77.5936,
+    "violation_count": 27,
+    "avg_congestion_cost": 134.69259259259258,
+    "avg_gridlock_score": 1.988888888888889,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP204 - ESI Hospital, Rajajinagar",
+    "lat": 12.990359,
+    "lng": 77.553735,
+    "violation_count": 91,
+    "avg_congestion_cost": 52.67846153846153,
+    "avg_gridlock_score": 0.7714285714285714,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP205 - Modi Hospital Junction",
+    "lat": 12.997488,
+    "lng": 77.546954,
+    "violation_count": 174,
+    "avg_congestion_cost": 45.692356321839085,
+    "avg_gridlock_score": 0.674712643678161,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP206 - Shankara Mutt Circle, Vijayanagar",
+    "lat": 12.99862,
+    "lng": 77.541421,
+    "violation_count": 280,
+    "avg_congestion_cost": 136.32435714285714,
+    "avg_gridlock_score": 2.0160714285714287,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP207 - 8th Main Road Basaveshwara Nagar",
+    "lat": 12.991897,
+    "lng": 77.538474,
+    "violation_count": 63,
+    "avg_congestion_cost": 84.5022222222222,
+    "avg_gridlock_score": 1.2444444444444442,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP208 - Havanur Circle",
+    "lat": 12.987954,
+    "lng": 77.537556,
+    "violation_count": 265,
+    "avg_congestion_cost": 63.92283018867924,
+    "avg_gridlock_score": 0.94188679245283,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP210 - 50th cross, 12th Main , Rajajinagar",
+    "lat": 12.986979,
+    "lng": 77.555125,
+    "violation_count": 59,
+    "avg_congestion_cost": 50.02050847457627,
+    "avg_gridlock_score": 0.7372881355932204,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP211 - Central Street Junction",
+    "lat": 12.983371,
+    "lng": 77.603454,
+    "violation_count": 1158,
+    "avg_congestion_cost": 52.31362694300518,
+    "avg_gridlock_score": 0.76286701208981,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP212 - Minto Junction",
+    "lat": 12.960314,
+    "lng": 77.571408,
+    "violation_count": 7,
+    "avg_congestion_cost": 64.58857142857143,
+    "avg_gridlock_score": 0.9428571428571428,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP213 - Royan Circle",
+    "lat": 12.960665,
+    "lng": 77.568229,
+    "violation_count": 5,
+    "avg_congestion_cost": 91.89399999999999,
+    "avg_gridlock_score": 1.3599999999999999,
+    "top_violation": "[\"PARKING IN A MAIN ROAD\",\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP214 - 5th Main Chamrajpet  Junction",
+    "lat": 12.965009,
+    "lng": 77.552553,
+    "violation_count": 230,
+    "avg_congestion_cost": 59.833,
+    "avg_gridlock_score": 0.8804347826086955,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP215 - Vanivillas Junction",
+    "lat": 12.94612,
+    "lng": 77.570234,
+    "violation_count": 95,
+    "avg_congestion_cost": 30.483684210526313,
+    "avg_gridlock_score": 0.44842105263157905,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP216 - Yediyur Junction",
+    "lat": 12.938045,
+    "lng": 77.576883,
+    "violation_count": 30,
+    "avg_congestion_cost": 49.309666666666665,
+    "avg_gridlock_score": 0.7333333333333336,
+    "top_violation": "[\"WRONG PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP217 - Baleyele Junction",
+    "lat": 12.957381,
+    "lng": 77.569448,
+    "violation_count": 14,
+    "avg_congestion_cost": 42.26642857142859,
+    "avg_gridlock_score": 0.6214285714285713,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP218 - Syndicate Bank Junction",
+    "lat": 12.934673,
+    "lng": 77.584436,
+    "violation_count": 79,
+    "avg_congestion_cost": 33.869367088607596,
+    "avg_gridlock_score": 0.5,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP219 - Canara Bank Junction",
+    "lat": 12.931167,
+    "lng": 77.584537,
+    "violation_count": 46,
+    "avg_congestion_cost": 88.43195652173912,
+    "avg_gridlock_score": 1.297826086956522,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP220 - Puttanna Junction",
+    "lat": 12.928845,
+    "lng": 77.582829,
+    "violation_count": 50,
+    "avg_congestion_cost": 95.29779999999997,
+    "avg_gridlock_score": 1.402,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP221 - 15th Cross, 24th Main, JP Nagar",
+    "lat": 12.905023,
+    "lng": 77.586189,
+    "violation_count": 24,
+    "avg_congestion_cost": 104.72416666666665,
+    "avg_gridlock_score": 1.5541666666666665,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP222 - Delmia Circle",
+    "lat": 12.905933,
+    "lng": 77.592636,
+    "violation_count": 19,
+    "avg_congestion_cost": 51.32526315789474,
+    "avg_gridlock_score": 0.7578947368421053,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "MEDIUM"
+  },
+  {
+    "junction": "BTP225 - Geetha Junction",
+    "lat": 12.928338,
+    "lng": 77.585874,
+    "violation_count": 52,
+    "avg_congestion_cost": 41.25230769230768,
+    "avg_gridlock_score": 0.6019230769230769,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  },
+  {
+    "junction": "BTP226 - 33rd Cross, 11th Main, Jayanagar",
+    "lat": 12.925927,
+    "lng": 77.585633,
+    "violation_count": 125,
+    "avg_congestion_cost": 77.80871999999998,
+    "avg_gridlock_score": 1.144,
+    "top_violation": "[\"NO PARKING\"]",
+    "impact_tier": "LOW"
+  }
+]

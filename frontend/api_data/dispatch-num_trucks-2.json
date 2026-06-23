@@ -1,0 +1,155 @@
+{
+  "routes": [
+    [
+      [
+        12.979022,
+        77.578661
+      ],
+      [
+        13.013624,
+        77.583974
+      ],
+      [
+        13.007811,
+        77.554653
+      ],
+      [
+        13.008974,
+        77.549205
+      ]
+    ],
+    [
+      [
+        12.979022,
+        77.578661
+      ],
+      [
+        12.981212,
+        77.608695
+      ],
+      [
+        12.963664,
+        77.642234
+      ],
+      [
+        12.923326,
+        77.619871
+      ],
+      [
+        12.916027,
+        77.615356
+      ],
+      [
+        12.964424,
+        77.577241
+      ],
+      [
+        12.974939,
+        77.578896
+      ]
+    ]
+  ],
+  "junction_names": [
+    "BTP058 - Subbanna Junction",
+    "BTP164 - 29th Main Road, BTM Layout",
+    "BTP148 - 17th Main, Doopanahalli Bus Stop",
+    "BTP030 - Mekhri Circle",
+    "BTP023 - Mahalaxmi Layout Entrance",
+    "BTP082 - KR Market Junction",
+    "BTP137 - Madiwala Traffic PS Junction",
+    "BTP001 - 10th Cross, Dr. Rajkumar Road",
+    "BTP044 - Sagar Theatre Junction",
+    "BTP051 - Safina Plaza Junction"
+  ],
+  "responses": [
+    {
+      "junction": "BTP058 - Subbanna Junction",
+      "gridlock_score": 2.0990255785627285,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 117097 veh-min delay",
+      "predicted_delay": 117097.19,
+      "capacity_recovery_rate": 28.51
+    },
+    {
+      "junction": "BTP164 - 29th Main Road, BTM Layout",
+      "gridlock_score": 1.433298969072165,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 94226 veh-min delay",
+      "predicted_delay": 94226.45,
+      "capacity_recovery_rate": 19.42
+    },
+    {
+      "junction": "BTP148 - 17th Main, Doopanahalli Bus Stop",
+      "gridlock_score": 1.4043504410585403,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 949658 veh-min delay",
+      "predicted_delay": 949657.65,
+      "capacity_recovery_rate": 19.04
+    },
+    {
+      "junction": "BTP030 - Mekhri Circle",
+      "gridlock_score": 1.2918875502008034,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 436321 veh-min delay",
+      "predicted_delay": 436320.76,
+      "capacity_recovery_rate": 17.52
+    },
+    {
+      "junction": "BTP023 - Mahalaxmi Layout Entrance",
+      "gridlock_score": 1.2801910828025478,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 136263 veh-min delay",
+      "predicted_delay": 136263.47,
+      "capacity_recovery_rate": 17.35
+    },
+    {
+      "junction": "BTP082 - KR Market Junction",
+      "gridlock_score": 1.076295045045045,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 129739 veh-min delay",
+      "predicted_delay": 129738.64,
+      "capacity_recovery_rate": 14.61
+    },
+    {
+      "junction": "BTP137 - Madiwala Traffic PS Junction",
+      "gridlock_score": 0.9195895522388059,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 66671 veh-min delay",
+      "predicted_delay": 66670.64,
+      "capacity_recovery_rate": 12.43
+    },
+    {
+      "junction": "BTP001 - 10th Cross, Dr. Rajkumar Road",
+      "gridlock_score": 0.7206087507926443,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 77091 veh-min delay",
+      "predicted_delay": 77091.27,
+      "capacity_recovery_rate": 9.77
+    },
+    {
+      "junction": "BTP044 - Sagar Theatre Junction",
+      "gridlock_score": 0.7044486215538847,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 76389 veh-min delay",
+      "predicted_delay": 76388.53,
+      "capacity_recovery_rate": 9.57
+    },
+    {
+      "junction": "BTP051 - Safina Plaza Junction",
+      "gridlock_score": 0.5883784522832922,
+      "action": "DRIVER_ALERT",
+      "reason": "Moderate: 146645 veh-min delay",
+      "predicted_delay": 146644.93,
+      "capacity_recovery_rate": 8.02
+    }
+  ],
+  "hotspot_stats": "                               mapped_junction  ...  capacity_recovery_rate\n39                  BTP058 - Subbanna Junction  ...                   28.51\n117        BTP164 - 29th Main Road, BTM Layout  ...                   19.42\n108  BTP148 - 17th Main, Doopanahalli Bus Stop  ...                   19.04\n18                      BTP030 - Mekhri Circle  ...                   17.52\n12          BTP023 - Mahalaxmi Layout Entrance  ...                   17.35\n56                 BTP082 - KR Market Junction  ...                   14.61\n99       BTP137 - Madiwala Traffic PS Junction  ...                   12.43\n0       BTP001 - 10th Cross, Dr. Rajkumar Road  ...                    9.77\n30             BTP044 - Sagar Theatre Junction  ...                    9.57\n34              BTP051 - Safina Plaza Junction  ...                    8.02\n\n[10 rows x 7 columns]",
+  "summary": {
+    "routing_method": "OR-tools VRP (optimal)",
+    "num_trucks": 2,
+    "total_stops": 11,
+    "total_distance_km": 29.5,
+    "top_hotspot": "BTP058 - Subbanna Junction",
+    "top_hotspot_delay": 117097.19
+  }
+}

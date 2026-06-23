@@ -1,0 +1,8 @@
+{
+  "token": "demo-token-123",
+  "user": {
+    "name": "Demo User",
+    "role": "inspector",
+    "station": "ALL"
+  }
+}

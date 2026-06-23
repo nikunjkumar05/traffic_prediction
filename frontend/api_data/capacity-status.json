@@ -1,0 +1,412 @@
+{
+  "junctions": [
+    {
+      "junction": "BTP089 - Police Quarters, Sultan Road",
+      "violation_count": 18,
+      "avg_congestion_cost": 589.2355555555555,
+      "avg_gridlock_score": 8.72777777777778,
+      "total_economic_loss": 4012815.93,
+      "impact_tier": "CRITICAL"
+    },
+    {
+      "junction": "BTP092 - Bangalore Builders Junction",
+      "violation_count": 29,
+      "avg_congestion_cost": 280.2034482758621,
+      "avg_gridlock_score": 4.13103448275862,
+      "total_economic_loss": 3247723.15,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP114 - KR Road Junction, Near JSS",
+      "violation_count": 14,
+      "avg_congestion_cost": 205.4871428571429,
+      "avg_gridlock_score": 3.021428571428572,
+      "total_economic_loss": 1664766.56,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP096 - Gali Anjaneya Temple",
+      "violation_count": 189,
+      "avg_congestion_cost": 199.008835978836,
+      "avg_gridlock_score": 2.934920634920635,
+      "total_economic_loss": 20351431.099999998,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP094 - Sri Skanda Complex, Mysore Road",
+      "violation_count": 29,
+      "avg_congestion_cost": 198.4244827586207,
+      "avg_gridlock_score": 2.9206896551724135,
+      "total_economic_loss": 2088903.9900000002,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP140 - Madiwala Check Post",
+      "violation_count": 110,
+      "avg_congestion_cost": 189.3309090909091,
+      "avg_gridlock_score": 2.791818181818181,
+      "total_economic_loss": 11134166.420000002,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP179 - 9th Block, 28th Main, Jayanagar",
+      "violation_count": 52,
+      "avg_congestion_cost": 185.30749999999995,
+      "avg_gridlock_score": 2.7365384615384616,
+      "total_economic_loss": 4041083.1599999997,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP156 - Kamakya Junction",
+      "violation_count": 108,
+      "avg_congestion_cost": 148.58805555555554,
+      "avg_gridlock_score": 2.187962962962963,
+      "total_economic_loss": 9224357.68,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP138 - Sarjapur Road Check Post",
+      "violation_count": 39,
+      "avg_congestion_cost": 143.39307692307693,
+      "avg_gridlock_score": 2.12051282051282,
+      "total_economic_loss": 3459851.0200000005,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP058 - Subbanna Junction",
+      "violation_count": 821,
+      "avg_congestion_cost": 142.62751522533495,
+      "avg_gridlock_score": 2.0990255785627285,
+      "total_economic_loss": 97954939.87,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP093 - Toll Gate, Mysore Road",
+      "violation_count": 20,
+      "avg_congestion_cost": 142.0555,
+      "avg_gridlock_score": 2.0949999999999998,
+      "total_economic_loss": 2126363.69,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP206 - Shankara Mutt Circle, Vijayanagar",
+      "violation_count": 280,
+      "avg_congestion_cost": 136.32435714285714,
+      "avg_gridlock_score": 2.0160714285714287,
+      "total_economic_loss": 21664672.82,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP168 - MSR Building, JC Road",
+      "violation_count": 14,
+      "avg_congestion_cost": 134.71428571428572,
+      "avg_gridlock_score": 1.9857142857142855,
+      "total_economic_loss": 1437675.9,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP203 - RRMR Junction",
+      "violation_count": 27,
+      "avg_congestion_cost": 134.69259259259258,
+      "avg_gridlock_score": 1.988888888888889,
+      "total_economic_loss": 3257671.42,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP136 - Hosur-Tavarkere Road Junction",
+      "violation_count": 125,
+      "avg_congestion_cost": 131.82192,
+      "avg_gridlock_score": 1.9431999999999998,
+      "total_economic_loss": 10430561.300000003,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP104 - Medical College Circle",
+      "violation_count": 222,
+      "avg_congestion_cost": 126.16923423423424,
+      "avg_gridlock_score": 1.8662162162162164,
+      "total_economic_loss": 20356437.72,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP121 - KH Circle",
+      "violation_count": 18,
+      "avg_congestion_cost": 123.67777777777776,
+      "avg_gridlock_score": 1.8222222222222224,
+      "total_economic_loss": 1605861.72,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP036 - Police Thimmaiah Circle (GPO)",
+      "violation_count": 13,
+      "avg_congestion_cost": 122.97230769230772,
+      "avg_gridlock_score": 1.8153846153846156,
+      "total_economic_loss": 939450.2699999999,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP006 - Navarang Bar Junction",
+      "violation_count": 10,
+      "avg_congestion_cost": 121.883,
+      "avg_gridlock_score": 1.81,
+      "total_economic_loss": 697005.1699999999,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP176 - Rajalakshmi Kalyana Mantapa, JP Nagar",
+      "violation_count": 47,
+      "avg_congestion_cost": 116.64978723404253,
+      "avg_gridlock_score": 1.729787234042553,
+      "total_economic_loss": 2473531.64,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP098 - Nayandahalli Junction",
+      "violation_count": 335,
+      "avg_congestion_cost": 116.37134328358209,
+      "avg_gridlock_score": 1.7182089552238806,
+      "total_economic_loss": 25889570.810000002,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP196 - Sarakki Main Road",
+      "violation_count": 18,
+      "avg_congestion_cost": 116.11777777777777,
+      "avg_gridlock_score": 1.7166666666666666,
+      "total_economic_loss": 2233080.2399999998,
+      "impact_tier": "HIGH"
+    },
+    {
+      "junction": "BTP117 - 9th Cross, Kanakapura Road",
+      "violation_count": 51,
+      "avg_congestion_cost": 115.9805882352941,
+      "avg_gridlock_score": 1.7058823529411768,
+      "total_economic_loss": 5057542.58,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP083 - AS Char Street, Mysore Road",
+      "violation_count": 503,
+      "avg_congestion_cost": 115.88666003976141,
+      "avg_gridlock_score": 1.7017892644135189,
+      "total_economic_loss": 45862418.42999999,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP115 - Sahasra Hospital, Jayanagar",
+      "violation_count": 57,
+      "avg_congestion_cost": 113.00122807017543,
+      "avg_gridlock_score": 1.6719298245614036,
+      "total_economic_loss": 4137545.83,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP091 - Sirsi Circle",
+      "violation_count": 58,
+      "avg_congestion_cost": 105.29189655172414,
+      "avg_gridlock_score": 1.5482758620689654,
+      "total_economic_loss": 4514093.61,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP221 - 15th Cross, 24th Main, JP Nagar",
+      "violation_count": 24,
+      "avg_congestion_cost": 104.72416666666665,
+      "avg_gridlock_score": 1.5541666666666665,
+      "total_economic_loss": 1567532.62,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP035 - Basaweshwara Circle (LH) Junction",
+      "violation_count": 5,
+      "avg_congestion_cost": 101.866,
+      "avg_gridlock_score": 1.5,
+      "total_economic_loss": 409919.86,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP126 - Dairy Circle",
+      "violation_count": 64,
+      "avg_congestion_cost": 99.496875,
+      "avg_gridlock_score": 1.4703125,
+      "total_economic_loss": 3588603.85,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP145 - Sri Hatti Maramma Circle, Domluru",
+      "violation_count": 43,
+      "avg_congestion_cost": 98.99232558139533,
+      "avg_gridlock_score": 1.4651162790697674,
+      "total_economic_loss": 3180014.93,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP048 - Shanthala Junction",
+      "violation_count": 346,
+      "avg_congestion_cost": 97.59982658959538,
+      "avg_gridlock_score": 1.439306358381503,
+      "total_economic_loss": 26965494.33,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP018 - Dhobi Ghat Junction",
+      "violation_count": 79,
+      "avg_congestion_cost": 97.46721518987344,
+      "avg_gridlock_score": 1.4379746835443037,
+      "total_economic_loss": 5426162.670000001,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP164 - 29th Main Road, BTM Layout",
+      "violation_count": 970,
+      "avg_congestion_cost": 97.14067010309277,
+      "avg_gridlock_score": 1.433298969072165,
+      "total_economic_loss": 79555485.44999999,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP128 - Gorappanapalya Junction",
+      "violation_count": 7,
+      "avg_congestion_cost": 95.92142857142856,
+      "avg_gridlock_score": 1.4142857142857144,
+      "total_economic_loss": 578864.5499999999,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP220 - Puttanna Junction",
+      "violation_count": 50,
+      "avg_congestion_cost": 95.29779999999997,
+      "avg_gridlock_score": 1.402,
+      "total_economic_loss": 3258758.4699999997,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP148 - 17th Main, Doopanahalli Bus Stop",
+      "violation_count": 9976,
+      "avg_congestion_cost": 95.19423115477144,
+      "avg_gridlock_score": 1.4043504410585403,
+      "total_economic_loss": 614253201.8599999,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP180 - Swagath Poornima Theatre",
+      "violation_count": 32,
+      "avg_congestion_cost": 93.74125000000001,
+      "avg_gridlock_score": 1.3875,
+      "total_economic_loss": 2837186.37,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP085 - Briyand Circle",
+      "violation_count": 42,
+      "avg_congestion_cost": 93.64214285714286,
+      "avg_gridlock_score": 1.3880952380952383,
+      "total_economic_loss": 2388552.0,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP106 - VV Puram College",
+      "violation_count": 30,
+      "avg_congestion_cost": 93.13366666666666,
+      "avg_gridlock_score": 1.3733333333333335,
+      "total_economic_loss": 2727656.89,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP011 - RR Kalyana Mantapa, Dr. Rajkumar Road",
+      "violation_count": 199,
+      "avg_congestion_cost": 93.074824120603,
+      "avg_gridlock_score": 1.3658291457286433,
+      "total_economic_loss": 17361654.789999995,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP213 - Royan Circle",
+      "violation_count": 5,
+      "avg_congestion_cost": 91.89399999999999,
+      "avg_gridlock_score": 1.3599999999999999,
+      "total_economic_loss": 367463.47,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP202 - East End Main Road, Jayanagar",
+      "violation_count": 51,
+      "avg_congestion_cost": 90.76058823529412,
+      "avg_gridlock_score": 1.337254901960784,
+      "total_economic_loss": 2134209.26,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP127 - Sagar Hospital, Jayanagar",
+      "violation_count": 26,
+      "avg_congestion_cost": 90.54269230769229,
+      "avg_gridlock_score": 1.3461538461538463,
+      "total_economic_loss": 1367182.88,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP219 - Canara Bank Junction",
+      "violation_count": 46,
+      "avg_congestion_cost": 88.43195652173912,
+      "avg_gridlock_score": 1.297826086956522,
+      "total_economic_loss": 2612540.78,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP185 - RV Teachers College",
+      "violation_count": 23,
+      "avg_congestion_cost": 88.06826086956521,
+      "avg_gridlock_score": 1.3130434782608693,
+      "total_economic_loss": 1292050.0000000002,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP030 - Mekhri Circle",
+      "violation_count": 4980,
+      "avg_congestion_cost": 87.61461044176707,
+      "avg_gridlock_score": 1.2918875502008034,
+      "total_economic_loss": 345321778.62,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP023 - Mahalaxmi Layout Entrance",
+      "violation_count": 1570,
+      "avg_congestion_cost": 86.79201910828026,
+      "avg_gridlock_score": 1.2801910828025478,
+      "total_economic_loss": 103158819.43,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP207 - 8th Main Road Basaveshwara Nagar",
+      "violation_count": 63,
+      "avg_congestion_cost": 84.5022222222222,
+      "avg_gridlock_score": 1.2444444444444442,
+      "total_economic_loss": 4199393.229999999,
+      "impact_tier": "LOW"
+    },
+    {
+      "junction": "BTP064 - Devanga Hostel Junction",
+      "violation_count": 16,
+      "avg_congestion_cost": 84.08812499999999,
+      "avg_gridlock_score": 1.23125,
+      "total_economic_loss": 1030338.1199999999,
+      "impact_tier": "MEDIUM"
+    },
+    {
+      "junction": "BTP077 - Halasuru Gate Junction",
+      "violation_count": 3,
+      "avg_congestion_cost": 83.82333333333334,
+      "avg_gridlock_score": 1.2333333333333334,
+      "total_economic_loss": 146533.74,
+      "impact_tier": "LOW"
+    }
+  ],
+  "total_junctions": 168,
+  "tier_summary": {
+    "LOW": 29327,
+    "MEDIUM": 11735,
+    "HIGH": 7156,
+    "CRITICAL": 1782
+  },
+  "high_risk_count": 0
+}

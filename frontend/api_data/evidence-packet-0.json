@@ -1,0 +1,23 @@
+{
+  "id": "FKID046429",
+  "vehicle_number": "FKN00GL41584",
+  "vehicle_type": "SCOOTER",
+  "violation_type": "[\"NO PARKING\"]",
+  "description": "nan",
+  "location": "Pramukh Swami Maharaj Road, Pride Pavilion Stage 1 Phase 6, Sri Mahaganapathi Nagar, Rajaji Nagar, Bengaluru, Karnataka. Pin-560010 (India)",
+  "mapped_junction": "BTP024 - NPS, Vijayanagar",
+  "latitude": 12.9834678,
+  "longitude": 77.5488473,
+  "created_datetime": "2024-03-29 23:08:46",
+  "duration_minutes": 22.4,
+  "severity": "1",
+  "congestion_cost": 7.69,
+  "gridlock_score": 0.1,
+  "economic_loss_inr": 13450.58,
+  "vehicles_blocked_hr": 412.0,
+  "co2_kg": 170.547,
+  "mv_act_section": "177",
+  "mv_act_penalty": "\u20b9500",
+  "police_station": "Magadi Road",
+  "impact_tier": "LOW"
+}

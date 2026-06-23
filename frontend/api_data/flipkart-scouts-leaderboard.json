@@ -1,0 +1,76 @@
+{
+  "leaderboard": [
+    {
+      "rank": 1,
+      "name": "Scout A",
+      "reports": 42,
+      "verified": 38,
+      "score": 95
+    },
+    {
+      "rank": 2,
+      "name": "Scout B",
+      "reports": 39,
+      "verified": 34,
+      "score": 90
+    },
+    {
+      "rank": 3,
+      "name": "Scout C",
+      "reports": 36,
+      "verified": 30,
+      "score": 85
+    },
+    {
+      "rank": 4,
+      "name": "Scout D",
+      "reports": 33,
+      "verified": 26,
+      "score": 80
+    },
+    {
+      "rank": 5,
+      "name": "Scout E",
+      "reports": 30,
+      "verified": 22,
+      "score": 75
+    },
+    {
+      "rank": 6,
+      "name": "Scout F",
+      "reports": 27,
+      "verified": 18,
+      "score": 70
+    },
+    {
+      "rank": 7,
+      "name": "Scout G",
+      "reports": 24,
+      "verified": 14,
+      "score": 65
+    },
+    {
+      "rank": 8,
+      "name": "Scout H",
+      "reports": 21,
+      "verified": 10,
+      "score": 60
+    },
+    {
+      "rank": 9,
+      "name": "Scout I",
+      "reports": 18,
+      "verified": 6,
+      "score": 55
+    },
+    {
+      "rank": 10,
+      "name": "Scout J",
+      "reports": 15,
+      "verified": 2,
+      "score": 50
+    }
+  ],
+  "total_active_scouts": 25,
+  "reports_this_week": 120
+}
