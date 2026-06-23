@@ -36,7 +36,7 @@ CMD ["sh", "-c", "gunicorn backend.api:app -k uvicorn.workers.UvicornWorker -w $
 FROM node:20-slim AS frontend-builder
 WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 COPY frontend/ .
 RUN npx vite build
 
