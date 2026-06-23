@@ -3,7 +3,7 @@
 # https://render.com/docs/blueprint-spec
 # ============================================================================
 services:
-  - type: worker
+  - type: web
     name: dispatchmind
     runtime: python
     region: singapore

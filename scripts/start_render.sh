@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================================
-# Render entrypoint — runs CLI demo + minimal HTTP server for health checks
+# Render entrypoint — starts the full FastAPI app
 # ============================================================================
 set -e
 
@@ -12,7 +12,13 @@ if [ ! -f "$CSV_FILE" ] && [ -f "$CSV_GZ" ]; then
     gzip -dk "$CSV_GZ"
 fi
 
-echo "Starting DispatchMind..."
-echo ""
+echo "Starting DispatchMind FastAPI server..."
 
-exec python -u scripts/serve_demo.py
+PORT="${PORT:-10000}"
+
+exec gunicorn backend.api:app \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --workers 2 \
+    --bind "0.0.0.0:${PORT}" \
+    --timeout 120 \
+    --log-level info
