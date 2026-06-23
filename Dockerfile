@@ -29,7 +29,7 @@ COPY data/processed/ data/processed/
 EXPOSE 8000
 ENV PORT=8000
 ENV PYTHONPATH=/app
-ENV WORKERS=4
+ENV WORKERS=1
 
 CMD ["sh", "-c", "gunicorn backend.api:app -k uvicorn.workers.UvicornWorker -w ${WORKERS} --bind 0.0.0.0:${PORT} --graceful-timeout 30 --timeout 120 --keep-alive 5"]
 
@@ -48,5 +48,3 @@ FROM backend AS production
 
 # Copy built frontend static assets into the directory FastAPI expects
 COPY --from=frontend-builder /app/dist /app/frontend/dist
-
-
