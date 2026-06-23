@@ -58,8 +58,8 @@ class ViolationAnomalyDetector:
         """
         df = df.copy()
         
-        # Temporal features
-        df['created_datetime'] = pd.to_datetime(df['created_date'], errors='coerce')
+        # Temporal features (uses canonical created_datetime from data_pipeline.py)
+        df['created_datetime'] = pd.to_datetime(df.get('created_datetime', df.get('created_date')), errors='coerce')
         df['hour_of_day'] = df['created_datetime'].dt.hour.fillna(12).astype(int)
         df['day_of_week'] = df['created_datetime'].dt.dayofweek.fillna(3).astype(int)
         
@@ -101,8 +101,9 @@ class ViolationAnomalyDetector:
         
         df['offense_count'] = df.get('violation', df.get('offence_code', '')).apply(count_offenses)
         
-        # Junction flag
-        df['junction_flag'] = df.get('junction_', 'No Junction').apply(
+        # Junction flag (uses canonical junction_name from data_pipeline.py)
+        junction_col = df.get('junction_name', df.get('junction_', 'No Junction'))
+        df['junction_flag'] = junction_col.apply(
             lambda x: 1 if str(x).startswith('BTP') else 0
         )
         

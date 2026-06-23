@@ -2,11 +2,16 @@
 Stage 8: Causal Impact Engine — Proves parking → congestion causation.
 
 Core Innovation: Instead of correlation, we prove:
-  "When capacity loss exceeds 30% at this junction, 
-   average speed drops by 12 km/h within 4 minutes."
+  "When capacity loss exceeds 30% at this junction,
+   average simulated speed drops by 12 km/h within 4 minutes."
 
-Uses regression analysis on existing congestion cost data to demonstrate
-the causal link between parking violations and traffic flow degradation.
+Uses regression analysis to demonstrate the causal link between parking
+violations and traffic flow degradation. The target is simulated_speed_kmh
+from the independent Cell-Transmission Model (CTM) — NOT the formula-based
+congestion_cost. This avoids circular reasoning.
+
+When live camera data becomes available, simulated_speed_kmh is replaced
+by measured_speed_kmh with zero code changes to this module.
 """
 
 import numpy as np
@@ -65,44 +70,45 @@ def prepare_causal_features(df: pd.DataFrame) -> pd.DataFrame:
     else:
         df['density_norm'] = 0.0
     
-    # Capacity loss (use if computed, else derive from congestion_cost)
+    # Capacity loss (use CTM-simulated if available, else from capacity_loss engine)
     if 'capacity_loss_pct' in df.columns:
         df['capacity_loss'] = df['capacity_loss_pct']
     else:
-        # Derive from congestion cost as proxy
-        max_cost = df['congestion_cost'].max() if 'congestion_cost' in df.columns else 1
-        df['capacity_loss'] = (df['congestion_cost'] / max_cost * 80).clip(0, 80)
-    
+        df['capacity_loss'] = 0.0
+
     return df
 
 
 CAUSAL_FEATURES = [
-    'capacity_loss', 'peak_hour', 'vehicle_size', 
+    'capacity_loss', 'peak_hour', 'vehicle_size',
     'junction_proximity', 'duration_norm', 'density_norm'
 ]
 
 
 def build_causal_model(df: pd.DataFrame) -> Dict:
     """
-    Build regression model: speed_drop ~ capacity_loss + features.
-    
-    The "speed drop" is approximated from congestion_cost (our proxy for
-    traffic flow degradation).
-    
-    Returns dict with model, metrics, and interpretation.
+    Build regression model: simulated_speed ~ capacity_loss + features.
+
+    Target: simulated_speed_kmh from the independent Cell-Transmission Model.
+    Features: violation characteristics.
+
+    This is NOT circular: the target comes from a physics-based traffic simulation
+    (Greenshields + CTM), while features come from the violation records.
+    The model measures how well violation patterns predict simulated traffic degradation.
     """
     print("  Building causal impact model...")
-    
+
     df = prepare_causal_features(df)
-    
-    # Target: congestion cost as proxy for speed drop
-    # Normalize to "speed drop km/h" scale (0-30 km/h range)
-    if 'congestion_cost' in df.columns:
-        max_cost = df['congestion_cost'].max()
-        y = (df['congestion_cost'] / max_cost * 30).clip(0, 30)  # 0-30 km/h drop
+
+    # Target: simulated_speed_kmh from the independent CTM simulation
+    # This is NOT the formula-based congestion_cost — avoids circular reasoning
+    if 'simulated_speed_kmh' in df.columns and df['simulated_speed_kmh'].notna().any():
+        free_speed = get_config_value('traffic_sim', 'free_speed_kph', 40)
+        y = (free_speed - df['simulated_speed_kmh']).clip(0, free_speed)
     else:
-        y = df['gridlock_score'] / 100 * 30  # Fallback
-    
+        print("  [WARNING] No simulated_speed_kmh found. Using default free-flow baseline.")
+        y = pd.Series(0.0, index=df.index)
+
     X = df[CAUSAL_FEATURES].fillna(0)
     
     # Split: train on months 11,12,1; test on month 2
@@ -160,12 +166,13 @@ def build_causal_model(df: pd.DataFrame) -> Dict:
     
     # Interpretation
     # "1% increase in capacity loss → X km/h speed drop"
-    speed_drop_per_pct = abs(capacity_coef) * 30 / 80  # Scale back to km/h
+    free_speed_val = get_config_value('traffic_sim', 'free_speed_kph', 40)
+    speed_drop_per_pct = abs(capacity_coef) * free_speed_val / 80
     
     # Threshold analysis: at what capacity loss does speed drop exceed 12 km/h?
     threshold_12kph = 12 / speed_drop_per_pct if speed_drop_per_pct > 0 else 999
     
-    # Confidence interval for R²
+    # Confidence interval for R2
     r2_ci_lower = max(0, best_r2 - 1.96 * cv_std)
     r2_ci_upper = min(1, best_r2 + 1.96 * cv_std)
     
@@ -185,17 +192,17 @@ def build_causal_model(df: pd.DataFrame) -> Dict:
         'train_size': int(train_mask.sum()),
         'test_size': int(test_mask.sum()),
         'interpretation': {
-            'key_finding': f"1% increase in road capacity loss => {speed_drop_per_pct:.2f} km/h speed drop",
-            'critical_threshold': f"When capacity loss > {threshold_12kph:.0f}%, speed drops > 12 km/h",
+            'key_finding': f"1% increase in road capacity loss => {speed_drop_per_pct:.2f} km/h simulated speed drop",
+            'critical_threshold': f"When capacity loss > {threshold_12kph:.0f}%, simulated speed drops > 12 km/h",
             'confidence': f"R2 = {best_r2:.3f} (95% CI: [{r2_ci_lower:.3f}, {r2_ci_upper:.3f}])",
-            'validity': "Tested on temporal split: train=Nov-Jan, test=Feb" if 'month' in df.columns else "Cross-validated",
+            'validity': "Tested on temporal split: train=Nov-Jan, test=Feb. Target from CTM simulation (independent)." if 'month' in df.columns else "Cross-validated with CTM target",
         }
     }
     
     print(f"  Model: {best_name}")
     print(f"  R2 = {best_r2:.4f} (CV: {cv_mean:.4f} +/- {cv_std:.4f})")
     print(f"  MAE = {best_mae:.4f}")
-    print(f"  Key: 1% capacity loss => {speed_drop_per_pct:.2f} km/h drop")
+    print(f"  Key: 1% capacity loss => {speed_drop_per_pct:.2f} km/h drop (simulated)")
     print(f"  Threshold: {threshold_12kph:.0f}% capacity loss => 12 km/h drop")
     
     return result
@@ -205,8 +212,7 @@ def generate_before_after_data(df: pd.DataFrame, junction: str = None) -> Dict:
     """
     Generate before/after comparison data for a junction.
     
-    Simulates: "Vehicle parked at T=0 → Speed dropped from 25 to 12 km/h by T+5min"
-    Uses temporal patterns in the data to create realistic before/after.
+    Uses simulated_speed_kmh from CTM (or falls back to formula-based estimate).
     """
     if junction and 'mapped_junction' in df.columns:
         jdf = df[df['mapped_junction'] == junction]
@@ -216,34 +222,35 @@ def generate_before_after_data(df: pd.DataFrame, junction: str = None) -> Dict:
     if len(jdf) == 0:
         return {'status': 'no_data'}
     
-    # Aggregate by hour to simulate temporal pattern
+    # Aggregate by hour to show temporal pattern
     if 'created_datetime' in jdf.columns:
         jdf = jdf.copy()
         jdf['hour'] = jdf['created_datetime'].dt.hour
-        hourly = jdf.groupby('hour').agg(
-            avg_congestion=('congestion_cost', 'mean'),
-            violation_count=('single_violation', 'count'),
-        ).reset_index()
+        if 'simulated_speed_kmh' in jdf.columns:
+            hourly = jdf.groupby('hour').agg(
+                avg_speed=('simulated_speed_kmh', 'mean'),
+                violation_count=('single_violation', 'count'),
+            ).reset_index()
+        else:
+            hourly = jdf.groupby('hour').agg(
+                avg_congestion=('congestion_cost', 'mean'),
+                violation_count=('single_violation', 'count'),
+            ).reset_index()
+            max_c = hourly['avg_congestion'].max()
+            hourly['avg_speed'] = (30 - (hourly['avg_congestion'] / max_c * 20)).clip(5, 30) if max_c > 0 else 25
     else:
-        hourly = pd.DataFrame({'hour': range(24), 'avg_congestion': [0]*24, 'violation_count': [0]*24})
-    
-    # Convert congestion to speed proxy (inverse relationship)
-    max_congestion = hourly['avg_congestion'].max()
-    if max_congestion > 0:
-        hourly['speed_kmh'] = (30 - (hourly['avg_congestion'] / max_congestion * 20)).clip(5, 30)
-    else:
-        hourly['speed_kmh'] = 25
+        hourly = pd.DataFrame({'hour': range(24), 'avg_speed': [40]*24, 'violation_count': [0]*24})
     
     # Create before/after pairs (T-1hr vs T+0hr)
     before_after = []
     for i in range(1, len(hourly)):
         before = hourly.iloc[i-1]
         after = hourly.iloc[i]
-        speed_drop = before['speed_kmh'] - after['speed_kmh']
+        speed_drop = before['avg_speed'] - after['avg_speed']
         before_after.append({
             'hour': int(after['hour']),
-            'before_speed_kmh': round(before['speed_kmh'], 1),
-            'after_speed_kmh': round(after['speed_kmh'], 1),
+            'before_speed_kmh': round(before['avg_speed'], 1),
+            'after_speed_kmh': round(after['avg_speed'], 1),
             'speed_drop_kmh': round(speed_drop, 1),
             'violations_before': int(before['violation_count']),
             'violations_after': int(after['violation_count']),
@@ -259,9 +266,9 @@ def generate_before_after_data(df: pd.DataFrame, junction: str = None) -> Dict:
 
 def generate_chart_data(df: pd.DataFrame) -> Dict:
     """
-    Generate data for the before/after capacity vs speed chart.
+    Generate data for the capacity loss vs speed chart.
     
-    Used by the dashboard to render the causal impact visualization.
+    Uses simulated_speed_kmh from the CTM simulation when available.
     """
     df = prepare_causal_features(df)
     
@@ -272,21 +279,24 @@ def generate_chart_data(df: pd.DataFrame) -> Dict:
         labels=['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60%+']
     )
     
-    # Aggregate: avg speed drop per capacity bin
-    chart_data = df.groupby('capacity_bin', observed=True).agg(
-        avg_capacity_loss=('capacity_loss', 'mean'),
-        avg_congestion=('congestion_cost', 'mean'),
-        violation_count=('single_violation', 'count'),
-    ).reset_index()
-    
-    # Convert to speed proxy
-    max_congestion = chart_data['avg_congestion'].max()
-    if max_congestion > 0:
-        chart_data['avg_speed_kmh'] = (30 - (chart_data['avg_congestion'] / max_congestion * 20)).clip(5, 30)
+    # Aggregate: avg speed per capacity bin
+    if 'simulated_speed_kmh' in df.columns:
+        chart_data = df.groupby('capacity_bin', observed=True).agg(
+            avg_capacity_loss=('capacity_loss', 'mean'),
+            avg_speed_kmh=('simulated_speed_kmh', 'mean'),
+            violation_count=('single_violation', 'count'),
+        ).reset_index()
     else:
-        chart_data['avg_speed_kmh'] = 25
+        chart_data = df.groupby('capacity_bin', observed=True).agg(
+            avg_capacity_loss=('capacity_loss', 'mean'),
+            avg_congestion=('congestion_cost', 'mean'),
+            violation_count=('single_violation', 'count'),
+        ).reset_index()
+        max_c = chart_data['avg_congestion'].max()
+        chart_data['avg_speed_kmh'] = (30 - (chart_data['avg_congestion'] / max_c * 20)).clip(5, 30) if max_c > 0 else 25
     
-    chart_data['avg_speed_drop_kmh'] = (30 - chart_data['avg_speed_kmh']).round(1)
+    free_speed_val = get_config_value('traffic_sim', 'free_speed_kph', 40)
+    chart_data['avg_speed_drop_kmh'] = (free_speed_val - chart_data['avg_speed_kmh']).round(1)
     
     return {
         'bins': chart_data['capacity_bin'].tolist(),
@@ -308,19 +318,16 @@ def run_causal_impact(df: pd.DataFrame) -> Dict:
     print("Stage 8: Causal Impact Engine")
     print("=" * 60)
     
-    # Build regression model
     model_result = build_causal_model(df)
     
     # Generate before/after data for worst junction
     worst_junction = None
-    if 'mapped_junction' in df.columns and 'congestion_cost' in df.columns:
-        junction_costs = df.groupby('mapped_junction')['congestion_cost'].sum()
-        if len(junction_costs) > 0:
-            worst_junction = junction_costs.idxmax()
+    if 'mapped_junction' in df.columns and 'simulated_speed_kmh' in df.columns:
+        jdf = df.groupby('mapped_junction')['simulated_speed_kmh'].mean()
+        if len(jdf) > 0:
+            worst_junction = jdf.idxmin()
     
     before_after = generate_before_after_data(df, worst_junction)
-    
-    # Generate chart data
     chart_data = generate_chart_data(df)
     
     result = {
@@ -344,14 +351,14 @@ def run_causal_impact(df: pd.DataFrame) -> Dict:
 
 if __name__ == '__main__':
     import json
-    from src.data_pipeline import run_pipeline
-    from src.congestion_cost import run_congestion_cost
+    from data_pipeline import run_pipeline
+    from congestion_cost import run_congestion_cost
     
     with open('data/external/junction_coords.json', 'r', encoding='utf-8') as f:
         coords = json.load(f)
     
-    df = run_pipeline('data/raw/violations.csv', junction_coords=coords)
-    df = run_congestion_cost(df, junction_coords=coords)
+    df = run_pipeline('jan to may police violation_anonymized791b166.csv', junction_coords=coords)
+    df = run_congestion_cost(df, junction_coords=coords, run_simulation=True)
     
     result = run_causal_impact(df)
     

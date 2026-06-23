@@ -233,12 +233,27 @@ def get_counter_intuitive_examples(df: pd.DataFrame, n: int = 5):
     return examples, false_positives, stats
 
 
-def run_congestion_cost(df: pd.DataFrame, junction_coords: dict, road_width: float = 7.0) -> pd.DataFrame:
+def run_congestion_cost(df: pd.DataFrame, junction_coords: dict, road_width: float = 7.0, run_simulation: bool = True) -> pd.DataFrame:
     print("=" * 60)
     print("Stage 2: Congestion Damage Score + JunctionGuard")
     print("=" * 60)
 
     df = compute_congestion_cost(df, junction_coords, road_width)
+
+    # Run cell-transmission traffic simulation (dataset-only physics-based model)
+    if run_simulation and junction_coords:
+        try:
+            from traffic_sim import add_simulated_speed_to_pipeline
+            time_bin_minutes = get_config_value('traffic_sim', 'time_bin_minutes', 15)
+            df = add_simulated_speed_to_pipeline(df, junction_coords, time_bin_minutes, road_width)
+        except Exception as e:
+            print(f"  [WARNING] Traffic simulation failed: {e}")
+            df['simulated_speed_kmh'] = 40.0
+            df['queue_length_m'] = 0.0
+    else:
+        df['simulated_speed_kmh'] = 40.0
+        df['queue_length_m'] = 0.0
+
     examples, false_positives, _ = get_counter_intuitive_examples(df)
 
     print("\n  Counter-Intuitive Examples (low count, high delay):")

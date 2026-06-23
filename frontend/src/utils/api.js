@@ -61,8 +61,23 @@ export function useApi(endpoint, deps = [], options = {}) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-    fetch(`${API_BASE}${endpoint}`, { signal: controller.signal })
+    const token = localStorage.getItem("token");
+    const headers = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    fetch(`${API_BASE}${endpoint}`, { 
+      headers,
+      signal: controller.signal 
+    })
       .then((res) => {
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.reload();
+          throw new Error("Unauthorized");
+        }
         if (res.status === 503) {
           const err = new Error("System initializing");
           err.status = 503;
@@ -131,6 +146,38 @@ export function tierColor(tier) {
     LOW: "#00FF88",
   };
   return colors[tier] || "#6B7280";
+}
+
+export async function apiFetch(endpoint, options = {}) {
+  const token = localStorage.getItem("token");
+  const headers = {
+    "Content-Type": "application/json",
+    ...options.headers,
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  
+  let cleanEndpoint = endpoint;
+  if (endpoint.startsWith("/api/")) {
+    cleanEndpoint = endpoint.substring(4);
+  } else if (endpoint.startsWith("api/")) {
+    cleanEndpoint = endpoint.substring(3);
+  }
+  
+  const response = await fetch(`${API_BASE}${cleanEndpoint}`, {
+    ...options,
+    headers,
+  });
+  
+  if (response.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.reload();
+    throw new Error("Unauthorized");
+  }
+  
+  return response;
 }
 
 

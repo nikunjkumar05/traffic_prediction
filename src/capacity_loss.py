@@ -15,7 +15,7 @@ Operational Status:
 
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 import sys
 from pathlib import Path
 
@@ -168,10 +168,15 @@ def compute_junction_capacity(df: pd.DataFrame) -> pd.DataFrame:
         total_pedestrian_spillover=('pedestrian_spillover_m', 'sum'),
     ).reset_index()
     
-    # Junction-level capacity loss (considering overlapping blockages)
-    # Use max blocked width at any point (worst case) + spillover
+    # Junction-level capacity loss
+    # Use mean blocked width (typical vehicle size) scaled by a congestion
+    # multiplier that grows logarithmically with violation count.
+    # A hard cap at 70% of road width ensures some clearance always exists.
+    mean_blocked = junction_stats['total_blocked_width'] / junction_stats['violation_count'].replace(0, 1)
+    scaling = np.log1p(junction_stats['violation_count']) * 0.3
+    effective_blocked = (mean_blocked * scaling).clip(upper=junction_stats['avg_road_width'] * 0.7)
     junction_stats['junction_capacity_loss_pct'] = (
-        (junction_stats['total_blocked_width'] / junction_stats['avg_road_width']) * 100
+        (effective_blocked / junction_stats['avg_road_width']) * 100
     ).clip(upper=100).round(1)
     
     junction_stats['junction_remaining_pct'] = (
@@ -204,6 +209,56 @@ def compute_junction_capacity(df: pd.DataFrame) -> pd.DataFrame:
           f"{junction_stats.iloc[0]['junction_capacity_loss_pct']}% capacity loss")
     
     return df, junction_stats
+
+
+def compute_gpi(
+    capacity_loss_pct: float,
+    cascade_risk: float = 0.0,
+    temporal_urgency: float = 0.0,
+    spatial_density: float = 0.0,
+    weights: Optional[Dict[str, float]] = None,
+) -> float:
+    """
+    Gridlock Propagation Index (GPI) — Novel 0-100 composite metric.
+
+    Combines four dimensions of congestion risk:
+      30% — Cascade risk (max upstream correlation)
+      30% — Capacity degradation (100 - remaining_capacity_pct)
+      20% — Temporal urgency (peak multiplier x presence probability)
+      20% — Spatial density (nearby violation concentration)
+
+    GPI = 0.30*CR_norm + 0.30*CD_norm + 0.20*TU_norm + 0.20*SD_norm
+    """
+    if weights is None:
+        w = get_config_value('gpi', 'weights', {'cascade': 0.30, 'capacity': 0.30, 'temporal': 0.20, 'density': 0.20})
+    else:
+        w = weights
+
+    cap_norm = min(100.0, max(0.0, float(capacity_loss_pct)))
+    cas_norm = min(100.0, max(0.0, float(cascade_risk) * 100.0))
+    temp_norm = min(100.0, max(0.0, float(temporal_urgency) * 100.0))
+    dens_norm = min(100.0, max(0.0, float(spatial_density) * 100.0))
+
+    gpi = (
+        w.get('cascade', 0.30) * cas_norm +
+        w.get('capacity', 0.30) * cap_norm +
+        w.get('temporal', 0.20) * temp_norm +
+        w.get('density', 0.20) * dens_norm
+    )
+    return round(gpi, 1)
+
+
+def compute_junction_gpi(
+    junction_data: pd.Series,
+    cascade_risk_map: Optional[Dict[str, float]] = None,
+) -> float:
+    cap_loss = float(junction_data.get('junction_capacity_loss_pct', 0))
+    density_raw = float(junction_data.get('violation_count', 0))
+    density_norm = min(1.0, density_raw / 100.0)
+    jname = str(junction_data.get('mapped_junction', ''))
+    cascade_risk = cascade_risk_map.get(jname, 0.0) if cascade_risk_map else 0.0
+    temporal = get_config_value('gpi', 'default_temporal_urgency', 0.7)
+    return compute_gpi(capacity_loss_pct=cap_loss, cascade_risk=cascade_risk, temporal_urgency=temporal, spatial_density=density_norm)
 
 
 def get_capacity_summary(junction_stats: pd.DataFrame) -> Dict:

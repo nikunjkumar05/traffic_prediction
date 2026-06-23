@@ -19,9 +19,9 @@ function AnimatedMetric({ value, prefix = '', suffix = '', label, color = 'text-
 
 function ImpactSlider({ baseline, scenario, impactData }) {
   const [revealed, setRevealed] = useState(true)
-  const vehiclesSaved = scenario?.vehicles_cleared_hr ?? impactData?.scenarios?.find(s => s.clear_count === scenario?.clear_count)?.vehicles_saved_hr ?? 0
-  const economicSaved = scenario?.cleared_cost ? Math.round(scenario.cleared_cost * 180) : 0
-  const co2Saved = scenario?.cleared_cost ? Math.round(scenario.cleared_cost * 0.8) : 0
+  const vehiclesSaved = scenario?.vehicles_saved_hr ?? 0
+  const economicSaved = scenario?.economic_savings_inr ?? 0
+  const co2Saved = scenario?.co2_saved_kg ?? 0
   const pctReduction = scenario?.pct_reduction ?? 0
 
   return (

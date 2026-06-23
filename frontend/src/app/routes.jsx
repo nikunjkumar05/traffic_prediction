@@ -19,6 +19,7 @@ const AICopilot = lazy(() => import("../pages/AICopilot"));
 const LiveCapacityBoard = lazy(() => import("../pages/LiveCapacityBoard"));
 const FlipkartScout = lazy(() => import("../pages/FlipkartScout"));
 const ScoutLeaderboard = lazy(() => import("../pages/ScoutLeaderboard"));
+const FlipkartImpactDashboard = lazy(() => import("../pages/FlipkartImpactDashboard"));
 
 export const ROUTE_CONFIG = [
   { path: "/", component: ImpactCalculator },
@@ -39,5 +40,6 @@ export const ROUTE_CONFIG = [
   { path: "/ai-copilot", component: AICopilot },
   { path: "/capacity-board", component: LiveCapacityBoard },
   { path: "/flipkart-scout", component: FlipkartScout },
+  { path: "/flipkart-impact", component: FlipkartImpactDashboard },
   { path: "/scout-leaderboard", component: ScoutLeaderboard },
 ];

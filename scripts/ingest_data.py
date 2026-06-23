@@ -63,6 +63,45 @@ def ingest_data():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     
+    # Seed default users
+    import hashlib
+    import secrets
+    def hash_password(password: str, salt: str) -> str:
+        return hashlib.sha256((password + salt).encode("utf-8")).hexdigest()
+    def generate_salt() -> str:
+        return secrets.token_hex(16)
+    def seed_default_users(db):
+        from backend.models import User
+        default_users = [
+            {"username": "acp", "password": "acp", "role": "acp", "full_name": "ACP Sandeep Kumar", "badge_number": "BTP-ACP-001"},
+            {"username": "si", "password": "si", "role": "si", "full_name": "SI Nikunj Sharma", "badge_number": "BTP-SI-104"},
+            {"username": "constable", "password": "constable", "role": "constable", "full_name": "Constable Ramesh Gowda", "badge_number": "BTP-PC-982"},
+            {"username": "scout", "password": "scout", "role": "scout", "full_name": "Scout Anil Kumar", "scout_id": "FK-SCOUT-77"},
+        ]
+        for u_info in default_users:
+            existing = db.query(User).filter(User.username == u_info["username"]).first()
+            if not existing:
+                salt = generate_salt()
+                hashed_pwd = hash_password(u_info["password"], salt)
+                user = User(
+                    username=u_info["username"],
+                    hashed_password=hashed_pwd,
+                    salt=salt,
+                    role=u_info["role"],
+                    full_name=u_info["full_name"],
+                    badge_number=u_info.get("badge_number"),
+                    scout_id=u_info.get("scout_id")
+                )
+                db.add(user)
+        db.commit()
+        print("OK: Seeded default users in database.")
+
+    db_init = SessionLocal()
+    try:
+        seed_default_users(db_init)
+    finally:
+        db_init.close()
+        
     # We don't include 'id' in df_sql so SQLite auto-increments it during append
     df_sql.to_sql("violations", con=engine, if_exists="append", index=False)
     

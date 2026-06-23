@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Activity, HeartPulse, ShieldCheck, Truck, Send, Stethoscope, Scale, FileWarning, CheckCircle2 } from "lucide-react";
-import { useApi, formatNumber } from "../utils/api";
+import { useApi, formatNumber, apiFetch } from "../utils/api";
 import ErrorState from "../components/ErrorState";
 import ScrollReveal from "../components/ScrollReveal";
 import GlassCard from "../components/GlassCard";
@@ -67,11 +67,11 @@ export default function TriageCenter() {
       setCourt(null);
       try {
         const [causeRes, courtRes] = await Promise.all([
-          fetch(
+          apiFetch(
             `/api/cause-attribution/${encodeURIComponent(selected.junction)}`,
           ),
-          fetch(
-            `/api/court-readiness/${encodeURIComponent(`demo-${selected.junction}`)}`,
+          apiFetch(
+            `/api/court-readiness/${encodeURIComponent(selected.junction)}`,
           ),
         ]);
 
@@ -110,7 +110,7 @@ export default function TriageCenter() {
         latitude: Number(scoutPayload.latitude),
         longitude: Number(scoutPayload.longitude),
       };
-      const res = await fetch("/api/flipkart-scouts/report", {
+      const res = await apiFetch("/api/flipkart-scouts/report", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -335,6 +335,26 @@ export default function TriageCenter() {
                 className="w-full bg-elevated/60 border border-border rounded px-2 py-1.5 text-xs text-chalk input-glass font-mono"
                 placeholder="Photo URL"
               />
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  aria-label="Vehicle Number"
+                  value={scoutPayload.vehicle_number}
+                  onChange={(e) =>
+                    setScoutPayload((p) => ({ ...p, vehicle_number: e.target.value }))
+                  }
+                  className="bg-elevated/60 border border-border rounded px-2 py-1.5 text-xs text-chalk input-glass font-mono"
+                  placeholder="Vehicle Number"
+                />
+                <input
+                  aria-label="Notes"
+                  value={scoutPayload.notes}
+                  onChange={(e) =>
+                    setScoutPayload((p) => ({ ...p, notes: e.target.value }))
+                  }
+                  className="bg-elevated/60 border border-border rounded px-2 py-1.5 text-xs text-chalk input-glass"
+                  placeholder="Notes / Obstructions"
+                />
+              </div>
               <button
                 type="submit"
                 disabled={scoutSubmitting}

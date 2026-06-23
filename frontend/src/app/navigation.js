@@ -15,6 +15,7 @@ import {
   Camera,
   Trophy,
   ShieldCheck,
+  Truck,
 } from "@phosphor-icons/react";
 
 export const NAV_BY_ROLE = {
@@ -46,9 +47,14 @@ export const NAV_BY_ROLE = {
     { path: "/triage", icon: Heartbeat, label: "Triage" },
     { path: "/dispatch", icon: Signpost, label: "Dispatch" },
     { path: "/repeat-offenders", icon: UsersThree, label: "Offenders" },
+    { path: "/flipkart-impact", icon: Truck, label: "Delivery Impact" },
     { path: "/flipkart-scout", icon: Camera, label: "Scout Reports" },
     { path: "/scout-leaderboard", icon: Trophy, label: "Leaderboard" },
     { path: "/map", icon: MapPin, label: "Tactical Map" },
+  ],
+  scout: [
+    { path: "/flipkart-scout", icon: Camera, label: "Report Parking" },
+    { path: "/scout-leaderboard", icon: Trophy, label: "Leaderboard" },
   ],
 };
 
@@ -56,4 +62,5 @@ export const ROLE_LABELS = {
   constable: "Constable (On Beat)",
   si: "Sub-Inspector (Station)",
   acp: "ACP / Commissioner",
+  scout: "Flipkart Scout (Delivery)",
 };

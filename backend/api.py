@@ -19,31 +19,94 @@ from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query, Request
+import hashlib
+import secrets
+from datetime import timedelta
+from fastapi import FastAPI, HTTPException, Query, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from backend.database import get_db, SessionLocal
+from backend.models import User, UserSession
 from phantom_risk import calculate_phantom_risk_score
 from preprocess import preprocess
 from src.cascade import run_cascade_analysis
+from src.gnn_cascade import run_gnn_cascade
 from src.congestion_cost import run_congestion_cost
 from src.curbflex import run_curbflex
-from src.data_pipeline import run_pipeline
+from src.data_pipeline import run_pipeline, validate_pipeline_data
 from src.dispatch import run_dispatch
 from src.prediction import run_prediction
 from src.realtime_alerts import ViolationAlertSystem
 from src.spillover_ai import detect_spillover_zones
+from src.presence_model import compute_presence_for_violation, filter_present_violations
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
-)
+_request_id_ctx = threading.local()
+
+class RequestIDFilter(logging.Filter):
+    def filter(self, record):
+        record.request_id = getattr(_request_id_ctx, 'request_id', '-')
+        return True
+
+def _setup_logging():
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        '{"timestamp":"%(asctime)s","level":"%(levelname)s","logger":"%(name)s","request_id":"%(request_id)s","message":"%(message)s"}',
+        datefmt="%Y-%m-%dT%H:%M:%S%z",
+    )
+    handler.setFormatter(formatter)
+    handler.addFilter(RequestIDFilter())
+    root = logging.getLogger()
+    root.handlers.clear()
+    root.addHandler(handler)
+    root.setLevel(logging.INFO)
+
+_setup_logging()
 logger = logging.getLogger("dispatchmind")
 
+
+def hash_password(password: str, salt: str) -> str:
+    return hashlib.sha256((password + salt).encode("utf-8")).hexdigest()
+
+def verify_password(password: str, salt: str, hashed: str) -> bool:
+    return hash_password(password, salt) == hashed
+
+def generate_salt() -> str:
+    return secrets.token_hex(16)
+
+def generate_token() -> str:
+    return secrets.token_hex(32)
+
+def _seed_default_users(db: Session):
+    default_users = [
+        {"username": "acp", "password": "acp", "role": "acp", "full_name": "ACP Sandeep Kumar", "badge_number": "BTP-ACP-001"},
+        {"username": "si", "password": "si", "role": "si", "full_name": "SI Nikunj Sharma", "badge_number": "BTP-SI-104"},
+        {"username": "constable", "password": "constable", "role": "constable", "full_name": "Constable Ramesh Gowda", "badge_number": "BTP-PC-982"},
+        {"username": "scout", "password": "scout", "role": "scout", "full_name": "Scout Anil Kumar", "scout_id": "FK-SCOUT-77"},
+    ]
+    for u_info in default_users:
+        existing = db.query(User).filter(User.username == u_info["username"]).first()
+        if not existing:
+            salt = generate_salt()
+            hashed_pwd = hash_password(u_info["password"], salt)
+            user = User(
+                username=u_info["username"],
+                hashed_password=hashed_pwd,
+                salt=salt,
+                role=u_info["role"],
+                full_name=u_info["full_name"],
+                badge_number=u_info.get("badge_number"),
+                scout_id=u_info.get("scout_id")
+            )
+            db.add(user)
+    db.commit()
+    logger.info("Default users seeded successfully.")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -53,6 +116,13 @@ async def lifespan(app: FastAPI):
         from backend.models import Base
         Base.metadata.create_all(bind=engine)
         logger.info("Database tables initialized successfully.")
+        
+        # Seed default users
+        db = SessionLocal()
+        try:
+            _seed_default_users(db)
+        finally:
+            db.close()
     except Exception as e:
         logger.error(f"Failed to initialize database tables: {e}")
 
@@ -97,11 +167,152 @@ async def lifespan(app: FastAPI):
         pass
 
 
+# Authentication schemas, dependency, and check function
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+class LoginResponse(BaseModel):
+    token: str
+    role: str
+    username: str
+    full_name: str
+    badge_number: Optional[str] = None
+    scout_id: Optional[str] = None
+
+class UserInfoResponse(BaseModel):
+    username: str
+    role: str
+    full_name: str
+    badge_number: Optional[str] = None
+    scout_id: Optional[str] = None
+
+class ClientErrorReport(BaseModel):
+    type: str
+    message: str
+    stack: Optional[str] = None
+    url: str
+    line: Optional[int] = None
+    column: Optional[int] = None
+
+oauth2_scheme = HTTPBearer(auto_error=False)
+
+def get_current_user(
+    request: Request,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> User:
+    if hasattr(request.state, "user"):
+        return request.state.user
+        
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Missing authorization credentials")
+    
+    token = credentials.credentials
+    session = db.query(UserSession).filter(UserSession.token == token).first()
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session token")
+    
+    if session.expires_at < datetime.utcnow():
+        db.delete(session)
+        db.commit()
+        raise HTTPException(status_code=401, detail="Session expired")
+        
+    user = db.query(User).filter(User.id == session.user_id).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+        
+    return user
+
+def require_role(roles: List[str]):
+    def dependency(user: User = Depends(get_current_user)):
+        if user.role not in roles:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Permission denied: require one of roles {roles}"
+            )
+        return user
+    return dependency
+
+def check_route_permissions(request: Request, db: Session = Depends(get_db)):
+    path = request.url.path
+    
+    # Bypass auth for health, login, errors, and static/documentation routes if any
+    if path in ["/api/health", "/api/auth/login", "/api/errors"] or not path.startswith("/api/"):
+        return
+        
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authentication credentials missing or invalid")
+        
+    token = auth_header.split(" ")[1]
+    session = db.query(UserSession).filter(UserSession.token == token).first()
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid session token")
+        
+    if session.expires_at < datetime.utcnow():
+        db.delete(session)
+        db.commit()
+        raise HTTPException(status_code=401, detail="Session expired")
+        
+    user = db.query(User).filter(User.id == session.user_id).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="User not found")
+        
+    request.state.user = user
+    
+    # Role-based access control
+    role = user.role
+    
+    # ACP only prefixes
+    acp_paths = [
+        "/api/command",
+        "/api/simulator",
+        "/api/recent-events",
+        "/api/camera-status/toggle",
+        "/api/early-warning-system",
+        "/api/causal-impact",
+        "/api/capacity-status",
+        "/api/cost-metrics",
+        "/api/degradation-status",
+    ]
+    # SI or ACP prefixes
+    si_acp_paths = [
+        "/api/inspector",
+        "/api/triage",
+        "/api/dispatch",
+    ]
+    # Scout or SI or ACP prefixes
+    scout_paths = [
+        "/api/flipkart-scouts/report",
+        "/api/flipkart-scouts/leaderboard",
+    ]
+    
+    is_acp_path = any(path.startswith(p) for p in acp_paths)
+    is_si_acp_path = any(path.startswith(p) for p in si_acp_paths)
+    is_scout_path = any(path.startswith(p) for p in scout_paths)
+    
+    if is_acp_path and role != "acp":
+        raise HTTPException(status_code=403, detail="Access denied: ACP role required")
+        
+    if is_si_acp_path and role not in ["acp", "si"]:
+        raise HTTPException(status_code=403, detail="Access denied: SI or ACP role required")
+        
+    if is_scout_path and role not in ["acp", "si", "scout"]:
+        raise HTTPException(status_code=403, detail="Access denied: Scout, SI, or ACP role required")
+        
+    # All other general /api/ paths require constable, SI, or ACP (e.g. overview, map, etc.)
+    # Scout is not allowed to access general police APIs.
+    if not is_scout_path and role == "scout":
+        if not path.startswith("/api/auth/"):
+            raise HTTPException(status_code=403, detail="Access denied: Police role required")
+
 app = FastAPI(
     title="DispatchMind API",
     description="BTP Beat Constable Co-Pilot — AI-powered parking enforcement intelligence",
     version="2.0.0",
     lifespan=lifespan,
+    dependencies=[Depends(check_route_permissions)],
 )
 
 app.add_middleware(
@@ -114,6 +325,82 @@ app.add_middleware(
     allow_credentials=False,
 )
 
+try:
+    from prometheus_client import Counter, Histogram, generate_latest, CollectorRegistry
+
+    HTTP_REQUESTS = Counter(
+        "dispatchmind_http_requests_total",
+        "Total HTTP requests",
+        ["method", "path", "status"],
+    )
+    HTTP_LATENCY = Histogram(
+        "dispatchmind_http_request_duration_seconds",
+        "HTTP request latency",
+        ["method", "path"],
+    )
+    _registry = CollectorRegistry()
+
+    from starlette.responses import PlainTextResponse
+
+    @app.get("/metrics")
+    async def metrics():
+        data = generate_latest().decode("utf-8")
+        logger.info("Metrics endpoint hit, length=%d", len(data))
+        return PlainTextResponse(data)
+    logger.info("Prometheus metrics enabled at /metrics")
+except ImportError:
+    logger.warning("prometheus-client not installed; /metrics endpoint disabled")
+
+@app.post("/api/auth/login", response_model=LoginResponse)
+def login(req: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == req.username).first()
+    if not user or not verify_password(req.password, user.salt, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        
+    token = generate_token()
+    # Expire session in 24 hours
+    expires_at = datetime.utcnow() + timedelta(hours=24)
+    
+    session = UserSession(
+        token=token,
+        user_id=user.id,
+        expires_at=expires_at
+    )
+    db.add(session)
+    db.commit()
+    
+    return LoginResponse(
+        token=token,
+        role=user.role,
+        username=user.username,
+        full_name=user.full_name,
+        badge_number=user.badge_number,
+        scout_id=user.scout_id
+    )
+
+@app.post("/api/auth/logout")
+def logout(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+    if credentials:
+        token = credentials.credentials
+        session = db.query(UserSession).filter(UserSession.token == token).first()
+        if session:
+            db.delete(session)
+            db.commit()
+    return {"status": "ok", "message": "Logged out successfully"}
+
+@app.get("/api/auth/me", response_model=UserInfoResponse)
+def get_me(user: User = Depends(get_current_user)):
+    return UserInfoResponse(
+        username=user.username,
+        role=user.role,
+        full_name=user.full_name,
+        badge_number=user.badge_number,
+        scout_id=user.scout_id
+    )
+
 
 class RequestIDMiddleware(BaseHTTPMiddleware):
     """Attach a unique request ID to every request for distributed tracing."""
@@ -121,17 +408,33 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         request_id = request.headers.get("X-Request-ID", str(uuid.uuid4())[:12])
         request.state.request_id = request_id
+        _request_id_ctx.request_id = request_id
         start = time.monotonic()
-        response = await call_next(request)
-        elapsed_ms = round((time.monotonic() - start) * 1000, 1)
-        response.headers["X-Request-ID"] = request_id
-        response.headers["X-Response-Time"] = f"{elapsed_ms}ms"
-        logger.info(
-            "%s %s %d %sms req=%s",
-            request.method, request.url.path, response.status_code,
-            elapsed_ms, request_id,
-        )
-        return response
+        try:
+            response = await call_next(request)
+            elapsed_ms = round((time.monotonic() - start) * 1000, 1)
+            response.headers["X-Request-ID"] = request_id
+            response.headers["X-Response-Time"] = f"{elapsed_ms}ms"
+            logger.info(
+                "%s %s %d %sms",
+                request.method, request.url.path, response.status_code,
+                elapsed_ms,
+            )
+            try:
+                HTTP_REQUESTS.labels(
+                    method=request.method,
+                    path=request.url.path,
+                    status=str(response.status_code),
+                ).inc()
+                HTTP_LATENCY.labels(
+                    method=request.method,
+                    path=request.url.path,
+                ).observe(elapsed_ms / 1000)
+            except Exception:
+                pass
+            return response
+        finally:
+            _request_id_ctx.request_id = '-'
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -216,7 +519,7 @@ REQUIRED_SCORED_COLUMNS = {
 _pipeline_data = None
 _junction_coords = None
 _models = None
-_validation = None
+_pipeline_validation = None
 _cascade = None
 _curbflex = None
 _spillover_zones = None
@@ -249,18 +552,12 @@ _precomputed: Dict[str, Any] = {}
 
 
 def _normalize_pipeline_dates():
-    """Ensure created_datetime column exists in pipeline data (called once after load)."""
+    """Ensure created_datetime column exists in pipeline data (canonicalized at pipeline load)."""
     global _pipeline_data
     if _pipeline_data is None:
         return
     if "created_datetime" not in _pipeline_data.columns:
-        date_col = "created_date" if "created_date" in _pipeline_data.columns else None
-        if date_col:
-            _pipeline_data["created_datetime"] = pd.to_datetime(
-                _pipeline_data[date_col], errors="coerce"
-            )
-        else:
-            _pipeline_data["created_datetime"] = pd.Timestamp("2024-06-01 12:00:00")
+        _pipeline_data["created_datetime"] = pd.Timestamp("2024-06-01 12:00:00")
     elif _pipeline_data["created_datetime"].dtype != "datetime64[ns]":
         _pipeline_data["created_datetime"] = pd.to_datetime(
             _pipeline_data["created_datetime"], errors="coerce"
@@ -270,7 +567,7 @@ _lock_precomputed = threading.Lock()
 
 def _ensure_base_data():
     """Load core pipeline (stages 1-2) synchronously — fast, ~18s."""
-    global _pipeline_data, _junction_coords, _pipeline_loading, _pipeline_error
+    global _pipeline_data, _junction_coords, _pipeline_loading, _pipeline_error, _pipeline_validation
 
     if _pipeline_data is not None:
         return
@@ -305,6 +602,10 @@ def _ensure_base_data():
                     _pipeline_data = cached
                     _pipeline_loading = False
                     _normalize_pipeline_dates()
+                    validation = validate_pipeline_data(_pipeline_data)
+                    _pipeline_validation = validation
+                    for issue in validation["issues"]:
+                        logger.warning("[PIPELINE VALIDATION] %s", issue)
                     logger.info(
                         "Scored cache loaded: %d violations", len(_pipeline_data)
                     )
@@ -316,6 +617,10 @@ def _ensure_base_data():
             logger.info("Building base pipeline from raw CSV...")
             _pipeline_data = run_pipeline(CSV_PATH, junction_coords=_junction_coords)
             _pipeline_data = run_congestion_cost(_pipeline_data, _junction_coords)
+            validation = validate_pipeline_data(_pipeline_data)
+            _pipeline_validation = validation
+            for issue in validation["issues"]:
+                logger.warning("[PIPELINE VALIDATION] %s", issue)
             CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
             _pipeline_data.to_parquet(CACHE_PATH, index=False)
             _normalize_pipeline_dates()
@@ -492,6 +797,10 @@ def _ensure_capacity():
 
             df = _pipeline_data.copy()
             _, junction_stats, summary = run_capacity_loss(df)
+            logger.info("CAPACITY DEBUG: RED=%d YELLOW=%d GREEN=%d",
+                       int((junction_stats['operational_status'] == 'RED').sum()),
+                       int((junction_stats['operational_status'] == 'YELLOW').sum()),
+                       int((junction_stats['operational_status'] == 'GREEN').sum()))
             _capacity_data = {"summary": summary, "junctions": junction_stats}
         except Exception:
             logger.exception("Failed to compute capacity loss")
@@ -610,6 +919,8 @@ class PriorityCard(BaseModel):
     lat: float
     lon: float
     explanation: str
+    actionability_score: float = 0.0
+    presence_probability_pct: float = 100.0
 
 
 class BeatStats(BaseModel):
@@ -1177,6 +1488,7 @@ async def get_status():
         "pipeline_ready": _pipeline_data is not None,
         "pipeline_loading": _pipeline_loading,
         "pipeline_error": _pipeline_error,
+        "pipeline_validation": _pipeline_validation,
         "precomputed": list(_precomputed.keys()),
         "violations": int(len(_pipeline_data)) if _pipeline_data is not None else 0,
     }
@@ -1208,6 +1520,16 @@ async def get_priority_queue(
         if station != "ALL":
             df = df[df["police_station"] == station]
 
+        # Compute presence probability for each violation
+        df = df.copy()
+        df['presence_prob'] = df.apply(
+            lambda r: compute_presence_for_violation(
+                r['created_datetime'], r['duration_minutes']
+            ),
+            axis=1,
+        )
+        df['actionability'] = df['congestion_cost'] * df['presence_prob']
+
         j_queue = (
             df.groupby("mapped_junction")
             .agg(
@@ -1224,9 +1546,11 @@ async def get_priority_queue(
                     "impact_tier",
                     lambda x: x.value_counts().index[0] if len(x) > 0 else "LOW",
                 ),
+                actionability_score=("actionability", "sum"),
+                avg_presence_prob=("presence_prob", "mean"),
             )
             .reset_index()
-            .nlargest(top_n, "total_delay")
+            .nlargest(top_n, "actionability_score")
         )
 
         cards = []
@@ -1246,6 +1570,7 @@ async def get_priority_queue(
             if not reasons:
                 reasons.append("high congestion damage")
 
+            presence_pct = round(float(row.get("avg_presence_prob", 1.0)) * 100, 1)
             cards.append(
                 PriorityCard(
                     rank=i,
@@ -1259,6 +1584,8 @@ async def get_priority_queue(
                     lat=round(float(row["avg_lat"]), 6),
                     lon=round(float(row["avg_lon"]), 6),
                     explanation="Ranked high because: " + ", ".join(reasons) + ".",
+                    actionability_score=round(float(row.get("actionability_score", 0)), 1),
+                    presence_probability_pct=presence_pct,
                 )
             )
 
@@ -1365,6 +1692,35 @@ async def get_cascade():
         if len(lag_df) > 0
         else 0,
     }
+
+
+_cascade_gnn = None
+_lock_cascade_gnn = threading.Lock()
+
+def _ensure_cascade_gnn():
+    global _cascade_gnn
+    if _cascade_gnn is not None:
+        return
+    with _lock_cascade_gnn:
+        if _cascade_gnn is not None:
+            return
+        _ensure_base_data()
+        if _pipeline_data is None or _junction_coords is None:
+            return
+        try:
+            _cascade_gnn = run_gnn_cascade(_pipeline_data, _junction_coords)
+        except Exception as e:
+            logger.error(f"GNN cascade failed: {e}")
+            _cascade_gnn = {"status": "failed", "error": str(e)}
+
+
+@app.get("/api/cascade/gnn-predict")
+async def get_gnn_cascade_predict():
+    """GNN cascade predictions — ML-based cascade probability for all junction pairs."""
+    await asyncio.to_thread(_ensure_cascade_gnn)
+    if _cascade_gnn is None or _cascade_gnn.get("status") == "failed":
+        raise HTTPException(503, "GNN cascade analysis not available")
+    return _cascade_gnn
 
 
 @app.get("/api/curbflex")
@@ -1611,6 +1967,10 @@ async def get_simulator(
                 "remaining_cost": round(remaining_cost, 1), "pct_reduction": round(pct_reduction, 1),
                 "tier_impact": tier_impact, "top_junction": top_junction_name,
                 "top_junction_pct": round(top_junction_pct, 1), "violations_cleared": n,
+                "vehicles_saved_hr": int(cleared["vehicles_blocked_hr"].sum()),
+                "economic_savings_inr": round(float(cleared["economic_loss_inr"].sum()), 2),
+                "co2_saved_kg": round(float(cleared["co2_kg"].sum()), 1),
+                "person_hours_saved": round(float(cleared["person_hours_blocked"].sum()), 1),
             })
 
         return {"baseline": baseline, "scenarios": scenarios,
@@ -1891,9 +2251,14 @@ async def get_court_readiness(violation_id: str):
     try:
         try:
             vid = int(violation_id)
+            violation = db.query(Violation).filter(Violation.id == vid).first()
         except ValueError:
-            vid = -1
-        violation = db.query(Violation).filter(Violation.id == vid).first()
+            violation = (
+                db.query(Violation)
+                .filter(Violation.mapped_junction == violation_id)
+                .order_by(Violation.created_datetime.desc())
+                .first()
+            )
     except Exception:
         violation = None
     finally:
@@ -1957,7 +2322,8 @@ async def post_flipkart_scout_report(payload: FlipkartScoutReportIn):
             longitude=payload.longitude,
             photo_url=payload.photo_url,
             vehicle_number=payload.vehicle_number,
-            notes=payload.notes
+            notes=payload.notes,
+            status="PENDING"
         )
         db.add(report)
         db.commit()
@@ -1990,16 +2356,134 @@ async def post_flipkart_scout_report(payload: FlipkartScoutReportIn):
     if estimated_cii < 1000:
         priority = "LOW"
 
-    report_id = f"FS-{uuid.uuid4().hex[:8].upper()}"
+    report_id = f"FS-{report.id:04d}"
 
     return {
         "report_id": report_id,
-        "status": "ACCEPTED",
+        "status": "PENDING",
         "priority": priority,
         "reward_points": 50 if priority == "HIGH" else 10,
         "estimated_cii": round(estimated_cii, 1),
-        "message": f"Report received. +50 Flipkart SuperCoins awarded.",
+        "message": f"Report received. +{50 if priority == 'HIGH' else 10} SuperCoins will be credited upon police verification.",
     }
+
+
+class VerifyReportPayload(BaseModel):
+    status: str
+
+
+@app.get("/api/flipkart-scouts/reports")
+async def get_flipkart_reports(request: Request):
+    """List all Flipkart Scout reports, most recent first. Filtered by scout_id for scouts."""
+    from backend.database import SessionLocal
+    from backend.models import FlipkartReport
+
+    db = SessionLocal()
+    try:
+        user = getattr(request.state, "user", None)
+        query = db.query(FlipkartReport)
+        
+        # Scouts can only fetch their own reports
+        if user and user.role == "scout":
+            query = query.filter(FlipkartReport.scout_id == user.scout_id)
+            
+        reports = (
+            db.query(FlipkartReport)
+            .filter(FlipkartReport.id.in_(query.with_entities(FlipkartReport.id)))
+            .order_by(FlipkartReport.created_at.desc())
+            .all()
+        )
+        return {
+            "reports": [
+                {
+                    "id": r.id,
+                    "report_id": f"FS-{r.id:04d}",
+                    "scout_id": r.scout_id,
+                    "junction": r.junction,
+                    "latitude": r.latitude,
+                    "longitude": r.longitude,
+                    "photo_url": r.photo_url,
+                    "vehicle_number": r.vehicle_number,
+                    "notes": r.notes,
+                    "status": r.status or "PENDING",
+                    "created_at": r.created_at.isoformat() if r.created_at else None,
+                }
+                for r in reports
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Error fetching flipkart reports: {e}")
+        raise HTTPException(500, detail="Failed to fetch reports")
+    finally:
+        db.close()
+
+
+@app.post("/api/flipkart-scouts/verify/{report_id}")
+async def verify_flipkart_report(report_id: int, payload: VerifyReportPayload):
+    """Verify (Approve or Reject) a Flipkart Scout report. Promotes approved reports to violations."""
+    global _precomputed, _capacity_data, _repeat_offenders_data, _causal_impact_data
+    from backend.database import SessionLocal
+    from backend.models import FlipkartReport, Violation
+    import datetime
+
+    db = SessionLocal()
+    try:
+        report = db.query(FlipkartReport).filter(FlipkartReport.id == report_id).first()
+        if not report:
+            raise HTTPException(404, detail="Scout report not found")
+
+        status_upper = payload.status.upper()
+        if status_upper not in ["APPROVED", "REJECTED"]:
+            raise HTTPException(400, detail="Invalid status. Must be APPROVED or REJECTED.")
+
+        report.status = status_upper
+        db.commit()
+
+        if status_upper == "APPROVED":
+            # Ingest as a new live violation
+            new_violation = Violation(
+                vehicle_number=report.vehicle_number or "UNKNOWN",
+                vehicle_type="CAR",
+                latitude=report.latitude,
+                longitude=report.longitude,
+                violation_type="PARKING_VIOLATION",
+                junction_name=report.junction,
+                police_station=report.junction,
+                created_datetime=datetime.datetime.utcnow(),
+                hour=datetime.datetime.utcnow().hour,
+                day_of_week=datetime.datetime.utcnow().weekday(),
+                month=datetime.datetime.utcnow().month,
+                congestion_cost=0.0,
+                severity=1,
+                image_url=report.photo_url
+            )
+            db.add(new_violation)
+            db.commit()
+            db.refresh(new_violation)
+
+            # Score, update and append to dataframe
+            await asyncio.to_thread(ingest_and_score_violation, new_violation, db)
+
+            # Invalidate caches so dashboards reflect the newly approved violation
+            with _lock_precomputed:
+                _precomputed.clear()
+            with _lock_capacity:
+                _capacity_data = None
+            with _lock_repeat:
+                _repeat_offenders_data = None
+            with _lock_causal:
+                _causal_impact_data = None
+
+        return {"status": "success", "report_id": report_id, "verification_status": status_upper}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.exception("Error verifying flipkart report")
+        raise HTTPException(500, detail=str(e))
+    finally:
+        db.close()
 
 
 @app.get("/api/cost-metrics")
@@ -2487,8 +2971,9 @@ async def get_flipkart_leaderboard():
             db.query(
                 FlipkartReport.scout_id,
                 func.count(FlipkartReport.id).label("report_count"),
-                FlipkartReport.junction,
+                func.max(FlipkartReport.junction).label("junction"),
             )
+            .filter(FlipkartReport.status == "APPROVED")
             .group_by(FlipkartReport.scout_id)
             .order_by(func.count(FlipkartReport.id).desc())
             .limit(20)
@@ -2576,7 +3061,7 @@ async def toggle_camera_status(junction_id: str):
 @app.post("/api/junctions/action")
 async def perform_junction_action(payload: JunctionActionIn):
     """Clear/warn/not-found a junction: resolves active violations and updates status."""
-    global _pipeline_data, _custom_events
+    global _pipeline_data, _custom_events, _precomputed, _capacity_data, _repeat_offenders_data, _causal_impact_data
     from backend.database import SessionLocal
     from backend.models import Violation
     from datetime import datetime
@@ -2600,6 +3085,16 @@ async def perform_junction_action(payload: JunctionActionIn):
     # Update in-memory dataframe
     if _pipeline_data is not None:
         _pipeline_data = _pipeline_data[_pipeline_data["mapped_junction"] != junction]
+
+    # Clear caches
+    with _lock_precomputed:
+        _precomputed.clear()
+    with _lock_capacity:
+        _capacity_data = None
+    with _lock_repeat:
+        _repeat_offenders_data = None
+    with _lock_causal:
+        _causal_impact_data = None
 
     # Prepend dynamic event to the log
     vehicles_count = count if count > 0 else 1
@@ -2642,16 +3137,43 @@ async def get_violations(top_n: int = Query(10, ge=1, le=50)):
     return {"cards": cards}
 
 
+_client_errors = []
+
+@app.post("/api/errors")
+async def report_client_error(report: ClientErrorReport):
+    global _client_errors
+    _client_errors.append({
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "type": report.type,
+        "message": report.message,
+        "stack": report.stack,
+        "url": report.url,
+        "line": report.line,
+        "column": report.column,
+    })
+    if len(_client_errors) > 500:
+        _client_errors = _client_errors[-500:]
+    logger.warning(
+        "Client error: %s at %s:%s — %s",
+        report.type, report.url, report.line, report.message,
+    )
+    return {"status": "ok"}
+
+
 @app.get("/api/health")
 async def health():
     from backend.database import check_db_health
 
+    db_health = check_db_health()
+    pipeline_status = "ready" if _pipeline_data is not None else ("loading" if _pipeline_loading else "error")
+
     components = {
         "pipeline": {
-            "status": "ready" if _pipeline_data is not None else ("loading" if _pipeline_loading else "error"),
+            "status": pipeline_status,
             "error": _pipeline_error,
             "violations_count": len(_pipeline_data) if _pipeline_data is not None else 0,
             "junctions_count": len(_junction_coords) if _junction_coords is not None else 0,
+            "validation": _pipeline_validation,
         },
         "precomputation": {
             "status": "ready" if _precomputed else "pending",
@@ -2664,19 +3186,24 @@ async def health():
             "capacity": "ready" if _capacity_data is not None else "pending",
             "repeat_offenders": "ready" if _repeat_offenders_data is not None else "pending",
         },
-        "database": check_db_health(),
+        "database": db_health,
     }
 
-    all_ready = (
-        _pipeline_data is not None
+    is_healthy = (
+        pipeline_status == "ready"
+        and db_health.get("status") == "ok"
         and all(v == "ready" for v in components["models"].values())
     )
 
-    return {
-        "status": "ok" if all_ready else "degraded",
+    payload = {
+        "status": "ok" if is_healthy else ("degraded" if pipeline_status != "error" else "error"),
         "version": "2.0.0",
         "components": components,
     }
+
+    if payload["status"] == "error":
+        raise HTTPException(status_code=503, detail=payload)
+    return payload
 
 
 if __name__ == "__main__":

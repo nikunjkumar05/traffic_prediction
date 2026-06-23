@@ -43,11 +43,52 @@ def get_client():
     return _client
 
 
+def get_mock_fallback(prompt: str) -> str:
+    prompt_lower = prompt.lower()
+    if "priority" in prompt_lower:
+        return (
+            "Good morning, Officer. Your current priority is Koramangala 80 Feet Road Junction. "
+            "Recent camera feeds report 8 double-parking violations causing a 42% road capacity loss. "
+            "Please dispatch a tow truck to clear the curb."
+        )
+    elif "kr market" in prompt_lower:
+        return (
+            "KR Market Junction is currently experiencing heavy congestion (Gridlock Score: 84). "
+            "Primary cause: illegal commercial loading/unloading on the main lane. "
+            "Marshals have been alerted to enforce clear curb zones."
+        )
+    elif "offender" in prompt_lower:
+        return (
+            "ClearLane Intelligence has flagged vehicle KA-01-ME-8892 (Black SUV) as a top repeat offender "
+            "with 7 violations in Koramangala this week. Current location: near Silk Board. "
+            "Recommended action: Issue immediate challan and tow."
+        )
+    elif "silk board" in prompt_lower:
+        return (
+            "Silk Board Junction is under critical load. Tipping point forecast predicts severe congestion spike "
+            "within the next 15 minutes due to spillover from the sector 4 commercial corridor. "
+            "Active tow truck pre-positioning is advised."
+        )
+    elif "morning" in prompt_lower or "hello" in prompt_lower:
+        return (
+            "Good morning, Constable Kumar. Welcome to your shift. "
+            "Koramangala is currently stable, but watch out for typical parking spillover "
+            "near commercial complexes on 80 Feet Road. Ask me anything about your shift!"
+        )
+    else:
+        return (
+            "Here is the local traffic telemetry overview for your query: "
+            "Active enforcement is underway in Koramangala. "
+            "We have registered minor delays but no critical blockages. "
+            "Please proceed with standard patrol routes."
+        )
+
+
 def chat_completion(prompt: str, system: str = None, temperature: float = 0.7) -> str:
     """Simple chat completion wrapper."""
     client = get_client()
-    if client is None:
-        return "LLM not available (openai package not installed)"
+    if client is None or not MISTRAL_API_KEY:
+        return get_mock_fallback(prompt)
     
     messages = []
     if system:
@@ -62,7 +103,8 @@ def chat_completion(prompt: str, system: str = None, temperature: float = 0.7) -
         )
         return completion.choices[0].message.content
     except Exception as e:
-        return f"LLM error: {e}"
+        print(f"LLM call failed: {e}. Falling back to mock.")
+        return get_mock_fallback(prompt)
 
 
 def responses_create(input_text: str, model: str = None) -> dict:

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useApi } from '../utils/api'
+import { useApi, apiFetch } from '../utils/api'
 import { MapPin, Truck, CheckCircle, AlertTriangle, Navigation, Volume2, VolumeX } from 'lucide-react'
 import ErrorState from '../components/ErrorState'
 import GlassCard from '../components/GlassCard'
@@ -29,7 +29,7 @@ export default function FieldOfficer() {
     setActioning(true)
     setToast(null)
     try {
-      const response = await fetch('/api/junctions/action', {
+      const response = await apiFetch('/api/junctions/action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ junction, action, officer: 'Constable Kumar' })

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FileText, Clock, CheckCircle, XCircle, Users, MapPin, RefreshCw, Eye, AlertTriangle, Car, TrendingUp } from 'lucide-react';
-import { useApi } from '../utils/api';
+import { useApi, apiFetch } from '../utils/api';
 import GlassCard from '../components/GlassCard';
 import ScrollReveal from '../components/ScrollReveal';
 import PageHeader from '../components/PageHeader';
@@ -9,20 +9,42 @@ export default function InspectorDashboard() {
   const [activeTab, setActiveTab] = useState('escalations')
   const { data: priorityQueue, loading: loadingPq, error: errorPq, refetch: refetchPq } = useApi('/priority-queue/ALL?top_n=10')
   const { data: repeatOffenders, loading: loadingRo, error: errorRo, refetch: refetchRo } = useApi('/repeat-offenders?min_violations=3')
-  const loading = loadingPq || loadingRo
+  const { data: reportsData, loading: loadingRep, error: errorRep, refetch: refetchRep } = useApi('/flipkart-scouts/reports')
+  const [verifyingId, setVerifyingId] = useState(null)
+  const loading = loadingPq || loadingRo || loadingRep
+
+  const handleVerify = async (reportId, status) => {
+    setVerifyingId(reportId)
+    try {
+      const response = await apiFetch(`/api/flipkart-scouts/verify/${reportId}`, {
+        method: 'POST',
+        body: JSON.stringify({ status })
+      })
+      if (response.ok) {
+        refetchRep()
+        refetchPq()
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setVerifyingId(null)
+    }
+  }
 
   if (loading) return <div className="space-y-6"><div className="flex items-center gap-4"><div className="w-12 h-12 rounded-2xl bg-elevated animate-pulse" /><div><div className="h-7 w-48 bg-elevated rounded-lg animate-pulse" /></div></div><div className="grid grid-cols-4 gap-3">{[1,2,3,4].map(i => <div key={i} className="glass-card-static h-20 bg-elevated/50 animate-pulse" />)}</div></div>
 
-  if (errorPq || errorRo) return <div className="flex flex-col items-center justify-center p-12 text-center"><AlertTriangle className="w-12 h-12 text-neon-red mb-4 animate-bounce" /><h2 className="text-lg font-bold text-chalk mb-2">Data Load Error</h2><p className="text-sm text-muted mb-4">{errorPq || errorRo}</p><button onClick={() => { refetchPq(); refetchRo() }} className="btn-primary flex items-center gap-2"><RefreshCw className="w-3.5 h-3.5" /> Retry</button></div>
+  if (errorPq || errorRo || errorRep) return <div className="flex flex-col items-center justify-center p-12 text-center"><AlertTriangle className="w-12 h-12 text-neon-red mb-4 animate-bounce" /><h2 className="text-lg font-bold text-chalk mb-2">Data Load Error</h2><p className="text-sm text-muted mb-4">{errorPq || errorRo || errorRep}</p><button onClick={() => { refetchPq(); refetchRo(); refetchRep() }} className="btn-primary flex items-center gap-2"><RefreshCw className="w-3.5 h-3.5" /> Retry</button></div>
 
   const cards = priorityQueue?.cards || []
   const offenders = repeatOffenders?.offenders || []
+  const reports = reportsData?.reports || []
   const escalations = cards.filter(c => c.tier === 'CRITICAL' || c.tier === 'HIGH')
   const pendingReview = cards.filter(c => c.tier === 'MEDIUM')
+  const pendingScoutReports = reports.filter(r => r.status === 'PENDING')
 
   const TABS = [
     { key: 'escalations', label: 'Escalation Queue', icon: AlertTriangle },
-    { key: 'evidence', label: 'Evidence Approval', icon: FileText },
+    { key: 'evidence', label: 'Scout Reports Vetting', icon: FileText },
     { key: 'offenders', label: 'Repeat Offenders', icon: Car },
     { key: 'performance', label: 'Officer Performance', icon: TrendingUp },
   ]
@@ -30,7 +52,7 @@ export default function InspectorDashboard() {
   return (
     <div className="space-y-6">
       <PageHeader icon={Users} title="SI Inspector Dashboard" subtitle="Escalation queue, evidence approval, and repeat offenders" accent="text-neon-blue"
-        actions={<button onClick={() => { refetchPq(); refetchRo() }} className="btn-ghost flex items-center gap-2 hover:bg-elevated/50 px-3 py-1.5 rounded-lg border border-border transition-all"><RefreshCw className="w-3.5 h-3.5 text-neon-blue" /> <span className="text-chalk">Refresh</span></button>}
+        actions={<button onClick={() => { refetchPq(); refetchRo(); refetchRep() }} className="btn-ghost flex items-center gap-2 hover:bg-elevated/50 px-3 py-1.5 rounded-lg border border-border transition-all"><RefreshCw className="w-3.5 h-3.5 text-neon-blue" /> <span className="text-chalk">Refresh</span></button>}
       />
 
       <ScrollReveal delay={100}>
@@ -38,7 +60,7 @@ export default function InspectorDashboard() {
           <div className="glass-card-static p-4 bg-neon-red/10 border border-neon-red/20"><p className="text-[10px] text-neon-red font-bold uppercase tracking-widest">Escalations</p><p className="text-2xl font-bold text-chalk mt-1 font-mono">{escalations.length}</p></div>
           <div className="glass-card-static p-4 bg-neon-amber/10 border border-neon-amber/20"><p className="text-[10px] text-neon-amber font-bold uppercase tracking-widest">Pending Review</p><p className="text-2xl font-bold text-chalk mt-1 font-mono">{pendingReview.length}</p></div>
           <div className="glass-card-static p-4 border border-border"><p className="text-[10px] text-muted font-bold uppercase tracking-widest">Repeat Offenders</p><p className="text-2xl font-bold text-chalk mt-1 font-mono">{offenders.length}</p></div>
-          <div className="glass-card-static p-4 bg-neon-green/10 border border-neon-green/20"><p className="text-[10px] text-neon-green font-bold uppercase tracking-widest">Evidence Approved</p><p className="text-2xl font-bold text-chalk mt-1 font-mono">23</p></div>
+          <div className="glass-card-static p-4 bg-neon-green/10 border border-neon-green/20"><p className="text-[10px] text-neon-green font-bold uppercase tracking-widest">Scout Reports Pending</p><p className="text-2xl font-bold text-chalk mt-1 font-mono">{pendingScoutReports.length}</p></div>
         </div>
       </ScrollReveal>
 
@@ -90,25 +112,48 @@ export default function InspectorDashboard() {
       {activeTab === 'evidence' && (
         <ScrollReveal>
           <GlassCard className="p-6">
-            <h3 className="text-sm font-bold text-chalk mb-4">Evidence Packets Pending Approval</h3>
+            <h3 className="text-sm font-bold text-chalk mb-4">Flipkart Scout Reports Vetting</h3>
             <div className="space-y-3">
-              {[{ id: 'CL-2024-001', junction: 'BTP044', vehicle: 'KA-01-AB-1234', status: 'pending', time: '2 hrs ago' }, { id: 'CL-2024-002', junction: 'BTP067', vehicle: 'KA-02-CD-5678', status: 'pending', time: '3 hrs ago' }, { id: 'CL-2024-003', junction: 'BTP089', vehicle: 'KA-03-EF-9012', status: 'approved', time: '5 hrs ago' }].map((e, idx) => (
-                <div key={idx} className="flex items-center justify-between p-4 rounded-xl bg-elevated/15 border border-border hover:border-neon-blue/20 transition-all duration-300">
-                  <div className="flex items-center gap-4">
-                    <FileText className="w-5 h-5 text-neon-blue" />
+              {reports.length === 0 ? (
+                <p className="text-sm text-muted py-6 text-center">No scout reports pending verification</p>
+              ) : reports.map((r, idx) => (
+                <div key={r.id || idx} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-elevated/15 border border-border hover:border-neon-blue/20 transition-all duration-300 gap-4">
+                  <div className="flex items-start gap-4">
+                    <FileText className="w-5 h-5 text-neon-blue shrink-0 mt-1" />
                     <div>
-                      <p className="text-sm font-semibold text-chalk">{e.id} — {e.junction}</p>
-                      <p className="text-xs text-muted font-mono mt-0.5">{e.vehicle} • {e.time}</p>
+                      <p className="text-sm font-semibold text-chalk">Report #{r.id} — Junction: {r.junction}</p>
+                      <p className="text-xs text-muted font-mono mt-0.5">
+                        Vehicle: {r.vehicle_number || 'N/A'} • Scout: {r.scout_id}
+                      </p>
+                      {r.notes && <p className="text-xs text-muted/85 italic mt-1 font-serif">"{r.notes}"</p>}
+                      {r.photo_url && <p className="text-xs text-neon-blue/70 mt-1">Proof Photo: {r.photo_url}</p>}
+                      <p className="text-[10px] text-muted/50 mt-1">Coordinates: {r.latitude}, {r.longitude}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    {e.status === 'pending' ? (
+                  <div className="flex items-center gap-3 self-end sm:self-center">
+                    {r.status === 'PENDING' ? (
                       <>
-                        <button className="px-3 py-1.5 bg-neon-green text-white text-xs font-bold rounded-lg hover:bg-neon-green/90 transition-all shadow-[0_4px_12px_rgba(52,199,89,0.2)]">Approve</button>
-                        <button className="px-3 py-1.5 bg-neon-red text-white text-xs font-bold rounded-lg hover:bg-neon-red/90 transition-all shadow-[0_4px_12px_rgba(255,59,48,0.2)]">Reject</button>
+                        <button 
+                          disabled={verifyingId === r.id}
+                          onClick={() => handleVerify(r.id, 'APPROVED')} 
+                          className="px-3 py-1.5 bg-neon-green text-white text-xs font-bold rounded-lg hover:bg-neon-green/90 transition-all shadow-[0_4px_12px_rgba(52,199,89,0.2)] disabled:opacity-50"
+                        >
+                          Approve
+                        </button>
+                        <button 
+                          disabled={verifyingId === r.id}
+                          onClick={() => handleVerify(r.id, 'REJECTED')} 
+                          className="px-3 py-1.5 bg-neon-red text-white text-xs font-bold rounded-lg hover:bg-neon-red/90 transition-all shadow-[0_4px_12px_rgba(255,59,48,0.2)] disabled:opacity-50"
+                        >
+                          Reject
+                        </button>
                       </>
                     ) : (
-                      <span className="px-2.5 py-1 bg-neon-green/10 text-neon-green text-xs font-bold rounded-lg border border-neon-green/20">APPROVED</span>
+                      <span className={`px-2.5 py-1 text-xs font-bold rounded-lg border ${
+                        r.status === 'APPROVED' ? 'bg-neon-green/10 text-neon-green border-neon-green/20' : 'bg-neon-red/10 text-neon-red border-neon-red/20'
+                      }`}>
+                        {r.status}
+                      </span>
                     )}
                   </div>
                 </div>

@@ -18,7 +18,8 @@ COPY "jan to may police violation_anonymized791b166.csv" ./
 COPY data/external/ data/external/
 
 EXPOSE 8000
-CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+ENV WORKERS=4
+CMD ["gunicorn", "backend.api:app", "-k", "uvicorn.workers.UvicornWorker", "-w", "4", "--bind", "0.0.0.0:8000", "--graceful-timeout", "30", "--timeout", "120", "--keep-alive", "5"]
 
 
 # ---- Stage 2: Frontend build ----

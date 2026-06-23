@@ -1,0 +1,57 @@
+Generate a complete, copy-paste-ready VBA macro for Microsoft PowerPoint that creates a full presentation about the following project. The macro must create all slides, titles, and bullet points in one execution. Use a dark theme (background #141414) with blue accent (#047BD5), orange accent (#F37A20), green accent (#46C876), and white text. Include proper error handling and slide cleanup.
+
+PROJECT OVERVIEW:
+DispatchMind is an AI-powered traffic gridlock management platform built for Bengaluru Traffic Police (Gridlock Hackathon 2.0). It analyzes 300K+ parking violation records from BTP surveillance cameras to detect, quantify, and mitigate parking-induced congestion in real-time.
+
+TECHNICAL HIGHLIGHTS:
+- Dual-mode architecture: trains on historical CSV data, runs on live CCTV feeds in production
+- 9-stage pipeline: data ingestion → anomaly detection → congestion costing → CTM simulation → causal impact → capacity loss → cascade analysis → GNN prediction → dispatch
+- Python/FastAPI backend, React 18 + Tailwind CSS frontend, SQLAlchemy + SQLite
+- 40+ REST API endpoints, role-based access (Constable/SI/ACP/Flipkart Scout)
+
+THREE CORE ML INNOVATIONS:
+1. GNN Cascade Predictor: 2-layer Message-Passing Network in pure NumPy (no PyTorch). Architecture: H = sigmoid(A @ ReLU(A @ X @ W1 + b1) @ W2 + b2). Predicts cascade propagation probability between junctions.
+2. CTM Traffic Simulation: Cell-Transmission Model based on Greenshields fundamental diagram. Free speed 45 km/h, jam density 120 veh/km/lane. Physics-based, no external API needed.
+3. Presence Probability Model: Bayesian logistic decay — P(still_present) = 1/(1+exp((t_elapsed - E[duration])/k)). Solves stale-violation problem.
+
+GPI METRIC (Gridlock Propagation Index):
+Novel 0-100 composite: 30% cascade risk + 30% capacity loss + 20% temporal urgency + 20% spatial density
+
+FLIPKART INTEGRATION:
+- DBSCAN clustering identifies 15+ delivery hotspots
+- Dynamic Loading Window recommendations (peak: 11am-1pm, 5-8pm)
+- Estimated annual savings: Rs 12.7 Cr (8.5 min avg delivery time reduction)
+- Scout program: violation reporting with SuperCoins rewards + leaderboard gamification
+
+DASHBOARD FEATURES:
+- Impact Dashboard: city-wide congestion cost with scenario analysis
+- Priority Queue: actionability-ranked junctions (GPI gauge + presence bar + dispatch buttons)
+- Tactical Map: geospatial capacity overlays (GREEN/YELLOW/RED)
+- Cascade Analysis: force-directed graph with GNN edge probabilities
+- Flipkart Impact: annual savings, hourly heatmap, green zone recommendations
+- Evidence Packets: one-click court-ready challans (MV Act ref + tamper-proof hash)
+- Guided Demo Mode: auto-advances through 5 key screens
+
+KEY METRICS:
+- GNN AUC > 0.85 on held-out test set
+- Pipeline: ~18s full 9-stage processing
+- API P50 < 200ms, P95 < 1500ms
+- 300K+ violations, 50+ junctions, 15 police stations
+
+SLIDE STRUCTURE (14 slides):
+1. Title: DispatchMind — AI-Powered Traffic Gridlock Management for Bengaluru
+2. Problem: The Bengaluru Gridlock Crisis
+3. Solution Overview
+4. Core Pipeline (9 Stages)
+5. Innovation: GNN Cascade Predictor
+6. Innovation: CTM Traffic Simulation
+7. Innovation: Presence Probability Model
+8. Gridlock Propagation Index (GPI)
+9. Flipkart Delivery Impact & Green Zones
+10. System Architecture
+11. Dashboard Walkthrough
+12. Key Performance Metrics
+13. Guided Demo Mode
+14. Thank You / Q&A
+
+The macro should be one complete Public Sub that can be run from the VBA editor with no additional setup.

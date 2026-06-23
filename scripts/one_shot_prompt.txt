@@ -1,0 +1,157 @@
+Generate a single, complete, copy-paste-ready VBA macro for Microsoft PowerPoint that creates a 14-slide presentation about the "DispatchMind" project in one execution. Output ONLY the VBA code, no explanations.
+
+DESIGN SYSTEM:
+- Dark backgrounds: #141414 for content slides, #047BD5 (blue) for title/ending slides
+- Text: white (#FFFFFF) titles, light gray (#AAAAAA) subtitles
+- Accent colors: orange #F37A20 for slide headings, green #46C876 for positive metrics, red #FF4747 for alerts
+- Font: Calibri throughout, 28pt bold orange for content slide titles, 13pt white for bullets
+- Bullets: use "•" character, 6pt spacing before/after
+- All slides: .FollowMasterBackground = msoFalse, set .Background.Fill.ForeColor.RGB
+
+MACRO STRUCTURE:
+- One Public Sub named DispatchMindPresentation
+- Helper: SetTitle(sld, text) — sets Shapes.Title text to 28pt bold orange
+- Helper: SetBullets(sld, linesArray) — adds "• " + line to body placeholder or new textbox at (50,110,620,420), 13pt white Calibri
+- Helper: AddCenteredTextBox(sld, text, fontSize, color, left, top, width, height)
+- Delete all existing slides before creating new ones
+- Show MsgBox with slide count at end
+
+SLIDE 1 — TITLE (ppLayoutTitleOnly):
+- Background: #047BD5 blue
+- Title: "DispatchMind" — 48pt bold white, centered
+- Subtitle: "AI-Powered Traffic Gridlock Management for Bengaluru" — 18pt white, centered at (120, 260, 500, 40)
+- "Bengaluru Traffic Police · Gridlock Hackathon 2.0" — 12pt #AAAAAA, centered at (120, 310, 500, 30)
+- "https://github.com/anomalyco/opencode" — 10pt #88BBDD, centered at (120, 400, 500, 20)
+
+SLIDE 2 — PROBLEM (ppLayoutText):
+- Title: "The Bengaluru Gridlock Crisis"
+- Bullets:
+  • Bengaluru loses ~Rs 38,000 Cr annually to traffic congestion (BSI report)
+  • Illegal parking on arterial roads reduces capacity by 40-60% at peak hours
+  • Parking violations create cascade effects — one blocked lane gridlocks 3+ junctions
+  • Flipkart delivery vehicles spend 30% extra time navigating blocked roads
+  • Existing enforcement relies on manual patrols with no data-driven prioritization
+
+SLIDE 3 — SOLUTION (ppLayoutText):
+- Title: "DispatchMind — Solution Overview"
+- Bullets:
+  • Dual-mode architecture: trains on historical violation data, runs on live CCTV feeds in production
+  • End-to-end pipeline: raw CSV → anomaly detection → congestion costing → capacity analysis → dispatch
+  • Three core ML innovations: GNN Cascade Predictor, CTM Traffic Simulation, Presence Probability Model
+  • Flipkart Green-Zone module: identifies delivery hotspots and recommends dynamic loading bay windows
+  • Role-based dashboard: Constable (field dispatch) / SI (case management) / ACP (city command)
+
+SLIDE 4 — PIPELINE (ppLayoutText):
+- Title: "Core Data Pipeline (9 Stages)"
+- Bullets:
+  • Stage 1-2: Data ingestion & validation — 300K+ violation records from BTP surveillance cameras
+  • Stage 3: Anomaly detection — statistical outlier removal, hour-of-day normalization
+  • Stage 4: Congestion costing — vehicle width mapping, delay calculation in veh-minutes
+  • Stage 5: Physical traffic simulation (CTM) — Greenshields fundamental diagram + cell transmission
+  • Stage 6: Causal impact regression — CTM speeds as target, avoiding circular dependency
+  • Stage 7: Capacity loss engine — blocked_width / total_road_width per junction
+  • Stage 8-9: Cascade analysis + GNN edge prediction — spatio-temporal domino effect detection
+
+SLIDE 5 — GNN (ppLayoutText):
+- Title: "Innovation: GNN Cascade Predictor"
+- Bullets:
+  • 2-layer Message-Passing Network implemented in pure NumPy — no PyTorch dependency
+  • Architecture: H = sigmoid(A @ ReLU(A @ X @ W1 + b1) @ W2 + b2)
+  • Adjacency matrix A encodes junction proximity (distance < 3km = directed edge)
+  • Node features X: violation count, avg congestion, temporal entropy, vehicle type diversity
+  • Trained with BCE loss against lag-correlation ground truth (correlation > 0.2 = cascade)
+  • Output: per-edge probability of cascade propagation A→B with AUC evaluation
+  • Enables pro-active enforcement at cascade-source junctions before gridlock spreads
+
+SLIDE 6 — CTM (ppLayoutText):
+- Title: "Innovation: CTM Traffic Simulation"
+- Bullets:
+  • Cell-Transmission Model (CTM) based on Greenshields fundamental diagram
+  • Free speed: 45 km/h | Jam density: 120 veh/km/lane | Capacity: 1800 veh/hr/lane
+  • Each road segment divided into 50m cells; violation obstacles reduce cell throughput
+  • Outputs: simulated_speed_kmh, queue_length_m, congestion index per junction
+  • CTM provides the independent target variable for causal impact regression
+  • Dataset-only, physics-based simulation — no external traffic API required
+  • Enables 'what-if' analysis: clearance of violation X would improve speed by Y km/h
+
+SLIDE 7 — PRESENCE (ppLayoutText):
+- Title: "Innovation: Presence Probability Model"
+- Bullets:
+  • Bayesian logistic decay: P(still_present) = 1 / (1 + exp((t_elapsed − E[duration]) / k))
+  • Solves the stale-violation problem: old reports should not consume dispatch resources
+  • Actionability = congestion_cost × presence_probability (priority queue sort key)
+  • Filter threshold at P > 0.3 balances enforcement efficiency vs false negatives
+  • Temporal urgency factor incorporated into GPI (Gridlock Propagation Index) metric
+  • Configurable half-life via model parameter k in config/app.json
+
+SLIDE 8 — GPI (ppLayoutText):
+- Title: "Gridlock Propagation Index (GPI)"
+- Bullets:
+  • Novel composite metric (0-100) for junction-level gridlock risk scoring
+  • 30% — Cascade risk: max upstream correlation from GNN edge predictions
+  • 30% — Capacity degradation: 100 − remaining_capacity_pct
+  • 20% — Temporal urgency: peak-hour multiplier × presence probability
+  • 20% — Spatial density: nearby violation concentration (violations/km²)
+  • GPI > 80: IMMEDIATE dispatch | GPI 50-80: HIGH priority | GPI < 50: scheduled patrol
+  • Weights configurable via config/app.json for different city morphologies
+
+SLIDE 9 — FLIPKART (ppLayoutText):
+- Title: "Flipkart Delivery Impact & Green Zones"
+- Bullets:
+  • DBSCAN clustering of delivery-vehicle violations identifies 15+ persistent hotspots
+  • Dynamic Loading Window recommendations: peak-hour bay allocation (11am-1pm, 5-8pm)
+  • Estimated annual savings: Rs 12.7 Cr through avg 8.5 min/delivery reduction
+  • Delivery partner scout program: incentivized violation reporting via SuperCoins
+  • Scout leaderboard gamification drives engagement across 500+ delivery partners
+  • Green Zone overlay: cleared junctions mapped for optimal delivery route planning
+
+SLIDE 10 — ARCHITECTURE (ppLayoutText):
+- Title: "System Architecture"
+- Bullets:
+  • Frontend: React 18 + Tailwind CSS + Phosphor Icons — responsive, dark-mode, role-based UI
+  • Backend: FastAPI (Python 3.10+) with async endpoints, SQLAlchemy + SQLite persistence
+  • ML Pipeline: modular stages (pipeline.py) with pandas/numpy/scikit-learn — no GPU required
+  • Authentication: bcrypt-hashed passwords + bearer token sessions with role-based access control
+  • API endpoints: 40+ RESTful routes covering all pipeline stages and dashboard widgets
+  • CI/CD: secrets scanner + benchmark suite in scripts/
+
+SLIDE 11 — DASHBOARD (ppLayoutText):
+- Title: "Dashboard Walkthrough"
+- Bullets:
+  • Impact Dashboard: city-wide congestion cost calculator with scenario analysis (clear 5/10/20 violations)
+  • Priority Queue: junction cards ranked by actionability with GPI gauge, presence bar, dispatch buttons
+  • Tactical Map: geospatial view with capacity status overlays (GREEN/YELLOW/RED) and officer positions
+  • Cascade Analysis: force-directed graph of violation propagation with GNN edge probability overlay
+  • Flipkart Impact: annual savings projections, hourly violation heatmap, green zone recommendations
+  • Evidence Packets: one-click court-ready challans with MV Act references and tamper-proof hash
+
+SLIDE 12 — METRICS (ppLayoutText):
+- Title: "Key Performance Metrics"
+- Bullets:
+  • 300K+ violations analyzed across 50+ junctions and 15 police stations
+  • GNN Cascade AUC: >0.85 on held-out edge prediction test set
+  • Pipeline processing time: ~18s for full 9-stage analysis on dataset
+  • API P50 latency: <200ms | P95 latency: <1500ms | Throughput: 50+ req/s
+  • GPI coverage: real-time scoring for all junctions with configurable thresholds
+  • Annual Flipkart delivery savings: Rs 12.7 Cr with 35% violation reduction potential
+
+SLIDE 13 — DEMO (ppLayoutText):
+- Title: "Guided Demo Mode"
+- Bullets:
+  • Built-in demo mode auto-advances through 5 key screens at configurable interval
+  • Step 1: Impact Dashboard — congestion cost calculator with scenario effects
+  • Step 2: Priority Queue — actionability-ranked junctions with GPI and presence
+  • Step 3: Cascade Analysis — domino-effect graph with GNN probability overlay
+  • Step 4: Tactical Map — geospatial capacity status and dispatch zones
+  • Step 5: Flipkart Impact — annual savings, hourly patterns, loading bay roadmap
+  • Demo overlay with prev/next controls, step dots, and auto-play toggle
+
+SLIDE 14 — END (ppLayoutTitleOnly):
+- Background: #047BD5 blue
+- Title: "Thank You" — 44pt bold white, centered
+- "DispatchMind — Keeping Bengaluru Moving" — 18pt white, centered at (120, 140, 500, 40)
+- "Bengaluru Traffic Police · Gridlock Hackathon 2.0" — 14pt #AAAAAA, centered at (120, 200, 500, 30)
+- "https://github.com/anomalyco/opencode" — 12pt #88BBDD, centered at (120, 280, 500, 25)
+- "Questions?" — 24pt white, centered at (120, 360, 500, 40)
+
+FINAL: Move slide 1 to first position. Show MsgBox "Presentation generated: X slides."

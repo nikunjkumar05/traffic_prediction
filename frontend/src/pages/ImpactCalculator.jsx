@@ -7,7 +7,7 @@ import AnimatedCounter from '../components/AnimatedCounter'
 import ScrollReveal from '../components/ScrollReveal'
 import PageHeader from '../components/PageHeader'
 
-const HERO_IMAGE = 'https://images.unsplash.com/photo-1585135497273-1a86b09fe70e?w=1200&q=80&auto=format'
+const HERO_IMAGE = '/make_in_india.jpg?v=3'
 
 export default function ImpactCalculator() {
   const [selectedScenario, setSelectedScenario] = useState(5)

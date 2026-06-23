@@ -72,10 +72,11 @@ def train_model(df: pd.DataFrame, features: list = None, model_type: str = 'xgbo
 
 
 def save_model(model, filepath: str):
-    Path(filepath).parent.mkdir(parents=True, exist_ok=True)
-    with open(filepath, 'wb') as f:
+    path_obj = Path(filepath).resolve()
+    path_obj.parent.mkdir(parents=True, exist_ok=True)
+    with open(path_obj, 'wb') as f:
         pickle.dump(model, f)
-    print(f"  Model saved: {filepath}")
+    print(f"  Model saved: {path_obj}")
 
 
 def run_prediction(df: pd.DataFrame, output_dir: str = 'outputs/models'):

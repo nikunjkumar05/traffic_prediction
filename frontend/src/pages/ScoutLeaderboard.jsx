@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApi } from '../utils/api';
+import { useNavigate } from 'react-router-dom';
 import { Trophy, Medal, Star, Coins, ArrowUp, MapPin, Camera, User } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 import GlassCard from '../components/GlassCard';
@@ -7,6 +8,7 @@ import GlassCard from '../components/GlassCard';
 export default function ScoutLeaderboard() {
   const [timeframe, setTimeframe] = useState('weekly');
   const { data, loading, error } = useApi('/flipkart-scouts/leaderboard');
+  const navigate = useNavigate();
 
   const leaderboardData = data?.leaderboard || [];
   const topThree = leaderboardData.slice(0, 3);
@@ -182,9 +184,9 @@ export default function ScoutLeaderboard() {
               </div>
               <h3 className="text-lg font-bold text-chalk mb-2 relative z-10">Want to join the leaderboard?</h3>
               <p className="text-sm text-muted mb-4 relative z-10">Become a Flipkart Traffic Scout and earn rewards for reporting illegal parking.</p>
-              <button className="bg-neon-blue hover:bg-neon-blue/80 text-white font-bold py-2.5 px-6 rounded-full text-sm shadow-lg transition duration-300 relative z-10">
-                Register as Scout
-              </button>
+               <button onClick={() => navigate('/flipkart-scout')} className="bg-neon-blue hover:bg-neon-blue/80 text-white font-bold py-2.5 px-6 rounded-full text-sm shadow-lg transition duration-300 relative z-10">
+                 Register as Scout
+               </button>
             </div>
             </ScrollReveal>
           </>

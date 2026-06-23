@@ -15,6 +15,7 @@ import {
 import ScrollReveal from "../components/ScrollReveal";
 import GlassCard from "../components/GlassCard";
 import PageHeader from "../components/PageHeader";
+import { apiFetch } from "../utils/api";
 
 const REFRESH_INTERVAL = 30_000;
 
@@ -43,7 +44,7 @@ export default function EarlyWarningPanel() {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 30000);
-      const res = await fetch("/api/early-warning-system", {
+      const res = await apiFetch("/api/early-warning-system", {
         signal: controller.signal,
       });
       clearTimeout(timeout);
@@ -80,268 +81,13 @@ export default function EarlyWarningPanel() {
   const hero = zones[0] || null;
   const rest = zones.slice(1);
 
-  return (
-    <div className="space-y-6">
-      <ScrollReveal>
-        <div className="flex items-center justify-between">
-          <PageHeader
-            icon={Radio}
-            iconColor="text-neon-red"
-            title="Phantom Blockage AI"
-            subtitle="Predicting gridlock 15 minutes before it happens"
-          />
-          <button
-            onClick={fetchData}
-            className="btn-ghost flex items-center gap-2 hover:bg-elevated/50 px-3 py-1.5 rounded-lg border border-border transition-all"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-neon-blue" />
-            <span className="text-chalk">Refresh</span>
-          </button>
-        </div>
-      </ScrollReveal>
-
-      {/* Status Bar */}
-      <ScrollReveal delay={50}>
-        <div className="flex items-center gap-4 text-xs text-muted">
-          <span className="flex items-center gap-1.5 font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse shadow-[0_0_8px_var(--color-accent-green)]" />
-            Live — {data?.current_time_block || "--:--"}
-          </span>
-          <span>Next block: {data?.next_time_block || "--:--"}</span>
-          {lastFetch && <span>Last: {lastFetch.toLocaleTimeString()}</span>}
-        </div>
-      </ScrollReveal>
-
-      {/* Error Banner */}
-      {error && (
-        <ScrollReveal delay={60}>
-          <div className="glass-card border-neon-red/30 p-3 text-sm text-neon-red bg-neon-red/5">
-            Failed to fetch: {error}. Retrying in {REFRESH_INTERVAL / 1000}s...
-          </div>
-        </ScrollReveal>
-      )}
-
-      {/* Loading */}
-      {loading && (
-        <div className="space-y-4">
-          <div className="h-48 glass-card-static animate-pulse" />
-          <div className="grid grid-cols-2 gap-3">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-24 glass-card-static animate-pulse" />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Hero Card — #1 Risk Zone */}
-      {hero && (
-        <ScrollReveal delay={100}>
-          <div className="glass-card border-neon-red/30 bg-gradient-to-br from-neon-red/[0.08] to-transparent relative overflow-hidden">
-            {/* Pulsing glow */}
-            <div className="absolute inset-0 bg-neon-red/[0.04] animate-pulse pointer-events-none" />
-            <div className="absolute top-0 right-0 w-40 h-40 bg-neon-red/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="relative p-5">
-              {/* Top row */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 bg-neon-red text-white text-[10px] font-bold uppercase tracking-wider rounded">
-                    PHANTOM BLOCKAGE ALERT
-                  </span>
-                  <span className="px-2 py-0.5 bg-neon-red/20 text-neon-red text-[10px] font-bold rounded">
-                    #{hero.rank}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] text-muted uppercase tracking-wider">
-                    Risk Score
-                  </p>
-                  <p className="font-mono text-2xl font-bold text-neon-red">
-                    {hero.phantom_risk_score}
-                  </p>
-                </div>
-              </div>
-
-              {/* Countdown */}
-              <div className="flex items-center gap-3 mb-4 p-3 bg-elevated/30 rounded-lg border border-neon-red/20">
-                <Clock className="w-5 h-5 text-neon-red animate-pulse shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-chalk">
-                    Gridlock predicted in {formatCountdown(secondsLeft)}
-                  </p>
-                  <p className="text-xs text-muted mt-0.5">
-                    Window closes at {data?.next_time_block}
-                  </p>
-                </div>
-              </div>
-
-              {/* Details Grid */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="p-3 bg-elevated/20 border border-border rounded-lg">
-                  <p className="text-[10px] text-muted uppercase tracking-wider">
-                    Vehicle
-                  </p>
-                  <p className="text-sm font-medium text-chalk mt-0.5">
-                    {hero.vehicle_type}
-                  </p>
-                  <p className="text-xs text-muted mt-0.5">Weight: {hero.weight}</p>
-                </div>
-                <div className="p-3 bg-elevated/20 border border-border rounded-lg">
-                  <p className="text-[10px] text-muted uppercase tracking-wider">
-                    Location
-                  </p>
-                  <p className="text-sm font-mono text-chalk mt-0.5">
-                    {hero.latitude}, {hero.longitude}
-                  </p>
-                </div>
-                <div className="p-3 bg-elevated/20 border border-border rounded-lg">
-                  <p className="text-[10px] text-muted uppercase tracking-wider">
-                    Seeds Nearby
-                  </p>
-                  <p className="text-sm font-mono text-chalk mt-0.5">
-                    {hero.nearby_seed_count}
-                  </p>
-                  <p className="text-xs text-muted mt-0.5">
-                    within {hero.avg_distance_to_seeds}m
-                  </p>
-                </div>
-              </div>
-
-              {/* Recommended Action */}
-              <div className="p-3 bg-neon-red/10 border border-neon-red/20 rounded-lg">
-                <p className="text-[10px] text-neon-red font-bold uppercase tracking-wider mb-1">
-                  Recommended Action
-                </p>
-                <p className="text-sm text-chalk leading-relaxed">
-                  {hero.recommended_action}
-                </p>
-              </div>
-            </div>
-          </div>
-        </ScrollReveal>
-      )}
-
-      {/* No Data */}
-      {!loading && !error && !hero && (
-        <ScrollReveal delay={100}>
-          <div className="text-center py-12 glass-card">
-            <Activity className="w-10 h-10 text-neon-green mx-auto mb-3" />
-            <p className="text-chalk font-medium">No phantom risk detected</p>
-            <p className="text-sm text-muted mt-1">
-              {data?.message || "Current time blocks are clear"}
-            </p>
-          </div>
-        </ScrollReveal>
-      )}
-
-      {/* Remaining Zones */}
-      {rest.length > 0 && (
-        <ScrollReveal delay={150}>
-          <h2 className="text-sm font-medium text-muted uppercase tracking-wider mb-3 flex items-center gap-2">
-            <AlertTriangle className="w-3.5 h-3.5 text-neon-amber" />
-            Additional Risk Zones ({rest.length})
-          </h2>
-          <div className="space-y-2">
-            {rest.map((zone, idx) => (
-              <ZoneCard key={zone.rank} zone={zone} delay={160 + idx * 30} />
-            ))}
-          </div>
-        </ScrollReveal>
-      )}
-
-      {/* Tipping Point Forecast */}
-      <ScrollReveal delay={200}>
-        <TippingPointChart />
-      </ScrollReveal>
-
-      {/* Anomaly Detection Section */}
-      <ScrollReveal delay={250}>
-        <AnomalyDetectionPanel />
-      </ScrollReveal>
-    </div>
-  );
-}
-
-function ZoneCard({ zone, delay = 0 }) {
-  return (
-    <ScrollReveal delay={delay}>
-      <div className="glass-card border-border hover:border-neon-red/20 transition-all duration-300 group cursor-pointer">
-        <div className="flex items-center gap-4">
-          {/* Rank */}
-          <div className="w-10 h-10 rounded-lg bg-elevated flex items-center justify-center shrink-0 border border-border">
-            <span className="font-mono text-lg font-bold text-muted group-hover:text-neon-red transition-colors">
-              {zone.rank}
-            </span>
-          </div>
-
-          {/* Details */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <Truck className="w-3.5 h-3.5 text-muted" />
-              <span className="text-sm font-medium text-chalk">
-                {zone.vehicle_type}
-              </span>
-              <span className="text-xs text-muted font-mono">wt. {zone.weight}</span>
-              <span className="text-[10px] text-muted">·</span>
-              <span className="text-xs text-muted font-mono">
-                {zone.nearby_seed_count} seeds within {zone.avg_distance_to_seeds}m
-              </span>
-            </div>
-            <p className="text-xs text-muted truncate">
-              {zone.recommended_action}
-            </p>
-          </div>
-
-          {/* Score + Arrow */}
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="text-right">
-              <p className="text-[10px] text-muted uppercase tracking-wider">
-                Score
-              </p>
-              <p className="font-mono text-lg font-bold text-neon-amber">
-                {zone.phantom_risk_score}
-              </p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted group-hover:text-neon-red transition-colors" />
-          </div>
-        </div>
-      </div>
-    </ScrollReveal>
-  );
-}
-
-function TippingPointChart() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    let cancelled = false;
-    const c = new AbortController();
-    const t = setTimeout(() => c.abort(), 30000);
-    fetch("/api/tipping-points", { signal: c.signal })
-      .then((res) => {
-        if (cancelled) return null;
-        clearTimeout(t);
-        return res.json();
-      })
-      .then((json) => {
-        if (!cancelled && json) {
-          setData(json);
-          setLoading(false);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          clearTimeout(t);
-          setLoading(false);
-        }
-      });
-    return () => {
-      cancelled = true;
-      clearTimeout(t);
-      c.abort();
-    };
-  }, []);
+    if (zones.length === 0) return;
+    const id = setInterval(() => {
+      setSecondsLeft(countdownMinutes());
+    }, 1000);
+    return () => clearInterval(id);
+  }, [zones.length]);
 
   if (loading) {
     return (
@@ -432,7 +178,7 @@ function AnomalyDetectionPanel() {
     let cancelled = false;
     const c = new AbortController();
     const t = setTimeout(() => c.abort(), 30000);
-    fetch("/api/anomaly-scores", { signal: c.signal })
+    apiFetch("/api/anomaly-scores", { signal: c.signal })
       .then((res) => {
         if (cancelled) return null;
         clearTimeout(t);

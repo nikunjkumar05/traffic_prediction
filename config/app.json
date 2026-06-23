@@ -212,6 +212,15 @@
       "time_window_hours": 2
     }
   },
+  "traffic_sim": {
+    "free_speed_kph": 40,
+    "jam_density_vpk": 200,
+    "cell_length_m": 50,
+    "time_step_s": 5,
+    "road_segment_m": 500,
+    "lanes": 2,
+    "time_bin_minutes": 15
+  },
   "clearlane": {
     "version": "1.0.0",
     "cost_per_station_inr": 2400,

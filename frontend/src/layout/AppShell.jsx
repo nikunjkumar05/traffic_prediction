@@ -1,7 +1,8 @@
 import { memo, useMemo, useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, ChevronRight, ShieldCheck, Sun, Moon } from 'lucide-react'
+import { Menu, X, ChevronRight, ShieldCheck, Sun, Moon, Camera, LogOut } from 'lucide-react'
 import { NAV_BY_ROLE, ROLE_LABELS } from '../app/navigation'
+import DemoOverlay from '../components/DemoOverlay'
 
 function ThemeToggle() {
   const [isDark, setIsDark] = useState(() => {
@@ -82,6 +83,7 @@ const ROLE_ICONS = {
   constable: ShieldCheck,
   si: ShieldCheck,
   acp: ShieldCheck,
+  scout: Camera,
 }
 
 export default function AppShell({ role, setRole, children }) {
@@ -114,7 +116,7 @@ export default function AppShell({ role, setRole, children }) {
         <div className="px-6 py-6 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-neon-green/10 flex items-center justify-center border border-neon-green/20">
-              <img src="/logo.svg" alt="" className="w-6 h-6" onError={(e) => {
+              <img src="/app_logo.jpeg" alt="DispatchMind" className="w-6 h-6 object-contain" onError={(e) => {
                 e.target.style.display = 'none'
                 e.target.nextSibling.style.display = 'flex'
               }} />
@@ -145,7 +147,13 @@ export default function AppShell({ role, setRole, children }) {
             className="input-glass text-xs py-2"
           >
             {Object.entries(ROLE_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
+              <option 
+                key={value} 
+                value={value}
+                className="bg-[#ffffff] text-[#111111] dark:bg-[#121217] dark:text-[#ffffff]"
+              >
+                {label}
+              </option>
             ))}
           </select>
         </div>
@@ -160,7 +168,18 @@ export default function AppShell({ role, setRole, children }) {
         </nav>
 
         {/* Footer */}
-        <div className="px-5 py-5 border-t border-border">
+        <div className="px-5 py-5 border-t border-border flex flex-col gap-3">
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.reload();
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl border border-border/80 bg-elevated/40 hover:bg-signal-red/10 hover:border-signal-red/20 text-xs text-muted hover:text-signal-red transition-all duration-300 font-medium cursor-pointer animate-in fade-in duration-300"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out</span>
+          </button>
           <div className="flex items-center justify-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse" />
             <p className="text-[10px] text-muted/40 uppercase tracking-[0.2em] font-medium">
@@ -180,14 +199,20 @@ export default function AppShell({ role, setRole, children }) {
 
       {/* Mobile Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-sidebar border-r border-border
+        className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-sidebar border-r border-border flex flex-col
           transform transition-transform duration-300 ease-out lg:hidden
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="px-6 py-6 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-neon-green/10 flex items-center justify-center border border-neon-green/20">
-              <ShieldCheck className="w-5 h-5 text-neon-green" strokeWidth={1.5} />
+            <div className="w-9 h-9 rounded-2xl bg-neon-green/10 flex items-center justify-center border border-neon-green/20 overflow-hidden">
+              <img src="/app_logo.jpeg" alt="DispatchMind" className="w-7 h-7 object-contain" onError={(e) => {
+                e.target.style.display = 'none'
+                e.target.nextSibling.style.display = 'flex'
+              }} />
+              <div className="hidden items-center justify-center">
+                <ShieldCheck className="w-5 h-5 text-neon-green" strokeWidth={1.5} />
+              </div>
             </div>
             <div>
               <h1 className="font-heading font-bold text-sm text-chalk">DispatchMind</h1>
@@ -213,18 +238,38 @@ export default function AppShell({ role, setRole, children }) {
             className="input-glass text-xs py-2"
           >
             {Object.entries(ROLE_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>{label}</option>
+              <option 
+                key={value} 
+                value={value}
+                className="bg-[#ffffff] text-[#111111] dark:bg-[#121217] dark:text-[#ffffff]"
+              >
+                {label}
+              </option>
             ))}
           </select>
         </div>
 
-        <nav className="px-3 py-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {navItems.map((item, i) => (
             <div key={`${role}-${item.path}`} className="group">
               <SideNavItem item={item} onClick={() => setSidebarOpen(false)} index={i} />
             </div>
           ))}
         </nav>
+
+        <div className="px-5 py-5 border-t border-border mt-auto">
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+              window.location.reload();
+            }}
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-border/80 bg-elevated/40 hover:bg-signal-red/10 hover:border-signal-red/20 text-xs text-muted hover:text-signal-red transition-all duration-300 font-medium cursor-pointer"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out</span>
+          </button>
+        </div>
       </aside>
 
       {/* Main Content */}
@@ -240,8 +285,14 @@ export default function AppShell({ role, setRole, children }) {
               <Menu className="w-5 h-5 text-chalk" />
             </button>
             <div className="lg:hidden flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-neon-green/10 flex items-center justify-center border border-neon-green/20">
-                <ShieldCheck className="w-3.5 h-3.5 text-neon-green" strokeWidth={1.5} />
+              <div className="w-7 h-7 rounded-xl bg-neon-green/10 flex items-center justify-center border border-neon-green/20 overflow-hidden">
+                <img src="/app_logo.jpeg" alt="DispatchMind" className="w-5 h-5 object-contain" onError={(e) => {
+                  e.target.style.display = 'none'
+                  e.target.nextSibling.style.display = 'flex'
+                }} />
+                <div className="hidden items-center justify-center">
+                  <ShieldCheck className="w-3.5 h-3.5 text-neon-green" strokeWidth={1.5} />
+                </div>
               </div>
               <h1 className="font-heading font-bold text-sm text-chalk tracking-tight">DispatchMind</h1>
             </div>
@@ -264,6 +315,7 @@ export default function AppShell({ role, setRole, children }) {
           </div>
         </div>
       </main>
+      <DemoOverlay role={role} />
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useApi, formatDelay } from '../utils/api'
 import {
@@ -14,6 +15,7 @@ import ScrollReveal from '../components/ScrollReveal'
 const HERO_IMAGE = '/hero.jpg?v=3'
 
 export default function Overview() {
+  const [heroImageLoaded, setHeroImageLoaded] = useState(false)
   const { data, loading, error, refetch } = useApi('/overview')
 
   if (loading) return <PageSkeleton />
@@ -40,26 +42,25 @@ export default function Overview() {
     <div className="space-y-8">
       {/* Hero — Apple-style large title */}
       <ScrollReveal>
-        <div className="hero-section relative rounded-3xl overflow-hidden">
+        <div className={`hero-section relative rounded-3xl overflow-hidden ${!heroImageLoaded ? 'bg-gradient-to-br from-neon-blue/20 via-base to-neon-green/10' : ''}`}>
           <img
             src={HERO_IMAGE}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover"
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${heroImageLoaded ? 'opacity-100' : 'opacity-0'}`}
             loading="eager"
-            onError={(e) => { e.target.style.display = 'none' }}
+            onLoad={() => setHeroImageLoaded(true)}
+            onError={(e) => { e.target.style.display = 'none'; setHeroImageLoaded(false); }}
           />
           <div className="relative z-10 p-8 lg:p-12 flex flex-col justify-end min-h-[320px]">
             <div className="flex items-center gap-3 mb-4">
-              <div className="glow-dot" />
-              <span className="text-[11px] uppercase tracking-[0.25em] text-neon-green font-semibold">
-                City Overview
+
+              <span className="text-[11px] uppercase tracking-[0.25em] text-white font-semibold">
               </span>
             </div>
             <h1 className="font-heading font-extrabold text-[2.5rem] lg:text-[3.5rem] text-chalk tracking-tight leading-[1.05] mb-3">
               DispatchMind
             </h1>
             <p className="text-muted text-[15px] lg:text-lg max-w-xl leading-relaxed">
-              Congestion-First Enforcement — Your city's clear path to faster commutes.
             </p>
           </div>
         </div>

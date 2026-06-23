@@ -86,12 +86,19 @@ export default function Dispatch() {
                     <div><p className="font-medium text-chalk text-sm">Truck {route?.truck_id ?? '?'}</p><p className="text-xs text-muted">{(route?.stops?.length ?? 0)} stops · {route?.total_distance_km ?? 0} km</p></div>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    {(route?.stops ?? []).map((stop, j) => (
+                    {(route?.stops ?? []).map((stop, j) => {
+                      const hasCoords = typeof stop?.lat === 'number' && typeof stop?.lon === 'number' && !isNaN(stop.lat) && !isNaN(stop.lon);
+                      return (
                       <span key={j} className="flex items-center gap-2">
-                        <a href={`https://www.google.com/maps?q=${stop?.lat ?? 0},${stop?.lon ?? 0}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 bg-neon-blue/10 text-neon-blue rounded-lg font-mono text-xs hover:bg-neon-blue/20 transition-colors">Stop {j + 1}<ExternalLink className="w-3.5 h-3.5" /></a>
+                        {hasCoords ? (
+                          <a href={`https://www.google.com/maps?q=${stop.lat},${stop.lon}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 px-2.5 py-1 bg-neon-blue/10 text-neon-blue rounded-lg font-mono text-xs hover:bg-neon-blue/20 transition-colors">Stop {j + 1}<ExternalLink className="w-3.5 h-3.5" /></a>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-elevated/60 text-muted rounded-lg font-mono text-xs">Stop {j + 1}</span>
+                        )}
                         {j < (route?.stops?.length ?? 0) - 1 && <span className="text-muted">→</span>}
                       </span>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}

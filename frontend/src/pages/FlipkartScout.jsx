@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useApi } from '../utils/api';
-import { Camera, MapPin, Navigation, Send, Award, Coins, CheckCircle, AlertTriangle, User, FileText, ChevronRight } from 'lucide-react';
+import { useApi, apiFetch } from '../utils/api';
+import { Camera, MapPin, Navigation, Send, Award, Coins, CheckCircle, AlertTriangle, User, FileText, ChevronRight, Clock, XCircle } from 'lucide-react';
 import ScrollReveal from '../components/ScrollReveal';
 import GlassCard from '../components/GlassCard';
 
@@ -18,10 +18,32 @@ export default function FlipkartScout() {
   const [submitting, setSubmitting] = useState(false);
   const [successData, setSuccessData] = useState(null);
   const [submitError, setSubmitError] = useState(null);
-  const [recentReports, setRecentReports] = useState([]);
+  const fileInputRef = React.useRef(null);
   
   const { data: stationData } = useApi('/stations');
   const stations = stationData?.stations || [];
+
+  const { data: reportsData, refetch: refetchReports } = useApi('/flipkart-scouts/reports');
+  const scoutReports = reportsData?.reports || [];
+
+  const totalReports = scoutReports.length;
+  const approvedReports = scoutReports.filter(r => r.status === 'APPROVED').length;
+  const pendingReports = scoutReports.filter(r => r.status === 'PENDING').length;
+  const coinsEarned = approvedReports * 50;
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const u = JSON.parse(storedUser);
+        if (u.scout_id) {
+          setFormData(prev => ({ ...prev, scout_id: u.scout_id }));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, []);
 
   const handleLocation = () => {
     if (navigator.geolocation) {
@@ -44,7 +66,7 @@ export default function FlipkartScout() {
     setSubmitError(null);
     
     try {
-      const response = await fetch('/api/flipkart-scouts/report', {
+      const response = await apiFetch('/api/flipkart-scouts/report', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -63,10 +85,7 @@ export default function FlipkartScout() {
           impact: data.estimated_cii || 'Medium'
         };
         setSuccessData(reward);
-        setRecentReports(prev => [
-          { time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), junction: formData.junction, id: reward.id, impact: reward.impact },
-          ...prev
-        ].slice(0, 5));
+        refetchReports();
         
         setFormData(prev => ({
           ...prev,
@@ -104,18 +123,18 @@ export default function FlipkartScout() {
       <ScrollReveal delay={100}>
         <div className="flex px-4 mt-6 gap-3">
           <div className="flex-1 glass-card-static p-3 flex flex-col items-center hover:scale-[1.01] transition-transform duration-300">
-            <p className="text-xs text-muted mb-1 uppercase font-semibold">Active</p>
-            <p className="text-lg font-mono font-bold text-chalk">248</p>
-            <p className="text-[10px] text-muted">Scouts</p>
+            <p className="text-xs text-muted mb-1 uppercase font-semibold">Total Filed</p>
+            <p className="text-lg font-mono font-bold text-chalk">{totalReports}</p>
+            <p className="text-[10px] text-muted">Reports</p>
           </div>
           <div className="flex-1 glass-card-static p-3 flex flex-col items-center hover:scale-[1.01] transition-transform duration-300">
-            <p className="text-xs text-muted mb-1 uppercase font-semibold">Today</p>
-            <p className="text-lg font-mono font-bold text-chalk">1,847</p>
+            <p className="text-xs text-muted mb-1 uppercase font-semibold">Pending Vetting</p>
+            <p className="text-lg font-mono font-bold text-chalk">{pendingReports}</p>
             <p className="text-[10px] text-muted">Reports</p>
           </div>
           <div className="flex-1 bg-[#F37A20]/10 border border-[#F37A20]/20 rounded-xl p-3 flex flex-col items-center hover:scale-[1.01] transition-transform duration-300">
-            <p className="text-xs text-[#F37A20] mb-1 uppercase font-semibold">Rewarded</p>
-            <p className="text-lg font-mono font-bold text-[#F37A20]">92.3K</p>
+            <p className="text-xs text-[#F37A20] mb-1 uppercase font-semibold">Earned</p>
+            <p className="text-lg font-mono font-bold text-[#F37A20]">{coinsEarned}</p>
             <p className="text-[10px] text-[#F37A20]">SuperCoins</p>
           </div>
         </div>
@@ -136,11 +155,11 @@ export default function FlipkartScout() {
             </div>
           ) : successData ? (
             <div className="glass-card border-signal-emerald/30 rounded-2xl p-6 text-center animate-in zoom-in duration-300">
-              <div className="w-20 h-20 bg-signal-emerald/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-10 h-10 text-signal-emerald" />
+              <div className="w-20 h-20 bg-[#F37A20]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Clock className="w-10 h-10 text-[#F37A20]" />
               </div>
-              <h2 className="text-2xl font-bold text-chalk mb-2">Report Accepted!</h2>
-              <p className="text-muted text-sm mb-6">Traffic Police has been notified.</p>
+              <h2 className="text-2xl font-bold text-chalk mb-2">Report Submitted!</h2>
+              <p className="text-muted text-sm mb-6">Submitted for police vetting to avoid false reports.</p>
               
               <div className="bg-elevated/40 rounded-xl p-4 mb-6 border border-border text-left">
                 <div className="flex justify-between items-center mb-3 pb-3 border-b border-border">
@@ -152,9 +171,9 @@ export default function FlipkartScout() {
                   <span className="text-signal-red font-medium text-sm">{successData.impact}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-muted text-sm">Reward</span>
+                  <span className="text-muted text-sm">Est. Reward</span>
                   <span className="text-[#F37A20] font-bold flex items-center gap-1 font-mono">
-                    <Coins className="w-4 h-4" /> +{successData.coins} SuperCoins
+                    <Coins className="w-4 h-4" /> +{successData.coins} SuperCoins (Pending Vetting)
                   </span>
                 </div>
               </div>
@@ -219,9 +238,6 @@ export default function FlipkartScout() {
                     {stations.map(s => (
                       <option key={s.station} value={s.station}>{s.station}</option>
                     ))}
-                    <option value="Silk Board">Silk Board</option>
-                    <option value="KR Market">KR Market</option>
-                    <option value="Koramangala">Koramangala</option>
                   </select>
                 </div>
 
@@ -258,9 +274,29 @@ export default function FlipkartScout() {
                   <label className="block text-xs font-semibold text-muted uppercase mb-1 flex items-center gap-2">
                     <Camera className="w-3 h-3" /> Photo Evidence
                   </label>
-                  <div className="border-2 border-dashed border-border rounded-xl p-4 text-center cursor-pointer hover:bg-elevated/50 transition">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          photo_url: file.name,
+                        }));
+                      }
+                    }}
+                  />
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-border rounded-xl p-4 text-center cursor-pointer hover:bg-elevated/50 transition"
+                  >
                     <Camera className="w-6 h-6 text-muted mx-auto mb-2" />
-                    <p className="text-xs text-muted">Tap to upload photo</p>
+                    <p className="text-xs text-muted">
+                      {formData.photo_url ? formData.photo_url : "Tap to upload photo"}
+                    </p>
                   </div>
                 </div>
 
@@ -295,30 +331,46 @@ export default function FlipkartScout() {
       </ScrollReveal>
 
       {/* Recent Reports */}
-      {recentReports.length > 0 && (
+      {scoutReports.length > 0 && (
         <ScrollReveal delay={200}>
           <div className="px-4 mt-8">
             <h3 className="text-sm font-semibold text-chalk mb-3 flex items-center justify-between">
               Your Recent Reports
-              <button className="text-xs text-[#047BD5] hover:underline flex items-center">View all <ChevronRight className="w-3 h-3" /></button>
+              <span className="text-xs text-muted">Showing last {scoutReports.length} reports</span>
             </h3>
             <div className="space-y-2">
-              {recentReports.map((report, idx) => (
-                <div key={idx} className="glass-card-static p-3 flex items-center justify-between">
+              {scoutReports.slice(0, 10).map((report, idx) => (
+                <div key={report.id || idx} className="glass-card-static p-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-signal-emerald/20 flex items-center justify-center">
-                      <CheckCircle className="w-4 h-4 text-signal-emerald" />
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      report.status === 'APPROVED' ? 'bg-signal-emerald/20 text-signal-emerald' : 
+                      report.status === 'REJECTED' ? 'bg-signal-red/20 text-signal-red' : 
+                      'bg-signal-amber/20 text-signal-amber'
+                    }`}>
+                      {report.status === 'APPROVED' ? <CheckCircle className="w-4 h-4" /> : 
+                       report.status === 'REJECTED' ? <XCircle className="w-4 h-4" /> : 
+                       <Clock className="w-4 h-4" />}
                     </div>
                     <div>
                       <p className="text-sm text-chalk font-medium">{report.junction || 'Unknown Location'}</p>
-                      <p className="text-xs text-muted font-mono">{report.time} · ID: {report.id}</p>
+                      <p className="text-xs text-muted font-mono">
+                        ID: {report.report_id || `FS-${report.id}`} {report.vehicle_number ? `· ${report.vehicle_number}` : ''}
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-bold text-[#F37A20] flex items-center gap-1 justify-end font-mono">
-                      <Coins className="w-3 h-3" /> +50
+                    <p className={`text-xs font-bold flex items-center gap-1 justify-end font-mono ${
+                      report.status === 'APPROVED' ? 'text-[#F37A20]' : 'text-muted'
+                    }`}>
+                      <Coins className="w-3 h-3" /> {report.status === 'APPROVED' ? '+50' : '0'}
                     </p>
-                    <p className="text-[10px] text-muted uppercase tracking-wider font-semibold">{report.impact} Impact</p>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
+                      report.status === 'APPROVED' ? 'bg-signal-emerald/10 text-signal-emerald' :
+                      report.status === 'REJECTED' ? 'bg-signal-red/10 text-signal-red' :
+                      'bg-signal-amber/10 text-signal-amber'
+                    }`}>
+                      {report.status}
+                    </span>
                   </div>
                 </div>
               ))}

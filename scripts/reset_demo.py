@@ -8,27 +8,27 @@ from backend.database import SessionLocal, engine
 from backend.models import FlipkartReport, CameraJunction, Base
 
 def reset_demo():
-    print("🔄 Initializing Gridlock 2.0 Demo Reset...")
+    print("[RESET] Initializing Gridlock 2.0 Demo Reset...")
     
     db = SessionLocal()
     try:
         # 1. Clear all Flipkart reports
         reports_deleted = db.query(FlipkartReport).delete()
-        print(f"✅ Cleared {reports_deleted} Flipkart Scout reports.")
+        print(f"SUCCESS: Cleared {reports_deleted} Flipkart Scout reports.")
         
         # 2. Reset all cameras to ONLINE
         cameras = db.query(CameraJunction).all()
         for camera in cameras:
             camera.is_online = True
-        print(f"✅ Reset {len(cameras)} Camera Junctions to ONLINE.")
+        print(f"SUCCESS: Reset {len(cameras)} Camera Junctions to ONLINE.")
         
         # Commit the changes
         db.commit()
-        print("\n🎉 Demo reset successful. The database is clean and ready for the judges!")
+        print("\nDemo reset successful. The database is clean and ready for the judges!")
         
     except Exception as e:
         db.rollback()
-        print(f"❌ Error during reset: {e}")
+        print(f"ERROR during reset: {e}")
     finally:
         db.close()
 

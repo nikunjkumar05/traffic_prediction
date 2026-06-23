@@ -13,7 +13,7 @@ import {
   Wifi,
   WifiOff,
 } from "lucide-react";
-import { useApi } from "../utils/api";
+import { useApi, apiFetch } from "../utils/api";
 import CapacityGauge from "../components/CapacityGauge";
 import ScrollReveal from "../components/ScrollReveal";
 import GlassCard from "../components/GlassCard";
@@ -161,7 +161,7 @@ function TemporalHeatmap({ junctionId }) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
 
-    fetch(`/api/temporal-profile/${encodeURIComponent(junctionId)}`, {
+    apiFetch(`/api/temporal-profile/${encodeURIComponent(junctionId)}`, {
       signal: controller.signal,
     })
       .then((res) => {
@@ -313,7 +313,7 @@ function BoardSkeleton() {
         ))}
       </div>
       <div className="space-y-3">
-        {Array.from({ length: 6 }).map((i) => (
+        {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-20 bg-elevated rounded-xl animate-pulse" />
         ))}
       </div>

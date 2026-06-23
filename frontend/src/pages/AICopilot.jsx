@@ -11,7 +11,7 @@ import {
   AlertCircle,
   User,
 } from 'lucide-react'
-
+import { apiFetch } from '../utils/api'
 /* ─────────────────────────────────────────────
    CONSTANTS
 ───────────────────────────────────────────── */
@@ -212,7 +212,7 @@ export default function AICopilot() {
     abortRef.current = controller
 
     try {
-      const res = await fetch(
+      const res = await apiFetch(
         `/api/shift-briefing?officer_zone=${encodeURIComponent(OFFICER_ZONE)}&officer_name=${encodeURIComponent(OFFICER_NAME)}`,
         { signal: controller.signal }
       )
@@ -272,7 +272,7 @@ export default function AICopilot() {
       abortRef.current = controller
 
       try {
-        const res = await fetch(
+        const res = await apiFetch(
           `/api/llm/query?q=${encodeURIComponent(trimmed)}`,
           { signal: controller.signal }
         )

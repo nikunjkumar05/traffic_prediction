@@ -1,0 +1,53 @@
+# Git
+.git
+.gitignore
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Data files
+*.csv
+*.parquet
+data/
+data/raw/
+data/processed/
+data/external/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+backend.log
+frontend.log
+
+# Build outputs
+dist/
+build/
+frontend/dist/
+
+# Docker
+docker-compose*.yml
+Dockerfile*

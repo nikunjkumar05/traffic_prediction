@@ -135,7 +135,7 @@ class ViolationAlertSystem:
         
         Returns dict compatible with WhatsApp/SMS APIs.
         """
-        timestamp = pd.to_datetime(violation.get('created_date'))
+        timestamp = pd.to_datetime(violation.get('created_datetime') or violation.get('created_date'))
         is_peak = self.is_peak_hour(timestamp)
         
         vehicle_type = violation.get('updated_vehicle_type', violation.get('vehicle_type', 'Unknown'))
