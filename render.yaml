@@ -1,0 +1,42 @@
+# ============================================================================
+# Render Blueprint — DispatchMind
+# https://render.com/docs/blueprint-spec
+# ============================================================================
+services:
+  - type: web
+    name: dispatchmind
+    runtime: python
+    region: singapore
+    plan: free
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      cd frontend && npm install && npm run build
+    startCommand: bash scripts/start_render.sh
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PYTHONPATH
+        value: .
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dispatchmind-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: http://localhost:3000,http://127.0.0.1:3000,https://*.onrender.com
+      - key: DISPATCHMIND_CACHE
+        value: data/processed/dispatchmind_scored.parquet
+      - key: DISPATCHMIND_CSV
+        value: jan to may police violation_anonymized791b166.csv
+      - key: DISPATCHMIND_COORDS
+        value: data/external/junction_coords.json
+      - key: MISTRAL_API_KEY
+        sync: false
+
+databases:
+  - name: dispatchmind-db
+    region: singapore
+    plan: free
+    databaseName: dispatchmind
+    ipAllowList: []

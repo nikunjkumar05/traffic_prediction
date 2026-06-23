@@ -25,8 +25,9 @@ from datetime import timedelta
 from fastapi import FastAPI, HTTPException, Query, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -317,9 +318,14 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.environ.get(
-        "CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
-    ).split(","),
+    allow_origins=[
+        o.strip()
+        for o in os.environ.get(
+            "CORS_ORIGINS",
+            "http://localhost:3000,http://127.0.0.1:3000,https://*.onrender.com",
+        ).split(",")
+        if o.strip()
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=False,
@@ -3204,6 +3210,38 @@ async def health():
     if payload["status"] == "error":
         raise HTTPException(status_code=503, detail=payload)
     return payload
+
+
+# ---------------------------------------------------------------------------
+# Serve built frontend as static files (Render / production)
+# The frontend dist folder is expected at <repo_root>/frontend/dist/
+# ---------------------------------------------------------------------------
+_FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+
+if _FRONTEND_DIST.is_dir():
+    # Mount static assets (JS, CSS, images) with caching headers
+    app.mount(
+        "/assets",
+        StaticFiles(directory=str(_FRONTEND_DIST / "assets"), check_dir=False),
+        name="frontend_assets",
+    )
+
+    # SPA catch-all: serve index.html for all non-API routes
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_frontend(full_path: str):
+        # Don't interfere with API routes
+        if full_path.startswith("api/") or full_path.startswith("assets/"):
+            raise HTTPException(status_code=404)
+        index_path = _FRONTEND_DIST / "index.html"
+        if not index_path.exists():
+            raise HTTPException(status_code=503, detail="Frontend not built yet")
+        return FileResponse(str(index_path))
+
+    logger.info("Frontend static files mounted from %s", _FRONTEND_DIST)
+else:
+    logger.info(
+        "Frontend dist not found at %s — API-only mode", _FRONTEND_DIST
+    )
 
 
 if __name__ == "__main__":
