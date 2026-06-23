@@ -14,7 +14,7 @@ set -e
 APP_MODULE="backend.api:app"
 HOST="${HOST:-0.0.0.0}"
 PORT="${PORT:-8000}"
-WORKERS="${WORKERS:-2}"
+WORKERS="${WORKERS:-1}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
 
 # Decompress dataset CSV if compressed archive exists and raw file is missing

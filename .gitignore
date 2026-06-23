@@ -16,7 +16,8 @@ frontend/dist/
 # Data files
 *.csv
 *.parquet
-data/processed/
+data/processed/*
+!data/processed/dispatchmind_scored.parquet
 
 # IDE
 .idea/
