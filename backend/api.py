@@ -3226,12 +3226,19 @@ if _FRONTEND_DIST.is_dir():
         name="frontend_assets",
     )
 
-    # SPA catch-all: serve index.html for all non-API routes
+    # SPA catch-all: serve index.html or other static files in the dist root
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_frontend(full_path: str):
-        # Don't interfere with API routes
+        # Don't interfere with API routes or assets directory
         if full_path.startswith("api/") or full_path.startswith("assets/"):
             raise HTTPException(status_code=404)
+        
+        # If the file exists directly in frontend/dist, serve it (e.g. app_logo.jpeg, hero.jpg)
+        if full_path:
+            target_path = _FRONTEND_DIST / full_path
+            if target_path.is_file():
+                return FileResponse(str(target_path))
+                
         index_path = _FRONTEND_DIST / "index.html"
         if not index_path.exists():
             raise HTTPException(status_code=503, detail="Frontend not built yet")
