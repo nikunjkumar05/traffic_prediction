@@ -7,9 +7,10 @@
 FROM python:3.12-slim AS backend
 WORKDIR /app
 
-# Install gzip to decompress the dataset during build
+# Install gzip and libgomp1 (OpenMP library needed by LightGBM/XGBoost)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gzip \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
