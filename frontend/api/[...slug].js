@@ -2,7 +2,23 @@
 import fs from "fs";
 import path from "path";
 
-const DATA_DIR = path.join(process.cwd(), "api_data");
+function findDataDir() {
+  // Try paths in order of likelihood
+  const candidates = [
+    path.join(process.cwd(), "api_data"),
+    path.join(__dirname, "..", "api_data"),
+    path.join(__dirname, "..", "..", "api_data"),
+    path.resolve("/var/task/api_data"),
+    path.resolve("/var/task/user/api_data"),
+  ];
+  for (const dir of candidates) {
+    try {
+      if (fs.statSync(dir).isDirectory()) return dir;
+    } catch {}
+  }
+  return candidates[0];
+}
+const DATA_DIR = findDataDir();
 
 const FILE_MAP = {
   "/api/overview": "overview.json",
