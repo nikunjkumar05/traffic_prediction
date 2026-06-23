@@ -27,7 +27,7 @@ COPY backend/ backend/
 COPY src/ src/
 COPY config/ config/
 COPY phantom_risk.py preprocess.py tipping_points.py ./
-COPY "jan to may police violation_anonymized791b166.csv.gz" ./
+COPY ["jan to may police violation_anonymized791b166.csv.gz", "./"]
 RUN gzip -d "jan to may police violation_anonymized791b166.csv.gz"
 COPY data/external/ data/external/
 
