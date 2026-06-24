@@ -3169,7 +3169,20 @@ async def report_client_error(report: ClientErrorReport):
 @app.get("/api/config/mappls")
 async def get_mappls_config():
     """Return the Mappls API key from environment variables at runtime."""
+    # Try direct lookup first
     key = os.environ.get("VITE_MAPPLS_API_KEY") or os.environ.get("MAPPLS_API_KEY")
+    
+    # Fallback to case-insensitive environment search if not found
+    if not key:
+        for k, v in os.environ.items():
+            if k.upper() in ("VITE_MAPPLS_API_KEY", "MAPPLS_API_KEY"):
+                key = v
+                break
+                
+    if key:
+        key = key.strip().strip("'\"") # clean whitespace and quotes
+        
+    logger.info("Mappls config request: key_found=%s, env_keys=%s", bool(key), [k for k in os.environ.keys() if "MAP" in k.upper() or "VITE" in k.upper()])
     return {"apiKey": key or ""}
 
 
