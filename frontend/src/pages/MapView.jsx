@@ -152,7 +152,7 @@ export default function MapView() {
 
     async function loadMappls() {
       // Hardcoded fallback key as requested by user
-      let apiKey = import.meta.env.VITE_MAPPLS_API_KEY || "ldvrbvdbrzthemtasdlbdfddbcgnmfpnklz";
+      let apiKey = import.meta.env.VITE_MAPPLS_API_KEY || "jwucggscwdkoqdbezldwphuskpdiigvwscli";
       
       // If build-time variable is absent and hardcoded key is not used, fetch from backend config API
       if (!apiKey) {
